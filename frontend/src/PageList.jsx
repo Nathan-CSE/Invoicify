@@ -1,13 +1,14 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import LandingPage from './pages/HomePage';
 import HomePage from './pages/HomePage';
+import DashboardPage from './pages/DashboardPage';
 
 function PageList() {
   return (
     <>
       <Routes>
         <Route path='/' element={<HomePage />} />
+        <Route path='/dashboard' element={<DashboardPage />} />
       </Routes>
     </>
   );
