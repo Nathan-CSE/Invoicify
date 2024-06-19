@@ -2,7 +2,8 @@ import React from 'react';
 import Navbar from '../components/Navbar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-// import InvoiceFlavourImage from '../images/invoice.png';
+import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import InvoiceFlavourImage from '../assets/stock_invoice.png';
 import { ReactComponent as TickSvg } from '../assets/tick.svg';
 import { ReactComponent as PenSvg } from '../assets/pen.svg';
@@ -11,6 +12,8 @@ function HomePage() {
   return (
     <>
       <Navbar></Navbar>
+
+      {/* Top Section */}
       <Box sx={{ display: 'flex', flexDirection: 'row', mt: 10 }}>
         <Box>
           <Typography variant='h2' gutterBottom>
@@ -35,6 +38,7 @@ function HomePage() {
         </Box>
       </Box>
 
+      {/* Feature Icons */}
       <Box
         sx={{
           display: 'flex',
@@ -113,6 +117,74 @@ function HomePage() {
           </Typography>
         </Box>
       </Box>
+
+      {/* Documentation Section */}
+      <Stack spacing={3} sx={{ mt: 15 }}>
+        <Typography variant='h3' gutterBottom>
+          Documentation
+        </Typography>
+        <Divider sx={{ borderColor: 'black' }} />
+        <Typography variant='h4' gutterBottom>
+          Invoice Creation
+        </Typography>
+        <Typography variant='body1' gutterBottom>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
+          blanditiis tenetur unde suscipit, quam beatae rerum inventore
+          consectetur, neque doloribus, cupiditate numquam dignissimos laborum
+          fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
+          amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam. Lorem ipsum dolor sit amet, consectetur adipisicing
+          elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum
+          inventore consectetur, neque doloribus, cupiditate numquam dignissimos
+          laborum fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor
+          sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam.
+        </Typography>
+        <Typography variant='h4' gutterBottom>
+          Invoice Validation
+        </Typography>
+        <Typography variant='body1' gutterBottom>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
+          blanditiis tenetur unde suscipit, quam beatae rerum inventore
+          consectetur, neque doloribus, cupiditate numquam dignissimos laborum
+          fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
+          amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam. Lorem ipsum dolor sit amet, consectetur adipisicing
+          elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum
+          inventore consectetur, neque doloribus, cupiditate numquam dignissimos
+          laborum fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor
+          sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam.
+        </Typography>
+        <Typography variant='h4' gutterBottom>
+          Invoice Sending
+        </Typography>
+        <Typography variant='body1' gutterBottom>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
+          blanditiis tenetur unde suscipit, quam beatae rerum inventore
+          consectetur, neque doloribus, cupiditate numquam dignissimos laborum
+          fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
+          amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam. Lorem ipsum dolor sit amet, consectetur adipisicing
+          elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum
+          inventore consectetur, neque doloribus, cupiditate numquam dignissimos
+          laborum fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor
+          sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam.
+        </Typography>
+      </Stack>
     </>
   );
 }
