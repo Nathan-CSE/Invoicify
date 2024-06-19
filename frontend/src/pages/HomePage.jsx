@@ -44,41 +44,73 @@ function HomePage() {
           justifyContent: 'center',
         }}
       >
-        <Box
-          sx={{
-            border: 6,
-            borderRadius: '50%',
-            width: 150,
-            height: 150,
-            alignContent: 'center',
-            textAlign: 'center',
-          }}
-        >
-          <TickSvg />
+        <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
+          <Box
+            sx={{
+              border: 6,
+              borderRadius: '50%',
+              borderColor: '#2196F3',
+              width: 150,
+              height: 150,
+              alignContent: 'center',
+              textAlign: 'center',
+            }}
+          >
+            <TickSvg />
+          </Box>
+          <Typography
+            variant='subtitle1'
+            sx={{ fontWeight: 'bold' }}
+            gutterBottom
+          >
+            INVOICE VALIDATION
+          </Typography>
         </Box>
-        <Box
-          sx={{
-            border: 6,
-            borderRadius: '50%',
-            width: 150,
-            height: 150,
-            alignContent: 'center',
-            textAlign: 'center',
-          }}
-        >
-          <PenSvg />
+
+        <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
+          <Box
+            sx={{
+              border: 6,
+              borderRadius: '50%',
+              borderColor: '#2196F3',
+              width: 150,
+              height: 150,
+              alignContent: 'center',
+              textAlign: 'center',
+            }}
+          >
+            <PenSvg />
+          </Box>
+          <Typography
+            variant='subtitle1'
+            sx={{ fontWeight: 'bold' }}
+            gutterBottom
+          >
+            INVOICE CREATION
+          </Typography>
         </Box>
-        <Box
-          sx={{
-            border: 6,
-            borderRadius: '50%',
-            width: 150,
-            height: 150,
-            alignContent: 'center',
-            textAlign: 'center',
-          }}
-        >
-          <SendSvg />
+
+        <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
+          <Box
+            sx={{
+              border: 6,
+              borderRadius: '50%',
+              borderColor: '#2196F3',
+              width: 150,
+              height: 150,
+              alignContent: 'center',
+              textAlign: 'center',
+            }}
+          >
+            <SendSvg />
+          </Box>
+          <Typography
+            variant='subtitle1'
+            sx={{ fontWeight: 'bold' }}
+            gutterBottom
+          >
+            INVOICE SENDING
+          </Typography>
         </Box>
       </Box>
     </>
