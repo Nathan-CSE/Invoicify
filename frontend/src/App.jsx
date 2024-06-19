@@ -6,7 +6,7 @@ function App() {
   return (
     <>
       <Router>
-        <PageList></PageList>
+        <PageList />
       </Router>
     </>
   );

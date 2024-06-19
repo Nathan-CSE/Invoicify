@@ -7,10 +7,11 @@ import InvoiceFlavourImage from '../assets/stock_invoice.png';
 import { ReactComponent as TickSvg } from '../assets/tick.svg';
 import { ReactComponent as PenSvg } from '../assets/pen.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
+
 function HomePage() {
   return (
     <>
-      <Navbar></Navbar>
+      <Navbar/>
       <Box sx={{ display: 'flex', flexDirection: 'row', mt: 10 }}>
         <Box>
           <Typography variant='h2' gutterBottom>
