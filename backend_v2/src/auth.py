@@ -66,7 +66,7 @@ class ChangePWAPI(MethodView):
 
         # sql = select(User).where(User.email==email)
         # user = db.session.execute(sql)
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first() #TODO 
     
         if user is None:
             return jsonify({"message": "User not found"}), 404
