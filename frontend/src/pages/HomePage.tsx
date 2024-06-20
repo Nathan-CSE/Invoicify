@@ -8,6 +8,7 @@ import InvoiceFlavourImage from '../assets/stock_invoice.png';
 import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
+
 function HomePage() {
   return (
     <>

@@ -9,6 +9,21 @@ import Typography from '@mui/material/Typography';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
 
+const options = [
+  'CREATE',
+  'VALIDATE',
+  'SEND',
+  'MANAGE',
+  'SETTINGS',
+  'DOCUMENTATION',
+];
+
+// Current Idea -> For loop to create each grid item and card to make it so we dont have to repeat code
+// Wow yeap
+// - The svgs have the name corresponding to the options -> just make it lower
+// - Assign a custom string based on the option value -> Switch case
+// - Issue: Have to integrate cardaction and usenavigate here... so?? figure that out yeah
+
 const bull = (
   <Box
     component='span'
