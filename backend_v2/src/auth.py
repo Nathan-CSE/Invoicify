@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask.views import MethodView
 from models import db, User
 from sqlalchemy import select, exists
@@ -38,18 +38,19 @@ class LoginAPI(MethodView):
         hashed_password = hashlib.sha512((password + salt).encode('UTF-8')).hexdigest()
 
         sql = db.select(User).where(User.email==email)
-
         data = db.session.execute(sql).first()
+        
         if not data:
             return jsonify({"message": "Your email/ password does not match an entry in our system, create an account instead?"}), 400
         user = data[0]
 
-        if user.password == hashed_password:
-            secretJWT = os.getenv("JWTSECRET")
-            cookie = jwt.encode({'email': email}, secretJWT, algorithm='HS256')
-            return jsonify({"message": "User logged in successfully.", "cookie": cookie}), 200
+        if user.password != hashed_password:
+            return jsonify({"message": "Your email/ password does not match an entry in our system, create an account instead?"}), 400
+
+        secretJWT = os.getenv("JWTSECRET")
+        cookie = jwt.encode({'email': email}, secretJWT, algorithm='HS256')
+        return jsonify({"message": "User logged in successfully.", "cookie": cookie}), 200
             
-        return jsonify({"message": "Your email/ password does not match an entry in our system, create an account instead?"}), 400
         
         
 class ChangePWAPI(MethodView):
@@ -63,15 +64,23 @@ class ChangePWAPI(MethodView):
         salt = os.getenv("SALT")
         hashed_password = hashlib.sha512((password + salt).encode('UTF-8')).hexdigest()
 
-        sql = select(User).where(User.email==email)
-        user = session.execute(sql)
-   
-        if user.first()[0].password == hashed_password:
-            hashed_new = hashlib.sha512((updated_password + salt).encode('UTF-8')).hexdigest()
+        # sql = select(User).where(User.email==email)
+        # user = db.session.execute(sql)
+        user = User.query.filter_by(email=email).first()
+    
+        if user is None:
+            return jsonify({"message": "User not found"}), 404
+
+        if user.first()[0].password != hashed_password:
+            return jsonify({"message": "Your password does not match"}), 400
             
+        hashed_new = hashlib.sha512((updated_password + salt).encode('UTF-8')).hexdigest()
+        user.password = hashed_new
+
+        db.session.commit()
+        
+        return jsonify({"message": "You have successfully changed your password."}), 200
             
-            return jsonify({"message": "You have successfully changed your password."}), 200
-            
-        return jsonify({"message": "Your password does not match"}), 400
+        
       
         
