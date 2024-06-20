@@ -10,6 +10,7 @@ import Container from '@mui/material/Container';
 import Navbar from '../components/Navbar';
 import Divider from '@mui/material/Divider';
 import { Link } from 'react-router-dom';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 
 export default function SignIn() {
   const handleSubmit = (event) => {
@@ -39,6 +40,18 @@ export default function SignIn() {
         Invoice Creation
       </Typography>
       <Divider sx={{ borderBottomWidth: 2 }} />
+      <Breadcrumbs aria-label="breadcrumb">
+        <Link
+          underline="hover"
+          color="inherit"
+          href="/material-ui/getting-started/installation/"
+        >
+          Dashboard
+        </Link>
+        <Typography color="text.primary">
+          Invoice Creation
+        </Typography>
+      </Breadcrumbs>
       <Container component="main" maxWidth="xs">
         <Box
           sx={{
