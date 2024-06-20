@@ -11,6 +11,15 @@ import Navbar from '../components/Navbar';
 import Divider from '@mui/material/Divider';
 import { Link } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import FileUpload from '../components/FileUpload';
+
+const theme = createTheme({
+  typography: {
+    fontFamily: 'Roboto, Arial, sans-serif',
+  },
+});
+
 
 export default function SignIn() {
   const handleSubmit = (event) => {
@@ -35,27 +44,40 @@ export default function SignIn() {
 
   return (
     <>
+      <ThemeProvider theme={theme}>
+
       <Navbar />
-      <Typography component="h1" variant="header3" sx={{ marginTop: 10 }}>
+
+      <Typography variant='h4' sx={{ marginTop: 10 }}>
         Invoice Creation
       </Typography>
-      <Divider sx={{ borderBottomWidth: 2 }} />
-      <Breadcrumbs aria-label="breadcrumb">
+
+      <Divider sx={{ borderBottomWidth: 1.5 }} />
+
+      <Breadcrumbs aria-label='breadcrumb'>
         <Link
-          underline="hover"
-          color="inherit"
-          href="/material-ui/getting-started/installation/"
+          underline='hover'
+          color='inherit'
+          href='/material-ui/getting-started/installation/'
         >
           Dashboard
         </Link>
-        <Typography color="text.primary">
+        <Typography color='text.primary'>
           Invoice Creation
         </Typography>
       </Breadcrumbs>
-      <Container component="main" maxWidth="xs">
+
+      <Box sx={{ mt: 5 }}>
+        <FileUpload />
+        <Typography textAlign='center' sx={{ mt: -15 }}>
+          Supported formats: CSV, Excel, SQL, PDF
+        </Typography>
+      </Box>
+
+      <Container component='main' maxWidth='xs'>
         <Box
           sx={{
-            marginTop: 20,
+            marginTop: 10,
             padding: 5,
             display: 'flex',
             flexDirection: 'column',
@@ -64,11 +86,29 @@ export default function SignIn() {
             borderRadius: 4
           }}
         >
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            Upload Invoice
+          <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <Typography textAlign='center'>
+              Upload Invoice
+            </Typography>
+            <Typography>
+              Supported formats: CSV, Excel, SQL, PDF
+            </Typography>
           </Box>
         </Box>
+
+        <Typography textAlign='center' sx={{ my: 2 }}>
+          OR
+        </Typography>
+
+        <Box textAlign='center'>
+          <Button component={Link} to='/sign-in' variant='contained'>
+            Create a New Invoice
+          </Button>
+        </Box>
+
       </Container>
+
+      </ThemeProvider>
     </>
   );
 }
