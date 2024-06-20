@@ -19,8 +19,6 @@ def create_app(db_path="database.db"):
         db.create_all()
 
     api.add_namespace(auth_ns)
-    # app.add_url_rule('/register', view_func=RegisterAPI.as_view('register_api'), methods=['POST'])
-    app.add_url_rule('/login', view_func=LoginAPI.as_view('login_api'), methods=['POST'])
     
     return app
 
