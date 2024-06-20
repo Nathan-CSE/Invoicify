@@ -4,6 +4,7 @@ from models import db, User
 from sqlalchemy import select, exists
 import hashlib
 import os 
+import jwt
 
 class RegisterAPI(MethodView):
     def post(self):
@@ -21,7 +22,10 @@ class RegisterAPI(MethodView):
         db.session.add(User(email=email, password=hashed_password))
         db.session.commit()
         
-        return jsonify({"message": "User registered successfully."}), 201
+        secretJWT = os.getenv("JWTSECRET")
+        cookie = jwt.encode({'email': email}, secretJWT, algorithm='HS256')
+        
+        return jsonify({"message": "User registered successfully.", "cookie": cookie}), 201
 
 class LoginAPI(MethodView):
     def post(self):
@@ -41,7 +45,9 @@ class LoginAPI(MethodView):
         user = data[0]
 
         if user.password == hashed_password:
-            return jsonify({"message": "User logged in successfully."}), 200
+            secretJWT = os.getenv("JWTSECRET")
+            cookie = jwt.encode({'email': email}, secretJWT, algorithm='HS256')
+            return jsonify({"message": "User logged in successfully.", "cookie": cookie}), 200
             
         return jsonify({"message": "Your email/ password does not match an entry in our system, create an account instead?"}), 400
         
