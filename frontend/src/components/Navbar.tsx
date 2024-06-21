@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import { Link } from 'react-router-dom';
 
 function Navbar() {
   return (
@@ -24,8 +25,8 @@ function Navbar() {
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             E-Invoice Manager
           </Typography>
-          <Button variant='contained' color='secondary'>
-            LOGIN
+          <Button component={Link} to="/sign-in" variant='contained' color='secondary'>
+            Login
           </Button>
         </Toolbar>
       </AppBar>

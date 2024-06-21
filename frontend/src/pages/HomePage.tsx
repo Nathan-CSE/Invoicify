@@ -12,9 +12,7 @@ import { ReactComponent as SendSvg } from '../assets/send.svg';
 function HomePage() {
   return (
     <>
-      <Navbar></Navbar>
-
-      {/* Top Section */}
+      <Navbar/>
       <Box sx={{ display: 'flex', flexDirection: 'row', mt: 10 }}>
         <Box>
           <Typography variant='h2' gutterBottom>
