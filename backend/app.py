@@ -1,18 +1,27 @@
-from flask import Flask, jsonify
-from models import setup_db
-from src.auth import RegisterAPI, LoginAPI
+import os
+from models import db
+from flask import Flask, render_template, request, url_for, redirect
+from flask_sqlalchemy import SQLAlchemy
+from flask_restx import Api
+from src.auth import RegisterAPI, LoginAPI, auth_ns
 from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
+def create_app(db_path="database.db"):
+    app = Flask(__name__)
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+    api = Api(app)
 
-app.add_url_rule('/register', view_func=RegisterAPI.as_view('register_api'), methods=['POST'])
-app.add_url_rule('/login', view_func=LoginAPI.as_view('login_api'), methods=['POST'])
+    db.init_app(app)
 
+    with app.app_context():
+        db.create_all()
 
+    api.add_namespace(auth_ns)
+    
+    return app
 
-
-if __name__ == '__main__':
-    # setup_db()
-    app.run(debug=True, use_reloader=False)
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)

@@ -1,70 +1,81 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask.views import MethodView
-from models import session, User
+from flask_restx import Namespace, Resource
+from models import db, User
 from sqlalchemy import select, exists
-import hashlib
-import os 
+from src.utils import salt_and_hash, create_jwt_token
 
-class RegisterAPI(MethodView):
+auth_ns = Namespace('auth', description='Operations related to authentication')
+
+@auth_ns.route("/register")
+class RegisterAPI(Resource):
     def post(self):
         data = request.json
         
-        username = data['username']
+        email = data['email']
         password = data['password']
         
-        salt = os.getenv("SALT")
-        hashed_password = hashlib.sha512((password + salt).encode('UTF-8')).hexdigest()
+        hashed_password = salt_and_hash(password)
 
-        # check if user is already registered
-        (ret, ), = session.query(exists().where(User.username==username))
-        if ret:
-            return jsonify({"message": "Username already registered, if you forgotten your password, please reset your password instead."}), 400
-            
+        if db.session.execute(db.select(User).filter_by(email=email)).first():
+            return make_response(jsonify({"message": "email already registered, if you forgotten your password, please reset your password instead."}), 400)
         
-        session.add(User(username=username, password=hashed_password))
-        session.commit()
+        db.session.add(User(email=email, password=hashed_password))
+        db.session.commit()
         
-        return jsonify({"message": "User registered successfully."}), 201
+        cookie = create_jwt_token({'email': email})
+        
+        return make_response(jsonify({"message": "User registered successfully.", "cookie": cookie}), 201)
 
-class LoginAPI(MethodView):
+@auth_ns.route("/login")
+class LoginAPI(Resource):
     def post(self):
         data = request.json
         
-        username = data['username']
+        email = data['email']
         password = data['password']
-        
-        salt = os.getenv("SALT")
-        hashed_password = hashlib.sha512((password + salt).encode('UTF-8')).hexdigest()
 
-        sql = select(User).where(User.username==username)
-        user = session.execute(sql)
-   
-        if user.first()[0].password == hashed_password:
-            return jsonify({"message": "User logged in successfully."}), 200
+        hashed_password = salt_and_hash(password)
+
+        sql = db.select(User).where(User.email==email)
+
+        if not (data := db.session.execute(sql).first()) or data[0].password != hashed_password:
+            return make_response(jsonify({"message": "Your email/ password does not match an entry in our system, create an account instead?"}), 400)
+
+        user, = data
+
+        cookie = create_jwt_token({'email': email})
+        return make_response(jsonify({"message": "User logged in successfully.", "cookie": cookie}), 200)
             
-        return jsonify({"message": "Your username/ password does not match an entry in our system, create an account instead?"}), 400
         
         
 class ChangePWAPI(MethodView):
     def patch(self):
         data = request.json
         
-        username = data['username']
+        email = data['email']
         password = data['password']
         updated_password = data['updated_password']
         
         salt = os.getenv("SALT")
         hashed_password = hashlib.sha512((password + salt).encode('UTF-8')).hexdigest()
 
-        sql = select(User).where(User.username==username)
-        user = session.execute(sql)
-   
-        if user.first()[0].password == hashed_password:
-            hashed_new = hashlib.sha512((updated_password + salt).encode('UTF-8')).hexdigest()
+        # sql = select(User).where(User.email==email)
+        # user = db.session.execute(sql)
+        user = User.query.filter_by(email=email).first() #TODO 
+    
+        if user is None:
+            return jsonify({"message": "User not found"}), 404
+
+        if user.first()[0].password != hashed_password:
+            return jsonify({"message": "Your password does not match"}), 400
             
+        user.password = salt_and_hash(updated_password)
+
+        db.session.commit()
+        
+        return jsonify({"message": "You have successfully changed your password."}), 200
             
-            return jsonify({"message": "You have successfully changed your password."}), 200
-            
-        return jsonify({"message": "Your password does not match"}), 400
+        
       
         
