@@ -1,6 +1,7 @@
 import os
 from models import db
 from flask import Flask, render_template, request, url_for, redirect
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
 from src.auth import RegisterAPI, LoginAPI, auth_ns
@@ -11,6 +12,8 @@ load_dotenv()
 def create_app(db_path="database.db"):
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+    
+    CORS(app)
     api = Api(app)
 
     db.init_app(app)
