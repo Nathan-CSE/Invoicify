@@ -11,30 +11,30 @@ import Navbar from '../components/Navbar';
 import { Link } from 'react-router-dom';
 
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const username = data.get('username');
-    const password = data.get('password');
-    
-    if (username.length === 0 || password === 0) {
+    const username = data.get('username') as string;
+    const password = data.get('password') as string;
+
+    if (username.length === 0 || password.length === 0) {
       alert('Fill out all required fields');
     } else {
       try {
         // send to backend
       } catch (err) {
-        alert(err.response.data.error);
+        if (err instanceof Error) {
+          alert(err.message);
+        }
       }
     }
-
-
   };
 
   return (
     <>
       <Navbar />
-      <Container component="main" maxWidth="xs">
+      <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
           sx={{
@@ -44,53 +44,53 @@ export default function SignIn() {
             flexDirection: 'column',
             alignItems: 'center',
             border: 'solid 0.5px',
-            borderRadius: 4
+            borderRadius: 4,
           }}
         >
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography component='h1' variant='h5'>
             Sign In
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box
+            component='form'
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
             <TextField
-              margin="normal"
+              margin='normal'
               required
               fullWidth
-              id="username"
-              label="Username"
-              name="username"
-              autoComplete="username"
+              id='username'
+              label='Username'
+              name='username'
+              autoComplete='username'
               autoFocus
             />
             <TextField
-              margin="normal"
+              margin='normal'
               required
               fullWidth
-              name="password"
-              label="Password"
-              type="password"
-              id="password"
-              autoComplete="current-password"
+              name='password'
+              label='Password'
+              type='password'
+              id='password'
+              autoComplete='current-password'
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3 }}
-            >
+            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
               Sign In
             </Button>
 
             <Button
-              type="submit"
+              type='submit'
               fullWidth
-              variant="contained"
+              variant='contained'
               component={Link}
-              to="/sign-up"
+              to='/sign-up'
               sx={{ mt: 3, mb: 2 }}
-              color="secondary"
+              color='secondary'
             >
               Register here
             </Button>
