@@ -9,10 +9,17 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Navbar from '../components/Navbar';
 import Divider from '@mui/material/Divider';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import FileUpload from '../components/FileUpload';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 const theme = createTheme({
   typography: {
@@ -20,8 +27,15 @@ const theme = createTheme({
   },
 });
 
-
 export default function SignIn() {
+  const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    navigate('/invoice-confirmation');
+    setOpen(false);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -39,7 +53,6 @@ export default function SignIn() {
       }
     }
 
-
   };
 
   return (
@@ -47,65 +60,81 @@ export default function SignIn() {
       <ThemeProvider theme={theme}>
 
       <Navbar />
-
-      <Typography variant='h4' sx={{ marginTop: 10 }}>
-        Invoice Creation
-      </Typography>
-
-      <Divider sx={{ borderBottomWidth: 1.5 }} />
-
-      <Breadcrumbs aria-label='breadcrumb'>
-        <Link
-          underline='hover'
-          color='inherit'
-          href='/material-ui/getting-started/installation/'
-        >
-          Dashboard
-        </Link>
-        <Typography color='text.primary'>
+      
+      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
+        <Typography variant='h4'>
           Invoice Creation
         </Typography>
-      </Breadcrumbs>
 
-      <Box sx={{ mt: 5 }}>
-        <FileUpload />
-        <Typography textAlign='center' sx={{ mt: -15 }}>
-          Supported formats: CSV, Excel, SQL, PDF
-        </Typography>
-      </Box>
+        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
 
-      <Container component='main' maxWidth='xs'>
-        <Box
-          sx={{
-            marginTop: 10,
-            padding: 5,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            border: 'solid 0.5px',
-            borderRadius: 4
-          }}
+        <Breadcrumbs
+          aria-label='breadcrumb'
+          separator={<NavigateNextIcon fontSize="small" />}
         >
-          <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <Typography textAlign='center'>
-              Upload Invoice
-            </Typography>
-            <Typography>
-              Supported formats: CSV, Excel, SQL, PDF
-            </Typography>
-          </Box>
+          <Typography
+            component={Link}
+            to='/sign-in'
+          >
+            Dashboard
+          </Typography>
+
+          <Typography color='text.primary'>
+            Invoice Creation
+          </Typography>
+        </Breadcrumbs>
+
+        <Box sx={{ my: 5 }}>
+          <FileUpload />
         </Box>
 
-        <Typography textAlign='center' sx={{ my: 2 }}>
+        <Box textAlign='center'>
+          <Button
+            onClick={handleOpen}
+            variant='contained'
+            sx={{
+              height: '50px',
+              padding: '25px',
+            }}
+          >
+            Generate Invoices
+          </Button>
+          {/* NOTE: Send to backend and create invoices */}
+        </Box>
+
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Your invoice has been created and saved to your account."}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={handleClose} autoFocus>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Typography variant='h5' textAlign='center' sx={{ my: 2 }}>
           OR
         </Typography>
 
         <Box textAlign='center'>
-          <Button component={Link} to='/sign-in' variant='contained'>
+          <Button
+            component={Link}
+            to='/sign-in'
+            variant='contained'
+            sx={{
+              height: '50px',
+              padding: '25px',
+            }}
+          >
             Create a New Invoice
           </Button>
         </Box>
-
       </Container>
 
       </ThemeProvider>

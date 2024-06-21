@@ -10,16 +10,19 @@ class FileUpload extends Component {
       files: [],
     };
   }
+
   handleChange(files) {
     this.setState({
       files: files,
     });
+
+    console.log('files: ', files);
   }
   render() {
     return (
       <DropzoneArea
         onChange={this.handleChange.bind(this)}
-        dropzoneText='Upload Invoice'
+        dropzoneText='Upload Invoice(s): CSV, Excel, SQL, PDF'
         dropzoneClass="FileUploadClass"
         dropzoneParagraphClass="FileUploadTextClass"
       />
