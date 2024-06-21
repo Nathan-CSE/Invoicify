@@ -3,7 +3,7 @@ from flask.views import MethodView
 from flask_restx import Namespace, Resource
 from models import db, User
 from sqlalchemy import select, exists
-from src.utils import salt_and_hash, create_jwt_token
+from src.utils import salt_and_hash, create_jwt_token, query_db
 
 auth_ns = Namespace('auth', description='Operations related to authentication')
 
@@ -17,7 +17,7 @@ class RegisterAPI(Resource):
         
         hashed_password = salt_and_hash(password)
 
-        if db.session.execute(db.select(User).filter_by(email=email)).first():
+        if query_db(db.select(User).where(User.email==email)):
             return make_response(jsonify({"message": "email already registered, if you forgotten your password, please reset your password instead."}), 400)
         
         db.session.add(User(email=email, password=hashed_password))
@@ -37,12 +37,10 @@ class LoginAPI(Resource):
 
         hashed_password = salt_and_hash(password)
 
-        sql = db.select(User).where(User.email==email)
-
-        if not (data := db.session.execute(sql).first()) or data[0].password != hashed_password:
+        if not (result := query_db(db.select(User).where(User.email==email))) or result[0].password != hashed_password:
             return make_response(jsonify({"message": "Your email/ password does not match an entry in our system, create an account instead?"}), 400)
 
-        user, = data
+        user = result[0]
 
         cookie = create_jwt_token({'email': email})
         return make_response(jsonify({"message": "User logged in successfully.", "cookie": cookie}), 200)
