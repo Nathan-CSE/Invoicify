@@ -1,0 +1,40 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - auth 
+      # - '*' (use this when we need it for all branches)
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10.2  # Change this to your preferred Python version
+
+    - name: Change Directory to Backend
+      run: cd backend && pwd
+      
+    - name: Load Environment Variables
+      run: |
+        echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+
+    - name: Install dependencies
+      run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+          python -m playwright install
+
+    - name: Run Pytest
+      run: pytest
