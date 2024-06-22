@@ -125,7 +125,7 @@ export default function SignIn() {
         <Box textAlign='center'>
           <Button
             component={Link}
-            to='/sign-in'
+            to='/invoice-creation-GUI'
             variant='contained'
             sx={{
               height: '50px',
