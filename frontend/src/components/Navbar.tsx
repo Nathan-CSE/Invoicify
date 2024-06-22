@@ -8,7 +8,43 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Link } from 'react-router-dom';
 
-function Navbar() {
+function Navbar(props: {
+  token: string;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  // Replace with API call later
+  function logout() {
+    localStorage.removeItem('token');
+    props.setToken('');
+  }
+  // Creates the Login OR logout button dynamically
+  function buttonCreation() {
+    if (props.token) {
+      return (
+        <Button
+          component={Link}
+          to='/'
+          variant='contained'
+          color='secondary'
+          onClick={logout}
+        >
+          Logout
+        </Button>
+      );
+    } else {
+      return (
+        <Button
+          component={Link}
+          to='/sign-in'
+          variant='contained'
+          color='secondary'
+        >
+          Login
+        </Button>
+      );
+    }
+  }
+
   return (
     <Box sx={{ flexGrow: 1, width: '100%', top: 0, position: 'fixed' }}>
       <AppBar>
@@ -25,9 +61,15 @@ function Navbar() {
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             E-Invoice Manager
           </Typography>
-          <Button component={Link} to="/sign-in" variant='contained' color='secondary'>
+          {buttonCreation()}
+          {/* <Button
+            component={Link}
+            to='/sign-in'
+            variant='contained'
+            color='secondary'
+          >
             Login
-          </Button>
+          </Button> */}
         </Toolbar>
       </AppBar>
     </Box>

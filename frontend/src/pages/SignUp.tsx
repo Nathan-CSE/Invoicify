@@ -9,23 +9,34 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Navbar from '../components/Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-export default function SignUp() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+export default function SignUp(props: {
+  token: string;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (props.token) {
+      navigate('/dashboard');
+    }
+  }, [props.token]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     const firstName = data.get('firstName') as string;
     const lastName = data.get('lastName') as string;
-    const username = data.get('username') as string;
+    const email = data.get('email') as string;
     const password = data.get('password') as string;
     const confirmPassword = data.get('confirmPassword') as string;
 
     if (
       firstName.length === 0 ||
       lastName.length === 0 ||
-      username.length === 0 ||
+      email.length === 0 ||
       password.length === 0 ||
       confirmPassword.length === 0
     ) {
@@ -33,7 +44,23 @@ export default function SignUp() {
     } else {
       if (password === confirmPassword) {
         try {
-          // send to backend
+          const response = await fetch('http://localhost:5000/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+            headers: {
+              'Content-type': 'application/json',
+            },
+          });
+
+          const data = await response.json();
+          console.log(data);
+
+          props.setToken(data.cookie);
+          localStorage.setItem('token', data.cookie);
+          navigate('/dashboard');
         } catch (err) {
           // alert(err.response.data.error);
           if (err instanceof Error) {
@@ -48,7 +75,7 @@ export default function SignUp() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
@@ -100,10 +127,10 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  name='username'
-                  label='Username'
-                  type='username'
-                  id='username'
+                  name='email'
+                  label='Email'
+                  type='email'
+                  id='email'
                 />
               </Grid>
               <Grid item xs={12}>

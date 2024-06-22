@@ -23,50 +23,55 @@ import { ReactComponent as DocSvg } from '../assets/documentation.svg';
 // - Assign a custom string based on the option value -> Switch case
 // - Issue: Have to integrate cardaction and usenavigate here... so?? figure that out yeah
 
-interface SVGDict {
-  [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
-}
+function DashboardPage(props: {
+  token: string;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  console.log(props.token);
 
-const options = {
-  'Create/Upload an Invoice': PenSvg,
-  'Validate an Invoice': TickSvg,
-  'Send an Invoice': SendSvg,
-  'Manage Invoices': ManageSvg,
-  'Account Settings': CogSvg,
-  'Documentation Info': DocSvg,
-};
+  interface SVGDict {
+    [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+  }
 
-function generateOptions(options: SVGDict): JSX.Element[] {
-  return Object.entries(options).map(([name, SVG], index) => (
-    <Grid key={index} item>
-      <Card
-        sx={{
-          border: 1,
-          borderRadius: '16px',
-          width: '20rem',
-          height: '18rem',
-          alignContent: 'center',
-          textAlign: 'center',
-          display: 'flex',
-        }}
-      >
-        <CardActionArea>
-          <CardContent>
-            <SVG />
-            <Typography variant='h6' component='div'>
-              {name}
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      </Card>
-    </Grid>
-  ));
-}
+  const options = {
+    'Create/Upload an Invoice': PenSvg,
+    'Validate an Invoice': TickSvg,
+    'Send an Invoice': SendSvg,
+    'Manage Invoices': ManageSvg,
+    'Account Settings': CogSvg,
+    'Documentation Info': DocSvg,
+  };
 
-function DashboardPage() {
+  function generateOptions(options: SVGDict): JSX.Element[] {
+    return Object.entries(options).map(([name, SVG], index) => (
+      <Grid key={index} item>
+        <Card
+          sx={{
+            border: 1,
+            borderRadius: '16px',
+            width: '20rem',
+            height: '18rem',
+            alignContent: 'center',
+            textAlign: 'center',
+            display: 'flex',
+          }}
+        >
+          <CardActionArea>
+            <CardContent>
+              <SVG />
+              <Typography variant='h6' component='div'>
+                {name}
+              </Typography>
+            </CardContent>
+          </CardActionArea>
+        </Card>
+      </Grid>
+    ));
+  }
+
   return (
     <>
-      <Navbar></Navbar>
+      {/* <Navbar></Navbar> */}
       <Box sx={{ mt: 10 }}>
         <Grid
           container
