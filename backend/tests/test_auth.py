@@ -22,8 +22,8 @@ def test_register_successfully(client):
 
     response_body = json.loads(res.data)
 
-    jwt_cookie = response_body.get('cookie')
-    assert jwt_cookie is not None, "JWT cookie should be present"
+    jwt_token = response_body.get('token')
+    assert jwt_token is not None, "JWT token should be present"
 
     result = query_db(db.select(User).where(User.email==data["email"]))
     assert len(result) == 1
@@ -62,8 +62,8 @@ def test_login_successfully(client):
 
     response_body = json.loads(res.data)
 
-    jwt_cookie = response_body.get('cookie')
-    assert jwt_cookie == create_jwt_token({"email": data["email"]})
+    jwt_token = response_body.get('token')
+    assert jwt_token == create_jwt_token({"email": data["email"]})
     
 def test_login_with_wrong_password(client):
     db.session.add(User(email="abc@gmail.com", password=salt_and_hash("abc")))

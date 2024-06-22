@@ -23,9 +23,9 @@ class RegisterAPI(Resource):
         db.session.add(User(email=email, password=hashed_password))
         db.session.commit()
         
-        cookie = create_jwt_token({'email': email})
+        token = create_jwt_token({'email': email})
         
-        return make_response(jsonify({"message": "User registered successfully.", "cookie": cookie}), 201)
+        return make_response(jsonify({"message": "User registered successfully.", "token": token}), 201)
 
 @auth_ns.route("/login")
 class LoginAPI(Resource):
@@ -40,14 +40,13 @@ class LoginAPI(Resource):
         if not (result := query_db(db.select(User).where(User.email==email))) or result[0].password != hashed_password:
             return make_response(jsonify({"message": "Your email/ password does not match an entry in our system, create an account instead?"}), 400)
 
-        user = result[0]
-
-        cookie = create_jwt_token({'email': email})
-        return make_response(jsonify({"message": "User logged in successfully.", "cookie": cookie}), 200)
+        token = create_jwt_token({'email': email})
+        return make_response(jsonify({"message": "User logged in successfully.", "token": token}), 200)
             
         
         
-class ChangePWAPI(MethodView):
+@auth_ns.route("/change-pw")
+class ChangePWAPI(Resource):
     def patch(self):
         data = request.json
         
@@ -55,24 +54,21 @@ class ChangePWAPI(MethodView):
         password = data['password']
         updated_password = data['updated_password']
         
-        salt = os.getenv("SALT")
-        hashed_password = hashlib.sha512((password + salt).encode('UTF-8')).hexdigest()
+        hashed_password = salt_and_hash(password)
 
-        # sql = select(User).where(User.email==email)
-        # user = db.session.execute(sql)
-        user = User.query.filter_by(email=email).first() #TODO 
+        user = User.query.filter_by(email=email).first() 
     
         if user is None:
-            return jsonify({"message": "User not found"}), 404
+            return make_response(jsonify({"message": "User not found"}), 400)
 
         if user.first()[0].password != hashed_password:
-            return jsonify({"message": "Your password does not match"}), 400
+            return make_response(jsonify({"message": "Your password does not match"}), 400)
             
         user.password = salt_and_hash(updated_password)
 
         db.session.commit()
         
-        return jsonify({"message": "You have successfully changed your password."}), 200
+        return make_response(jsonify({}),204)
             
         
       
