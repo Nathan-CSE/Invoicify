@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_restx import Namespace, Resource
 
 from models import db, User
-from src.utils import salt_and_hash, create_jwt_token
+from src.utils import salt_and_hash, create_jwt_token, db_insert
 
 auth_ns = Namespace('auth', description='Operations related to authentication')
 
@@ -19,8 +19,7 @@ class RegisterAPI(Resource):
         if User.query.where(User.email==email).first():
             return make_response(jsonify({"message": "email already registered, if you forgotten your password, please reset your password instead."}), 400)
         
-        db.session.add(User(email=email, password=hashed_password))
-        db.session.commit()
+        db_insert(User(email=email, password=hashed_password))
         
         token = create_jwt_token({'email': email})
         
@@ -61,6 +60,7 @@ class ChangePWAPI(Resource):
             return make_response(jsonify({"message": "Your password does not match"}), 400)
             
         user.password = salt_and_hash(updated_password)
+        db.session.commit()
 
         return make_response(jsonify({"message": "Your password has been changed successfully"}),204)
             
