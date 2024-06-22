@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - auth 
+      - github_actions/tests
       # - '*' (use this when we need it for all branches)
 
 jobs:
