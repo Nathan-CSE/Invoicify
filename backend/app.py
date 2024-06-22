@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, url_for, redirect
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_restx import Api
-from src.auth import RegisterAPI, LoginAPI, auth_ns
+from src.auth import RegisterAPI, LoginAPI, ChangePWAPI, auth_ns
 from dotenv import load_dotenv
 
 load_dotenv()
