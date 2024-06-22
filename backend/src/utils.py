@@ -10,11 +10,6 @@ def salt_and_hash(data):
 def create_jwt_token(payload):
     return jwt.encode(payload, os.getenv("JWTSECRET"), algorithm='HS256')
 
-def query_db(sql):
-    """
-    Takes in a query
-    i.e. db.select(User).where(User.email==data["email"])
-
-    Returns a list containing the objects queried
-    """
-    return db.session.execute(sql).scalars().all()
+def db_insert(model):
+    db.session.add(model)
+    db.session.commit()
