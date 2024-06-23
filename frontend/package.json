@@ -14,10 +14,15 @@
     "@testing-library/user-event": "^13.5.0",
     "date-fns": "^3.6.0",
     "mui-file-dropzone": "^4.0.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.6",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.1",
     "react-scripts": "5.0.1",
+    "typescript": "^5.4.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -43,5 +48,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^8.1.0"
   }
 }
