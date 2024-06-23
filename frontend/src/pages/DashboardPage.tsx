@@ -26,7 +26,6 @@ function DashboardPage(props: {
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
   console.log(props.token);
-  const navigate = useNavigate();
 
   interface SVGDict {
     [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;

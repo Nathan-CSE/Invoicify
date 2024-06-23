@@ -17,11 +17,10 @@ export default function SignUp(props: {
 }) {
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    if (props.token) {
-      navigate('/dashboard');
-    }
-  }, [props.token]);
+  if (props.token) {
+    console.log('SIGNUP');
+    navigate('/dashboard');
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
