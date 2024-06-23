@@ -59,7 +59,6 @@ class LoginAPI(Resource):
         hashed_password = salt_and_hash(password)
 
         if not (user := User.query.where(User.email==email).first()) or user.password != hashed_password:
-            print(user.password, hashed_password)
             return make_response(jsonify({"message": "Your email/ password does not match an entry in our system, create an account instead?"}), 400)
 
         token = create_jwt_token({'email': email})
