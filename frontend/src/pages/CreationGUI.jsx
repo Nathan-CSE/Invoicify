@@ -39,6 +39,8 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { DropzoneDialogBase } from 'mui-file-dropzone';
+import Popover from '@mui/material/Popover';
+import InfoIcon from '@mui/icons-material/Info';
 
 const theme = createTheme({
   typography: {
@@ -70,10 +72,23 @@ export default function CreationGUI() {
   const [selectedRowIds, setSelectedRowIds] = React.useState([]);
   const [sellerCountry, setSellerCountry] = React.useState('');
   const [buyerCountry, setBuyerCountry] = React.useState('');
-  const [vatRate, setVatRate] = React.useState(null);
+  const [vatRate, setVatRate] = React.useState(0);
   
   const [open, setOpen] = React.useState(false);
   const [fileObjects, setFileObjects] = React.useState([]);
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const openPopover = Boolean(anchorEl);
+  const id = openPopover ? 'simple-popover' : undefined;
 
   const dialogTitle = () => (
     <>
@@ -111,16 +126,15 @@ export default function CreationGUI() {
     
     console.log(event.target);
 
-    if (event.target.name == "sellerCountry") {
-      setSellerCountry(selectedCountry);
+    if (event.target.name == "buyerCountry") {
+      setBuyerCountry(selectedCountry);
       setVatRate(vatRates[selectedCountry]);
 
       rows.forEach((row) => {
-
         handleCellValueChange(row);
       })
     } else {
-      setBuyerCountry(selectedCountry)
+      setSellerCountry(selectedCountry);
     }
   };
 
@@ -145,10 +159,6 @@ export default function CreationGUI() {
     setSelectedRowIds([]);
   };
 
-  const handleSelectionChange = (newSelection) => {
-    setSelectedRowIds(newSelection.selectionModel);
-  };
-
   const handleCellValueChange = (newRow) => {
 
     newRow.GST = (vatRate / 100) * newRow.unitPrice;
@@ -158,7 +168,6 @@ export default function CreationGUI() {
       row.id === newRow.id ? { ...row, ...newRow } : row
     );
     setRows(updatedRows);
-    // console.log('these are the updated rows: ', updatedRows);
   };
   
   const columns = [
@@ -173,20 +182,57 @@ export default function CreationGUI() {
   
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-    const username = data.get('username');
-    const password = data.get('password');
     
-    if (username.length === 0 || password === 0) {
-      alert('Fill out all required fields');
-    } else {
-      try {
-        // send to backend
-      } catch (err) {
-        alert(err.response.data.error);
-      }
-    }
+    const formData = new FormData(event.currentTarget);
+    const invoiceData = {
+      invoiceName: formData.get('invoiceName'),
+      invoiceNumber: formData.get('invoiceNumber'),
+      invoiceIssueDate: formData.get('invoiceIssueDate'),
+      seller: {
+        ABN: formData.get('sellerABN'),
+        companyName: formData.get('sellerCompanyName'),
+        address: {
+          streetName: formData.get('sellerStreetName'),
+          additionalStreetName: formData.get('sellerAdditionalStreetName'),
+          cityName: formData.get('sellerCityName'),
+          postalCode: formData.get('sellerPostalCode'),
+          country: sellerCountry,
+        },
+      },
+      buyer: {
+        ABN: formData.get('buyerABN'),
+        companyName: formData.get('buyerCompanyName'),
+        address: {
+          streetName: formData.get('buyerStreetName'),
+          additionalStreetName: formData.get('buyerAdditionalStreetName'),
+          cityName: formData.get('buyerCityName'),
+          postalCode: formData.get('buyerPostalCode'),
+          country: buyerCountry,
+        },
+      },
+      invoiceItems: rows.map(row => ({
+        quantity: row.quantity,
+        unitCode: row.unitCode,
+        item: row.item,
+        description: row.description,
+        unitPrice: row.unitPrice,
+        GST: row.GST,
+        totalPrice: row.totalPrice,
+      })),
+      totalGST: totalGST,
+      totalTaxable: totalTaxable,
+      totalAmount: totalAmount,
+      additionalDocuments: fileObjects.map(file => ({
+        fileName: file.file.name,
+        fileSize: file.file.size,
+        fileMimeType: file.file.type,
+      })),
+      extraComments: formData.get('extraComments'),
+    };
+
+    console.log('Formatted Invoice Data:', invoiceData);
+    
+    // SEND TO BACKEND HERE
 
   };
 
@@ -226,12 +272,8 @@ export default function CreationGUI() {
           </Typography>
         </Breadcrumbs>
 
-        {/* <Box sx={{ my: 5 }}>
-          <FileUpload />
-        </Box> */}
-
-
         <form onSubmit={handleSubmit}>
+          {/* INVOICE HEADER */}
           <Typography variant='h5' sx={{ mt: 4 }}>
             Invoice Header
           </Typography>
@@ -266,6 +308,8 @@ export default function CreationGUI() {
                 <DemoContainer components={['DatePicker']}>
                   <DatePicker 
                     label="Invoice Issue Date"
+                    name='invoiceIssueDate'
+                    format="dd/MM/yyyy"
                     sx={{ width: '100%' }}
                   />
                 </DemoContainer>
@@ -274,10 +318,9 @@ export default function CreationGUI() {
 
           </Grid>
 
-          {/* =========================================================== */}
-
-          <Grid container justifyContent="center" spacing={10} sx={{ mb: 2 }}>
-            <Grid item xs={6}> 
+          {/* BUYER/SELLER HEADER */}
+          <Grid container justifyContent="center" spacing={4} sx={{ mb: 2 }}>
+            <Grid item xs={5.8}> 
               <Typography variant='h5' sx={{ mt: 4 }}>
                 Seller Information
               </Typography>
@@ -365,7 +408,11 @@ export default function CreationGUI() {
 
             </Grid>
 
-            <Grid item xs={6}> 
+            <Grid item xs={0}>
+              <Divider orientation="vertical" sx={{ height: '90%', mt: 10 }} />
+            </Grid>
+
+            <Grid item xs={5.8}> 
               <Typography variant='h5' sx={{ mt: 4 }}>
                 Buyer Information
               </Typography>
@@ -453,112 +500,144 @@ export default function CreationGUI() {
 
             </Grid>
 
-
-              
           </Grid>
 
-        </form>
+          {/* INVOICE ITEMS */}
+          <Typography variant='h5' sx={{ mt: 4 }}>
+            Invoice Items
+          </Typography>
 
-        <Typography variant='h5' sx={{ mt: 4 }}>
-          Invoice Items
-        </Typography>
-
-        <Box sx={{ width: '100%' }}>
-          <Stack direction="row" spacing={1} sx={{ my: 1.5 }}>
-            <Button size="small" onClick={removeRow} variant='contained'>
-              Remove Selected Rows
-            </Button>
-            <Button size="small" onClick={addRow} variant='contained'>
-              Add a Row
-            </Button>
-          </Stack>
-          <Box sx={{ height: 400, width: '100%' }}>
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              checkboxSelection
-              disableRowSelectionOnClick
-              autoPageSize
-              disableColumnMenu
-              selectionModel={selectedRowIds}
-              onRowSelectionModelChange={(rowIds) => {
-                setSelectedRowIds(rowIds);
-              }}
-              processRowUpdate={(newRow) => {
-                handleCellValueChange(newRow);
-                return newRow;
-              }}
-              onProcessRowUpdateError={(error) => {
-                console.error('Row update error:', error);
-              }}
-            />
+          <Box sx={{ width: '100%' }}>
+            <Stack direction="row" spacing={1} sx={{ my: 1.5 }}>
+              <Button size="small" onClick={addRow} variant='contained'>
+                Add a Row
+              </Button>
+              {selectedRowIds.length > 0 && (
+                <Button
+                  size="small"
+                  onClick={removeRow}
+                  variant='contained'
+                >
+                  Remove Selected Rows
+                </Button>
+              )}
+            </Stack>
+            <Box sx={{ height: 400, width: '100%' }}>
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                checkboxSelection
+                disableRowSelectionOnClick
+                autoPageSize
+                disableColumnMenu
+                selectionModel={selectedRowIds}
+                onRowSelectionModelChange={(rowIds) => {
+                  setSelectedRowIds(rowIds);
+                }}
+                processRowUpdate={(newRow) => {
+                  handleCellValueChange(newRow);
+                  return newRow;
+                }}
+                onProcessRowUpdateError={(error) => {
+                  console.error('Row update error:', error);
+                }}
+              />
+            </Box>
           </Box>
-        </Box>
 
-        <Typography variant='h5' sx={{ mt: 4 }}>Monetary Totals</Typography>
-        <TableContainer component={Paper} sx={{ maxWidth: '25vw', my: 2 }}>
-          <Table aria-label="simple table">
-            <TableBody>
-              <TableRow>
-                <TableCell>Total GST: </TableCell>
-                <TableCell align="right">${totalGST.toLocaleString()}</TableCell>
-              </TableRow>
-
-              <TableRow>
-                <TableCell>Total Taxable Amount: </TableCell>
-                <TableCell align="right">${totalTaxable.toLocaleString()}</TableCell>
-              </TableRow>
-          
-              <TableRow>
-                <TableCell>Total Amount: </TableCell>
-                <TableCell align="right">${totalAmount.toLocaleString()}</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-
-        <Typography variant='h5' sx={{ mt: 4 }}>Additional Options</Typography>
-        <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
-          Upload Additional Documents
-        </Button>
-        <DropzoneDialogBase
-          dialogTitle={dialogTitle()}
-          acceptedFiles={['image/*']}
-          fileObjects={fileObjects}
-          cancelButtonText={"cancel"}
-          submitButtonText={"submit"}
-          maxFileSize={5000000}
-          open={open}
-          onAdd={newFileObjs => {
-            console.log('onAdd', newFileObjs);
-            setFileObjects([].concat(fileObjects, newFileObjs));
-          }}
-          onDelete={deleteFileObj => {
-            console.log('onDelete', deleteFileObj);
-          }}
-          onClose={() => setOpen(false)}
-          onSave={() => {
-            console.log('onSave', fileObjects);
-            setOpen(false);
-          }}
-          showPreviews={true}
-          showFileNamesInPreview={true}
-        />
-
-
-        <Box textAlign='center'>
-          <Button
-            component={Link}
-            to='/sign-in'
-            variant='contained'
-            sx={{
-              height: '50px',
-              padding: '25px',
+          <Stack direction="row" spacing={1} sx={{ mt: 4 }}>
+            <Typography variant='h5'>Monetary Totals</Typography>
+            <IconButton onClick={handleClick}>
+              <InfoIcon sx={{ mt: -0.25 }} />
+            </IconButton>
+          </Stack>
+          <Popover
+            id={id}
+            open={openPopover}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
             }}
           >
-            Create a New Invoice
+            <Typography sx={{ p: 2 }}>GST is determined by the buyer's country.</Typography>
+          </Popover>
+
+          {/* MONETARY TOTALS */}
+          <TableContainer component={Paper} sx={{ maxWidth: '25vw', my: 2 }}>
+            <Table aria-label="simple table">
+              <TableBody>
+                <TableRow>
+                  <TableCell>Total GST ({vatRate}%): </TableCell>
+                  <TableCell align="right">${totalGST.toLocaleString()}</TableCell>
+                </TableRow>
+
+                <TableRow>
+                  <TableCell>Total Taxable Amount: </TableCell>
+                  <TableCell align="right">${totalTaxable.toLocaleString()}</TableCell>
+                </TableRow>
+            
+                <TableRow>
+                  <TableCell>Total Amount: </TableCell>
+                  <TableCell align="right">${totalAmount.toLocaleString()}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* ADDITIONAL OPTIONS */}
+          <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>Additional Options</Typography>
+          <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
+            Upload Additional Documents
           </Button>
-        </Box>
+          <DropzoneDialogBase
+            dialogTitle={dialogTitle()}
+            acceptedFiles={['image/*']}
+            fileObjects={fileObjects}
+            cancelButtonText={"cancel"}
+            submitButtonText={"submit"}
+            maxFileSize={5000000}
+            open={open}
+            onAdd={newFileObjs => {
+              console.log('onAdd', newFileObjs);
+              setFileObjects([].concat(fileObjects, newFileObjs));
+            }}
+            onDelete={deleteFileObj => {
+              console.log('onDelete', deleteFileObj);
+            }}
+            onClose={() => setOpen(false)}
+            onSave={() => {
+              console.log('onSave', fileObjects);
+              setOpen(false);
+            }}
+            showPreviews={true}
+            showFileNamesInPreview={true}
+          />
+
+          <Typography variant='h6' sx={{ mt: 4 }}>Extra Comments</Typography>
+          <TextField
+            multiline
+            rows={5}
+            name='extraComments'
+            sx={{ width: '100%' }}
+          />
+
+          <Box textAlign='center'>
+            <Button
+              type="submit"
+              variant='contained'
+              sx={{
+                height: '50px',
+                padding: '25px',
+                my: 6
+              }}
+            >
+              Finish & Save Invoice
+            </Button>
+          </Box>
+        
+        </form>
       </Container>
 
       </ThemeProvider>
