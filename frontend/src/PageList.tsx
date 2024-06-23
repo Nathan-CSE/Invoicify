@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import Navbar from './components/Navbar';
+import SettingsPage from './pages/SettingsPage';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -51,6 +52,15 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <SignUp token={token} setToken={setToken} />
+            </>
+          }
+        />
+        <Route
+          path='/sign-up'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <SettingsPage token={token} />
             </>
           }
         />

@@ -6,16 +6,28 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Navbar(props: {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (props.token) {
+      console.log('HELLO?');
+      navigate('/');
+    }
+  }, [props.token]);
+
   // Replace with API call later
   function logout() {
     localStorage.removeItem('token');
     props.setToken('');
+    // Temporary Solution before backend TOKEN auth is done
+    // REMOVE WHEN FEATURE IS ADDED
+    localStorage.removeItem('email');
   }
   // Creates the Login OR logout button dynamically
   function buttonCreation() {
