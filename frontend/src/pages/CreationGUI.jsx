@@ -62,28 +62,19 @@ export default function CreationGUI() {
   };
 
   const handleCellValueChange = (newRow) => {
-    console.log(newValue, id, field);
-    let updatedRows = rows.map((row) =>
-      row.id === id ? { ...row, [field]: newValue } : row
+
+    const updatedRows = rows.map((row) =>
+      row.id === newRow.id ? { ...row, ...newRow } : row
     );
-    console.log('this is updatedRows, ', updatedRows);
-
-    if (field === 'quantity' || field === 'unitPrice') {
-      console.log("row found");
-      updatedRows = updatedRows.map((row) => ({
-        ...row,
-        totalPrice: row.quantity * row.unitPrice,
-      }));
-    }
-
     setRows(updatedRows);
+    console.log('these are the updated rows: ', updatedRows);
   };
   
   const columns = [
     { field: 'item', headerName: 'Item', width: 200, editable: true },
     { field: 'quantity', headerName: 'Quantity', type: 'number', width: 150, editable: true },
-    { field: 'unitPrice', headerName: 'Unit Price', type: 'number', width: 150, editable: true },
-    { field: 'totalPrice', headerName: 'Total Price', type: 'number', width: 150, editable: false },
+    { field: 'unitPrice', headerName: 'Unit Price ($)', type: 'number', width: 150, editable: true },
+    { field: 'totalPrice', headerName: 'Total Price ($)', type: 'number', width: 150, editable: false },
   ];
   
   const handleSubmit = (event) => {
@@ -146,7 +137,7 @@ export default function CreationGUI() {
         </Box> */}
 
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <Typography variant='h5' sx={{ mt: 4 }}>
             Invoice Header
           </Typography>
@@ -330,23 +321,22 @@ export default function CreationGUI() {
               Add a row
             </Button>
           </Stack>
-          {/* Need to figure out: Row deletion, calculate total price, dynamically sizing table */}
           <Box sx={{ height: 400, width: '100%' }}>
             <DataGrid
               rows={rows}
               columns={columns}
               checkboxSelection
               disableRowSelectionOnClick
-              // autoHeight
               autoPageSize
               disableColumnMenu
               selectionModel={selectedRowIds}
-              onRowSelectionModelChange={(newRowSelectionModel) => {
-                setSelectedRowIds(newRowSelectionModel);
+              onRowSelectionModelChange={(rowIds) => {
+                setSelectedRowIds(rowIds);
               }}
               processRowUpdate={(newRow) => {
-                console.log("this is the new row, ", newRow);
+                newRow.totalPrice = newRow.quantity * newRow.unitPrice;
                 handleCellValueChange(newRow);
+                return newRow;
               }}
               onProcessRowUpdateError={(error) => {
                 console.error('Row update error:', error);
