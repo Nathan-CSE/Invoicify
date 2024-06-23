@@ -27,6 +27,18 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Grid from '@mui/material/Grid';
 import { DataGrid } from '@mui/x-data-grid';
 import Stack from '@mui/material/Stack';
+import vatRates from '../VATRates.json';
+import { InputLabel, Select, MenuItem } from '@mui/material';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import { DropzoneDialogBase } from 'mui-file-dropzone';
 
 const theme = createTheme({
   typography: {
@@ -34,19 +46,95 @@ const theme = createTheme({
   },
 });
 
+const countries = Object.keys(vatRates);
+
 const initialRows = [
-  { id: 1, item: '', quantity: 0, unitPrice: 0, totalPrice: 0 },
+  { 
+    id: 1,
+    quantity: 0,
+    unitCode: '',
+    item: '',
+    description: '',
+    unitPrice: 0,
+    GST: 0,
+    totalPrice: 0 
+  },
 ];
+
 
 export default function CreationGUI() {
   const navigate = useNavigate();
 
   const [rows, setRows] = React.useState(initialRows);
-  const [nextId, setNextId] = React.useState(2); // To track the next available ID for new rows
+  const [nextId, setNextId] = React.useState(2);
   const [selectedRowIds, setSelectedRowIds] = React.useState([]);
+  const [sellerCountry, setSellerCountry] = React.useState('');
+  const [buyerCountry, setBuyerCountry] = React.useState('');
+  const [vatRate, setVatRate] = React.useState(null);
+  
+  const [open, setOpen] = React.useState(false);
+  const [fileObjects, setFileObjects] = React.useState([]);
+
+  const dialogTitle = () => (
+    <>
+      <span>Upload file</span>
+      <IconButton
+        style={{right: '12px', top: '8px', position: 'absolute'}}
+        onClick={() => setOpen(false)}>
+        <CloseIcon />
+      </IconButton>
+    </>
+  );
+
+  const calculateTotals = () => {
+    let totalGST = 0;
+    let totalTaxable = 0;
+    let totalAmount = 0;
+  
+    rows.forEach((row) => {
+      totalGST += row.GST;
+      totalTaxable += row.totalPrice - row.GST;
+      totalAmount += row.totalPrice;
+    });
+  
+    return {
+      totalGST: totalGST,
+      totalTaxable: totalTaxable,
+      totalAmount: totalAmount
+    };
+  };
+
+  const { totalGST, totalTaxable, totalAmount } = calculateTotals();
+
+  const handleChange = (event) => {
+    const selectedCountry = event.target.value;
+    
+    console.log(event.target);
+
+    if (event.target.name == "sellerCountry") {
+      setSellerCountry(selectedCountry);
+      setVatRate(vatRates[selectedCountry]);
+
+      rows.forEach((row) => {
+
+        handleCellValueChange(row);
+      })
+    } else {
+      setBuyerCountry(selectedCountry)
+    }
+  };
 
   const addRow = () => {
-    const newRow = { id: nextId, item: '', quantity: 0, unitPrice: 0, totalPrice: 0 };
+    const newRow = { 
+      id: nextId,
+      quantity: 0,
+      unitCode: '',
+      item: '',
+      description: '',
+      unitPrice: 0,
+      GST: 0,
+      totalPrice: 0 
+    };
     setRows([...rows, newRow]);
     setNextId(nextId + 1);
   };
@@ -63,18 +151,24 @@ export default function CreationGUI() {
 
   const handleCellValueChange = (newRow) => {
 
+    newRow.GST = (vatRate / 100) * newRow.unitPrice;
+    newRow.totalPrice = newRow.quantity * (newRow.unitPrice + newRow.GST);
+
     const updatedRows = rows.map((row) =>
       row.id === newRow.id ? { ...row, ...newRow } : row
     );
     setRows(updatedRows);
-    console.log('these are the updated rows: ', updatedRows);
+    // console.log('these are the updated rows: ', updatedRows);
   };
   
   const columns = [
-    { field: 'item', headerName: 'Item', width: 200, editable: true },
-    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 150, editable: true },
-    { field: 'unitPrice', headerName: 'Unit Price ($)', type: 'number', width: 150, editable: true },
-    { field: 'totalPrice', headerName: 'Total Price ($)', type: 'number', width: 150, editable: false },
+    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 75, editable: true },
+    { field: 'unitCode', headerName: 'Unit Code', width: 100, editable: true },
+    { field: 'item', headerName: 'Item', width: 120, editable: true },
+    { field: 'description', headerName: 'Description', width: 180, editable: true },
+    { field: 'unitPrice', headerName: 'Unit Price ($)', type: 'number', width: 120, editable: true },
+    { field: 'GST', headerName: 'GST ($)', type: 'number', width: 80, editable: false },
+    { field: 'totalPrice', headerName: 'Total Price ($)', type: 'number', width: 120, editable: false },
   ];
   
   const handleSubmit = (event) => {
@@ -167,7 +261,7 @@ export default function CreationGUI() {
               />
             </Grid>
 
-            <Grid item xs={6} sx={{ mt: -4 }}>
+            <Grid item xs={12} sx={{ mt: -5 }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DemoContainer components={['DatePicker']}>
                   <DatePicker 
@@ -178,21 +272,11 @@ export default function CreationGUI() {
               </LocalizationProvider>
             </Grid>
 
-            <Grid item xs={6} sx={{ mt: -4 }}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DemoContainer components={['DatePicker']}>
-                  <DatePicker 
-                    label="Invoice Due Date"
-                    sx={{ width: '100%' }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-            </Grid>
           </Grid>
 
           {/* =========================================================== */}
 
-          <Grid container justifyContent="center" spacing={5} sx={{ mb: 2 }}>
+          <Grid container justifyContent="center" spacing={10} sx={{ mb: 2 }}>
             <Grid item xs={6}> 
               <Typography variant='h5' sx={{ mt: 4 }}>
                 Seller Information
@@ -200,17 +284,9 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
-                id="sellerFirstName"
-                label="First name"
-                name="sellerFirstName"
-                sx={{ width: '100%' }}
-              />
-
-              <TextField
-                margin="normal"
-                id="sellerLastName"
-                label="Last name"
-                name="sellerLastName"
+                id="sellerABN"
+                label="ABN"
+                name="sellerABN"
                 sx={{ width: '100%' }}
               />
 
@@ -230,21 +306,62 @@ export default function CreationGUI() {
                 sx={{ width: '100%' }}
               />
 
+              <Typography variant='h6' sx={{ mt: 1 }}>
+                Postal Address
+              </Typography>
+
+
               <TextField
                 margin="normal"
-                id="sellerEmailAddress"
-                label="Email Address"
-                name="sellerEmailAddress"
+                id="sellerStreetName"
+                label="Street Name"
+                name="sellerStreetName"
                 sx={{ width: '100%' }}
               />
 
               <TextField
                 margin="normal"
-                id="sellerPhoneNumber"
-                label="Phone Number"
-                name="sellerPhoneNumber"
+                id="sellerAdditionalStreetName"
+                label="Additional Street Name"
+                name="sellerAdditionalStreetName"
                 sx={{ width: '100%' }}
               />
+
+              <TextField
+                margin="normal"
+                id="sellerCityName"
+                label="City Name"
+                name="sellerCityName"
+                sx={{ width: '100%' }}
+              />
+
+              <TextField
+                margin="normal"
+                id="sellerPostalCode"
+                label="Postal Code"
+                name="sellerPostalCode"
+                sx={{ width: '100%' }}
+              />
+
+              <FormControl sx={{ mt: 2, width: '100%' }}>
+                <InputLabel id="country-label">Country</InputLabel>
+                <Select
+                  labelId="country-label"
+                  id="country"
+                  name="sellerCountry"
+                  value={sellerCountry}
+                  onChange={handleChange}
+                  label="Country"
+                  // placeholder='Country'
+                  sx={{ width: '100%' }}
+                >
+                  {countries.map((country, index) => (
+                    <MenuItem key={index} value={country}>
+                      {country}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
             </Grid>
 
@@ -255,51 +372,85 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
-                id="sellerFirstName"
-                label="First name"
-                name="sellerFirstName"
+                id="buyerABN"
+                label="ABN"
+                name="buyerABN"
                 sx={{ width: '100%' }}
               />
 
               <TextField
                 margin="normal"
-                id="sellerLastName"
-                label="Last name"
-                name="sellerLastName"
-                sx={{ width: '100%' }}
-              />
-
-              <TextField
-                margin="normal"
-                id="sellerCompanyName"
+                id="buyerCompanyName"
                 label="Company Name"
-                name="sellerCompanyName"
+                name="buyerCompanyName"
                 sx={{ width: '100%' }}
               />
 
               <TextField
                 margin="normal"
-                id="sellerAddress"
+                id="buyerAddress"
                 label="Address"
-                name="sellerAddress"
+                name="buyerAddress"
+                sx={{ width: '100%' }}
+              />
+
+              <Typography variant='h6' sx={{ mt: 1 }}>
+                Postal Address
+              </Typography>
+
+
+              <TextField
+                margin="normal"
+                id="buyerStreetName"
+                label="Street Name"
+                name="buyerStreetName"
                 sx={{ width: '100%' }}
               />
 
               <TextField
                 margin="normal"
-                id="sellerEmailAddress"
-                label="Email Address"
-                name="sellerEmailAddress"
+                id="buyerAdditionalStreetName"
+                label="Additional Street Name"
+                name="buyerAdditionalStreetName"
                 sx={{ width: '100%' }}
               />
 
               <TextField
                 margin="normal"
-                id="sellerPhoneNumber"
-                label="Phone Number"
-                name="sellerPhoneNumber"
+                id="buyerCityName"
+                label="City Name"
+                name="buyerCityName"
                 sx={{ width: '100%' }}
               />
+
+              <TextField
+                margin="normal"
+                id="buyerPostalCode"
+                label="Postal Code"
+                name="buyerPostalCode"
+                sx={{ width: '100%' }}
+              />
+
+              <FormControl sx={{ mt: 2, width: '100%' }}>
+                <InputLabel id="country-label">Country</InputLabel>
+                <Select
+                  labelId="country-label"
+                  id="country"
+                  name="buyerCountry"
+                  value={buyerCountry}
+                  onChange={handleChange}
+                  label="Country"
+                  // placeholder='Country'
+                  sx={{ width: '100%' }}
+                >
+                  {countries.map((country, index) => (
+                    <MenuItem key={index} value={country}>
+                      {country}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
             </Grid>
 
 
@@ -313,12 +464,12 @@ export default function CreationGUI() {
         </Typography>
 
         <Box sx={{ width: '100%' }}>
-          <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
-            <Button size="small" onClick={removeRow}>
-              Remove a row
+          <Stack direction="row" spacing={1} sx={{ my: 1.5 }}>
+            <Button size="small" onClick={removeRow} variant='contained'>
+              Remove Selected Rows
             </Button>
-            <Button size="small" onClick={addRow}>
-              Add a row
+            <Button size="small" onClick={addRow} variant='contained'>
+              Add a Row
             </Button>
           </Stack>
           <Box sx={{ height: 400, width: '100%' }}>
@@ -334,7 +485,6 @@ export default function CreationGUI() {
                 setSelectedRowIds(rowIds);
               }}
               processRowUpdate={(newRow) => {
-                newRow.totalPrice = newRow.quantity * newRow.unitPrice;
                 handleCellValueChange(newRow);
                 return newRow;
               }}
@@ -344,6 +494,56 @@ export default function CreationGUI() {
             />
           </Box>
         </Box>
+
+        <Typography variant='h5' sx={{ mt: 4 }}>Monetary Totals</Typography>
+        <TableContainer component={Paper} sx={{ maxWidth: '25vw', my: 2 }}>
+          <Table aria-label="simple table">
+            <TableBody>
+              <TableRow>
+                <TableCell>Total GST: </TableCell>
+                <TableCell align="right">${totalGST.toLocaleString()}</TableCell>
+              </TableRow>
+
+              <TableRow>
+                <TableCell>Total Taxable Amount: </TableCell>
+                <TableCell align="right">${totalTaxable.toLocaleString()}</TableCell>
+              </TableRow>
+          
+              <TableRow>
+                <TableCell>Total Amount: </TableCell>
+                <TableCell align="right">${totalAmount.toLocaleString()}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        <Typography variant='h5' sx={{ mt: 4 }}>Additional Options</Typography>
+        <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
+          Upload Additional Documents
+        </Button>
+        <DropzoneDialogBase
+          dialogTitle={dialogTitle()}
+          acceptedFiles={['image/*']}
+          fileObjects={fileObjects}
+          cancelButtonText={"cancel"}
+          submitButtonText={"submit"}
+          maxFileSize={5000000}
+          open={open}
+          onAdd={newFileObjs => {
+            console.log('onAdd', newFileObjs);
+            setFileObjects([].concat(fileObjects, newFileObjs));
+          }}
+          onDelete={deleteFileObj => {
+            console.log('onDelete', deleteFileObj);
+          }}
+          onClose={() => setOpen(false)}
+          onSave={() => {
+            console.log('onSave', fileObjects);
+            setOpen(false);
+          }}
+          showPreviews={true}
+          showFileNamesInPreview={true}
+        />
 
 
         <Box textAlign='center'>
