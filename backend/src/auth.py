@@ -62,7 +62,7 @@ class ChangePWAPI(Resource):
         user.password = salt_and_hash(updated_password)
         db.session.commit()
 
-        return make_response(jsonify({"message": "Your password has been changed successfully"}),204)
+        return make_response(jsonify({"message": "Your password has been changed successfully"}),200)
             
         
       
