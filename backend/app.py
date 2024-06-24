@@ -6,6 +6,7 @@ from flask_restx import Api
 from dotenv import load_dotenv
 
 from src.auth import auth_ns
+from src.validation import validation_ns
 from models import db
 
 load_dotenv()
@@ -22,6 +23,7 @@ def create_app(db_path="database.db"):
         db.create_all()
 
     api.add_namespace(auth_ns)
+    api.add_namespace(validation_ns)
     
     return app
 
