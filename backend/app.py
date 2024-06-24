@@ -13,7 +13,7 @@ load_dotenv()
 def create_app(db_path="database.db"):
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
-    api = Api(app)
+    api = Api(app, validate=True, strict=True)
     CORS(app)
 
     db.init_app(app)

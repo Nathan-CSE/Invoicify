@@ -14,12 +14,15 @@ export default function SignIn(props: {
 }) {
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    if (props.token) {
-      navigate('/dashboard');
-    }
-  }, [props.token]);
-
+  // React.useEffect(() => {
+  //   if (props.token) {
+  //     navigate('/dashboard');
+  //   }
+  // }, [props.token]);
+  if (props.token) {
+    console.log('SIGNIN');
+    navigate('/dashboard');
+  }
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -45,8 +48,12 @@ export default function SignIn(props: {
         const data = await response.json();
         console.log(data);
 
-        props.setToken(data.cookie);
-        localStorage.setItem('token', data.cookie);
+        props.setToken(data.token);
+        localStorage.setItem('token', data.token);
+
+        // Temporary Solution before backend TOKEN auth is done
+        // REMOVE WHEN FEATURE IS ADDED
+        localStorage.setItem('email', email);
         navigate('/dashboard');
         // send to backend
       } catch (err) {
@@ -59,7 +66,6 @@ export default function SignIn(props: {
 
   return (
     <>
-      {/* <Navbar /> */}
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box

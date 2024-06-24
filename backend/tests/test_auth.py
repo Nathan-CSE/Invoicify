@@ -110,7 +110,7 @@ def test_change_pw_successfully(client):
         content_type="application/json"
     )
 
-    assert res.status_code == 204
+    assert res.status_code == 200
 
     user = User.query.where(User.email==data["email"]).first()
     assert user.password == salt_and_hash(data["updated_password"])

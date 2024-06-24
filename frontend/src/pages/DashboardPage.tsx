@@ -1,13 +1,10 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Navbar from '../components/Navbar';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import CardActions from '@mui/material/CardActions';
-import Button from '@mui/material/Button';
 import { CardActionArea } from '@mui/material';
 import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
@@ -16,6 +13,7 @@ import { ReactComponent as SendSvg } from '../assets/send.svg';
 import { ReactComponent as ManageSvg } from '../assets/manage.svg';
 import { ReactComponent as CogSvg } from '../assets/settings.svg';
 import { ReactComponent as DocSvg } from '../assets/documentation.svg';
+import Navbar from '../components/Navbar';
 
 // Current Idea -> For loop to create each grid item and card to make it so we dont have to repeat code
 // Wow yeap
@@ -71,7 +69,6 @@ function DashboardPage(props: {
 
   return (
     <>
-      {/* <Navbar></Navbar> */}
       <Box sx={{ mt: 10 }}>
         <Grid
           container

@@ -8,8 +8,8 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Navbar from '../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
+import { WindowSharp } from '@mui/icons-material';
 
 export default function SignUp(props: {
   token: string;
@@ -17,11 +17,10 @@ export default function SignUp(props: {
 }) {
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    if (props.token) {
-      navigate('/dashboard');
-    }
-  }, [props.token]);
+  if (props.token) {
+    console.log('SIGNUP');
+    navigate('/dashboard');
+  }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -58,8 +57,12 @@ export default function SignUp(props: {
           const data = await response.json();
           console.log(data);
 
-          props.setToken(data.cookie);
-          localStorage.setItem('token', data.cookie);
+          props.setToken(data.token);
+          localStorage.setItem('token', data.token);
+
+          // Temporary Solution before backend TOKEN auth is done
+          // REMOVE WHEN FEATURE IS ADDED
+          localStorage.setItem('email', email);
           navigate('/dashboard');
         } catch (err) {
           // alert(err.response.data.error);
