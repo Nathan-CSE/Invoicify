@@ -10,7 +10,6 @@ template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:C
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cbc:EndpointID schemeID="0151">{seller_abn}</cbc:EndpointID>
-            <!-- seller ABN -->
             <cac:PartyName>
                 <cbc:Name>{company_name}</cbc:Name>
             </cac:PartyName>
@@ -26,11 +25,9 @@ template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:C
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{company_name}</cbc:RegistrationName>
                 <cbc:CompanyID schemeID="0151">{seller_abn}</cbc:CompanyID>
-                <!-- seller ABN -->
             </cac:PartyLegalEntity>
             <cac:PartyTaxScheme>
                 <cbc:CompanyID>{seller_abn}</cbc:CompanyID>
-                <!-- seller ABN -->
                 <cac:TaxScheme>
                     <cbc:ID>GST</cbc:ID>
                 </cac:TaxScheme>
@@ -40,7 +37,6 @@ template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:C
     <cac:AccountingCustomerParty>
         <cac:Party>
             <cbc:EndpointID schemeID="0151">{buyer_abn}</cbc:EndpointID>
-            <!-- Buyer/customer ABN -->
             <cac:PartyName>
                 <cbc:Name>{buyer_company_name}</cbc:Name>
             </cac:PartyName>
@@ -56,7 +52,6 @@ template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:C
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{buyer_company_name}</cbc:RegistrationName>
                 <cbc:CompanyID schemeID="0151">{buyer_abn}</cbc:CompanyID>
-                <!-- Buyer/customer ABN -->
             </cac:PartyLegalEntity>
             <cac:PartyTaxScheme>
                 <cac:TaxScheme>
@@ -81,108 +76,67 @@ template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:C
         </cac:TaxSubtotal>
     </cac:TaxTotal>
     <cac:LegalMonetaryTotal>
-        <cbc:LineExtensionAmount currencyID="AUD">{total_tax}</cbc:LineExtensionAmount>
-        <cbc:TaxExclusiveAmount currencyID="AUD">{total_tax}</cbc:TaxExclusiveAmount>
+        <cbc:LineExtensionAmount currencyID="AUD">{total_without_tax}</cbc:LineExtensionAmount>
+        <cbc:TaxExclusiveAmount currencyID="AUD">{total_without_tax}</cbc:TaxExclusiveAmount>
         <cbc:TaxInclusiveAmount currencyID="AUD">{total_after_tax}</cbc:TaxInclusiveAmount>
         <cbc:PayableAmount currencyID="AUD">{total_after_tax}</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
-    <cac:InvoiceLine>
-        <cbc:ID>1</cbc:ID>
-        <cbc:Note>Texts Giving More Info about the Invoice Line</cbc:Note>
-        <cbc:InvoicedQuantity unitCode="E99">{amount_product}</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="AUD">{cost_product}</cbc:LineExtensionAmount>
-        <cac:Item>
-            <cbc:Description>{name_product}</cbc:Description>
-            <!-- optional -->
-            <cbc:Name>True-Widgets</cbc:Name>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>{tax_amount}</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>{tax_name}</cbc:ID>
-                </cac:TaxScheme>
-            </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="AUD">{cost_product}</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
-    <cac:InvoiceLine>
-        <cbc:ID>1</cbc:ID>
-        <cbc:Note>Texts Giving More Info about the Invoice Line</cbc:Note>
-        <cbc:InvoicedQuantity unitCode="E99">{amount_product}</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="AUD">{cost_product}</cbc:LineExtensionAmount>
-        <cac:Item>
-            <cbc:Description>Widgets True and Fair</cbc:Description>
-            <cbc:Name>True-Widgets</cbc:Name>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>{tax_amount}</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>{tax_name}</cbc:ID>
-                </cac:TaxScheme>
-            </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="AUD">{cost_product}</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
-    <cac:InvoiceLine>
-        <cbc:ID>1</cbc:ID>
-        <cbc:Note>Texts Giving More Info about the Invoice Line</cbc:Note>
-        <cbc:InvoicedQuantity unitCode="E99">10</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="AUD">299.90</cbc:LineExtensionAmount>
-        <cac:Item>
-            <cbc:Description>Widgets True and Fair</cbc:Description>
-            <cbc:Name>True-Widgets</cbc:Name>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>10</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>GST</cbc:ID>
-                </cac:TaxScheme>
-        </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="AUD">29.99</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
+    {products}
     </Invoice>
+"""
+item = """<cac:InvoiceLine>
+    <cbc:ID>{item_id}</cbc:ID>
+    <cbc:Note>Texts Giving More Info about the Invoice Line</cbc:Note>
+    <cbc:InvoicedQuantity unitCode="E99">{amount_product}</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="AUD">{cost_product}</cbc:LineExtensionAmount>
+    <cac:Item>
+        <cbc:Description>{item_description}</cbc:Description>
+        <cbc:Name>{item_name}</cbc:Name>
+        <cac:ClassifiedTaxCategory>
+            <cbc:ID>S</cbc:ID>
+            <cbc:Percent>{tax_amount}</cbc:Percent>
+            <cac:TaxScheme>
+                <cbc:ID>{tax_name}</cbc:ID>
+            </cac:TaxScheme>
+        </cac:ClassifiedTaxCategory>
+    </cac:Item>
+    <cac:Price>
+        <cbc:PriceAmount currencyID="AUD">{cost_per_product}</cbc:PriceAmount>
+    </cac:Price>
+</cac:InvoiceLine>
 """
 
 
-
 def create_xml(file):
-    variable1 = "test"
-    variable2 = "test" 
-    variable3 = "test" 
-    variable4 = "test" 
-
-    variable5 = 8008 
+    products = ""
+    for item, no in enumerate(file["invoiceItems"]):
+        products += items.format(
+            item_id = no
+            item_name = item["item"]
+            item_description = item["description"]
+            amount_product = item["quantity"] 
+            cost_per_product = item["unitPrice"]
+            cost_product = item["totalPrice"]
+            tax_amount = 10
+            tax_name = item["GST"]
+        )
 
     content = template.format(
-        issue_date=variable5, 
+        issue_date=file["invoiceIssueDate"], 
         note=variable2, 
-        seller_abn=variable5, 
-        company_name=variable4,
-        street_name=variable3, 
-        additional_name=variable4,
-        city_name=variable3, 
-        post_code=variable5,
-        buyer_abn=variable5, 
-        buyer_company_name=variable4,
-        buyer_city_name=variable4,
-        buyer_post_code=variable5,
-        buyer_street_name=variable3, 
-        buyer_additional_name=variable4,
-        tax_name=variable3, 
-        tax_per=variable4,
-        total_tax=variable5, 
-        total_after_tax=variable5,
-        amount_product=variable5, 
-        cost_product=variable5,
-        name_product=variable5,
-        tax_amount=variable5
+        seller_abn=file["seller"]["ABN"], 
+        company_name=file["seller"]["companyName"],
+        street_name=file["seller"]["address"]["streetName"], 
+        additional_name=file["seller"]["address"]["additionalStreetName"],
+        city_name=file["seller"]["address"]["cityName"], 
+        post_code=file["seller"]["address"]["postalCode"],
+        buyer_abn=file["buyer"]["ABN"], 
+        buyer_company_name=file["buyer"]["companyName"],
+        buyer_street_name=file["buyer"]["address"]["streetName"], 
+        buyer_additional_name=file["buyer"]["address"]["additionalStreetName"],
+        buyer_city_name=file["buyer"]["address"]["cityName"],
+        buyer_post_code=["buyer"]["address"]["postalCode"],
+        products=products
     )
 
     with open('output.xml', 'w') as file:
