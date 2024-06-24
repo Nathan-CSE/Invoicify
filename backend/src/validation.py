@@ -78,7 +78,7 @@ def validate_xml(filename, content, rules):
     Validates that an XML is compliant with the specified UBL rules
 
     Arguments:
-        filename: Optional[string]   
+        filename: string
             - A string to uniquely identify the XML file
         content: string              
             - A string containing the base-64 encoded contents of the XML
