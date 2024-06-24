@@ -3,6 +3,8 @@ from flask_restx import Namespace, Resource, fields
 
 from models import db, User
 from src.utils import salt_and_hash, create_jwt_token, db_insert
+from src.send_mail import auth_request
+import secrets
 
 auth_ns = Namespace('auth', description='Operations related to authentication')
 
@@ -93,3 +95,50 @@ class ChangePWAPI(Resource):
         db.session.commit()
 
         return make_response(jsonify({"message": "Your password has been changed successfully"}),200)
+
+@auth_ns.route("/reset-code")
+class SendCode(Resource):
+    def patch(self):
+        data = request.json
+        email = data['email']
+        user = User.query.filter_by(email=email).first() 
+        if user is None:
+            return make_response(jsonify({"message": "User not found"}), 400)
+
+        code = secrets.token_hex(8)
+        user.reset_code = code
+        try:
+            auth_request(email, code)
+        except:
+            print("not a valid email")
+        return make_response(jsonify({"message": "Success"}), 200)
+
+@auth_ns.route("/reset-pw")
+class ResetPass(Resource):
+    def patch(self):
+        data = request.json
+        email = data['email']
+        user = User.query.filter_by(email=email).first() 
+        if user is None:
+            print("user not found")
+            return make_response(jsonify({"message": "User not found"}), 400)
+        if user.reset_code == data['reset_code']:
+            password = data['updated_password']
+            user.password = salt_and_hash(password)
+            user.reset_code = None
+            db.session.commit()
+            return make_response(jsonify({"message": "Your password has been changed successfully"}),204)
+        else:
+            print("code match")
+            print(user.reset_code)
+            print(data["reset_code"])
+            return make_response(jsonify({"message": "Your code does not match"}), 400)
+
+
+        
+
+
+            
+        
+      
+        
