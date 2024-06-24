@@ -1,106 +1,85 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Navbar from '../components/Navbar';
-import Divider from '@mui/material/Divider';
+import React from 'react';
+import {
+  Button,
+  TextField,
+  Box,
+  Typography,
+  Container,
+  Divider,
+  Breadcrumbs,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+  IconButton,
+  Popover,
+  Grid,
+  Stack,
+} from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FileUpload from '../components/FileUpload';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import FormControl from '@mui/material/FormControl';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import InfoIcon from '@mui/icons-material/Info';
+import { DataGrid } from '@mui/x-data-grid';
+import { DropzoneDialogBase } from 'mui-file-dropzone';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import Grid from '@mui/material/Grid';
-import { DataGrid } from '@mui/x-data-grid';
-import Stack from '@mui/material/Stack';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import vatRates from '../VATRates.json';
-import { InputLabel, Select, MenuItem } from '@mui/material';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import { DropzoneDialogBase } from 'mui-file-dropzone';
-import Popover from '@mui/material/Popover';
-import InfoIcon from '@mui/icons-material/Info';
-
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Roboto, Arial, sans-serif',
-  },
-});
-
-const countries = Object.keys(vatRates);
-
-const initialRows = [
-  { 
-    id: 1,
-    quantity: 0,
-    unitCode: '',
-    item: '',
-    description: '',
-    unitPrice: 0,
-    GST: 0,
-    totalPrice: 0 
-  },
-];
-
+import ErrorModal from '../components/ErrorModal';
 
 export default function CreationGUI() {
   const navigate = useNavigate();
+  const countries = Object.keys(vatRates);
 
-  const [rows, setRows] = React.useState(initialRows);
+  // Form Information
   const [nextId, setNextId] = React.useState(2);
   const [selectedRowIds, setSelectedRowIds] = React.useState([]);
   const [sellerCountry, setSellerCountry] = React.useState('');
   const [buyerCountry, setBuyerCountry] = React.useState('');
   const [vatRate, setVatRate] = React.useState(0);
+  const [rows, setRows] = React.useState([
+    { 
+      id: 1,
+      quantity: 0,
+      unitCode: '',
+      item: '',
+      description: '',
+      unitPrice: 0,
+      GST: 0,
+      totalPrice: 0 
+    },
+  ]);
   
-  const [open, setOpen] = React.useState(false);
+  // Uploading additional documents
+  const [openFileUpload, setOpenFileUpload] = React.useState(false);
   const [fileObjects, setFileObjects] = React.useState([]);
 
+  // Error Handling
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  // Popover Info
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const handleClick = (event) => {
+  const handleClickPopover = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = () => {
+  const handleClosePopover = () => {
     setAnchorEl(null);
   };
 
   const openPopover = Boolean(anchorEl);
   const id = openPopover ? 'simple-popover' : undefined;
 
-  const dialogTitle = () => (
-    <>
-      <span>Upload file</span>
-      <IconButton
-        style={{right: '12px', top: '8px', position: 'absolute'}}
-        onClick={() => setOpen(false)}>
-        <CloseIcon />
-      </IconButton>
-    </>
-  );
-
+  // Function for monetary totals
   const calculateTotals = () => {
     let totalGST = 0;
     let totalTaxable = 0;
@@ -121,11 +100,10 @@ export default function CreationGUI() {
 
   const { totalGST, totalTaxable, totalAmount } = calculateTotals();
 
+  // Changes the VAT rate based on the buyer's country
   const handleChange = (event) => {
     const selectedCountry = event.target.value;
     
-    console.log(event.target);
-
     if (event.target.name == "buyerCountry") {
       setBuyerCountry(selectedCountry);
       setVatRate(vatRates[selectedCountry]);
@@ -137,6 +115,17 @@ export default function CreationGUI() {
       setSellerCountry(selectedCountry);
     }
   };
+
+  // For adding invoice items
+  const columns = [
+    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 75, editable: true },
+    { field: 'unitCode', headerName: 'Unit Code', width: 100, editable: true },
+    { field: 'item', headerName: 'Item', width: 120, editable: true },
+    { field: 'description', headerName: 'Description', width: 180, editable: true },
+    { field: 'unitPrice', headerName: 'Unit Price ($)', type: 'number', width: 120, editable: true },
+    { field: 'GST', headerName: 'GST ($)', type: 'number', width: 80, editable: false },
+    { field: 'totalPrice', headerName: 'Total Price ($)', type: 'number', width: 120, editable: false },
+  ];
 
   const addRow = () => {
     const newRow = { 
@@ -170,19 +159,12 @@ export default function CreationGUI() {
     setRows(updatedRows);
   };
   
-  const columns = [
-    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 75, editable: true },
-    { field: 'unitCode', headerName: 'Unit Code', width: 100, editable: true },
-    { field: 'item', headerName: 'Item', width: 120, editable: true },
-    { field: 'description', headerName: 'Description', width: 180, editable: true },
-    { field: 'unitPrice', headerName: 'Unit Price ($)', type: 'number', width: 120, editable: true },
-    { field: 'GST', headerName: 'GST ($)', type: 'number', width: 80, editable: false },
-    { field: 'totalPrice', headerName: 'Total Price ($)', type: 'number', width: 120, editable: false },
-  ];
-  
+  // Form submission & sending to backend + error handling
   const handleSubmit = (event) => {
     event.preventDefault();
     
+    let errorCheck = false;
+
     const formData = new FormData(event.currentTarget);
     const invoiceData = {
       invoiceName: formData.get('invoiceName'),
@@ -230,18 +212,40 @@ export default function CreationGUI() {
       extraComments: formData.get('extraComments'),
     };
 
-    console.log('Formatted Invoice Data:', invoiceData);
+    if (invoiceData.invoiceIssueDate === "") {
+      setOpenError(true);
+      setError("Please select an invoice issue date.");
+      errorCheck = true;
+    }
+
     
-    // SEND TO BACKEND HERE
+    for (let i = 0; i < rows.length; i++) {
+      const unitCode = rows[i].unitCode;
+
+      if (!unitCode.match(/^[A-Z]{3}$/)) {
+        setOpenError(true);
+        setError(`Invalid unit code '${unitCode}' for item ${rows[i].item}. Unit code must be a 3-letter alphanumeric combination in all uppercase.`);
+        errorCheck = true;
+        break;
+      }
+    }
+
+    console.log('Formatted Invoice Data:', invoiceData);
+
+    if (errorCheck) {
+      return;
+    } else {
+      // SEND TO BACKEND HERE -> if successful, go to confirmation page
+      navigate('/invoice-confirmation');
+      return;
+    }
+
+    
 
   };
 
   return (
-    <>
-      <ThemeProvider theme={theme}>
-
-      <Navbar />
-      
+    <>      
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
           Invoice Creation - GUI
@@ -308,6 +312,7 @@ export default function CreationGUI() {
                 <DemoContainer components={['DatePicker']}>
                   <DatePicker 
                     label="Invoice Issue Date"
+                    required
                     name='invoiceIssueDate'
                     format="dd/MM/yyyy"
                     sx={{ width: '100%' }}
@@ -327,6 +332,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="sellerABN"
                 label="ABN"
                 name="sellerABN"
@@ -335,6 +341,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="sellerCompanyName"
                 label="Company Name"
                 name="sellerCompanyName"
@@ -343,6 +350,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="sellerAddress"
                 label="Address"
                 name="sellerAddress"
@@ -356,6 +364,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="sellerStreetName"
                 label="Street Name"
                 name="sellerStreetName"
@@ -372,6 +381,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="sellerCityName"
                 label="City Name"
                 name="sellerCityName"
@@ -380,6 +390,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="sellerPostalCode"
                 label="Postal Code"
                 name="sellerPostalCode"
@@ -391,6 +402,7 @@ export default function CreationGUI() {
                 <Select
                   labelId="country-label"
                   id="country"
+                  required
                   name="sellerCountry"
                   value={sellerCountry}
                   onChange={handleChange}
@@ -419,6 +431,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="buyerABN"
                 label="ABN"
                 name="buyerABN"
@@ -427,6 +440,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="buyerCompanyName"
                 label="Company Name"
                 name="buyerCompanyName"
@@ -435,6 +449,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="buyerAddress"
                 label="Address"
                 name="buyerAddress"
@@ -448,6 +463,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="buyerStreetName"
                 label="Street Name"
                 name="buyerStreetName"
@@ -464,6 +480,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="buyerCityName"
                 label="City Name"
                 name="buyerCityName"
@@ -472,6 +489,7 @@ export default function CreationGUI() {
 
               <TextField
                 margin="normal"
+                required
                 id="buyerPostalCode"
                 label="Postal Code"
                 name="buyerPostalCode"
@@ -483,11 +501,11 @@ export default function CreationGUI() {
                 <Select
                   labelId="country-label"
                   id="country"
+                  required
                   name="buyerCountry"
                   value={buyerCountry}
                   onChange={handleChange}
                   label="Country"
-                  // placeholder='Country'
                   sx={{ width: '100%' }}
                 >
                   {countries.map((country, index) => (
@@ -545,9 +563,10 @@ export default function CreationGUI() {
             </Box>
           </Box>
 
+          {/* MONETARY TOTALS */}
           <Stack direction="row" spacing={1} sx={{ mt: 4 }}>
             <Typography variant='h5'>Monetary Totals</Typography>
-            <IconButton onClick={handleClick}>
+            <IconButton onClick={handleClickPopover}>
               <InfoIcon sx={{ mt: -0.25 }} />
             </IconButton>
           </Stack>
@@ -555,7 +574,7 @@ export default function CreationGUI() {
             id={id}
             open={openPopover}
             anchorEl={anchorEl}
-            onClose={handleClose}
+            onClose={handleClosePopover}
             anchorOrigin={{
               vertical: 'bottom',
               horizontal: 'left',
@@ -564,7 +583,6 @@ export default function CreationGUI() {
             <Typography sx={{ p: 2 }}>GST is determined by the buyer's country.</Typography>
           </Popover>
 
-          {/* MONETARY TOTALS */}
           <TableContainer component={Paper} sx={{ maxWidth: '25vw', my: 2 }}>
             <Table aria-label="simple table">
               <TableBody>
@@ -588,17 +606,17 @@ export default function CreationGUI() {
 
           {/* ADDITIONAL OPTIONS */}
           <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>Additional Options</Typography>
-          <Button variant="contained" color="primary" onClick={() => setOpen(true)}>
+          <Button variant="contained" color="primary" onClick={() => setOpenFileUpload(true)}>
             Upload Additional Documents
           </Button>
           <DropzoneDialogBase
-            dialogTitle={dialogTitle()}
+            dialogTitle={"Upload file"}
             acceptedFiles={['image/*']}
             fileObjects={fileObjects}
             cancelButtonText={"cancel"}
             submitButtonText={"submit"}
             maxFileSize={5000000}
-            open={open}
+            open={openFileUpload}
             onAdd={newFileObjs => {
               console.log('onAdd', newFileObjs);
               setFileObjects([].concat(fileObjects, newFileObjs));
@@ -606,10 +624,10 @@ export default function CreationGUI() {
             onDelete={deleteFileObj => {
               console.log('onDelete', deleteFileObj);
             }}
-            onClose={() => setOpen(false)}
+            onClose={() => setOpenFileUpload(false)}
             onSave={() => {
               console.log('onSave', fileObjects);
-              setOpen(false);
+              setOpenFileUpload(false);
             }}
             showPreviews={true}
             showFileNamesInPreview={true}
@@ -638,9 +656,11 @@ export default function CreationGUI() {
           </Box>
         
         </form>
-      </Container>
 
-      </ThemeProvider>
+        <Box sx={{ mb: 6 }}>
+          {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
+        </Box>
+      </Container>
     </>
   );
 }

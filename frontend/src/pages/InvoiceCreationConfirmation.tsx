@@ -1,38 +1,31 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Navbar from '../components/Navbar';
 import Divider from '@mui/material/Divider';
 import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Grid from '@mui/material/Grid';
 
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Roboto, Arial, sans-serif',
-  },
-});
-
 export default function InvoiceCreationConfirmation() {
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const username = data.get('username');
-    const password = data.get('password');
+    const username = data.get('username') as string;
+    const password = data.get('password') as string;
     
-    if (username.length === 0 || password === 0) {
+    if (username.length === 0 || password.length === 0) {
       alert('Fill out all required fields');
     } else {
       try {
         // send to backend
       } catch (err) {
-        alert(err.response.data.error);
+        if (err instanceof Error) {
+          alert(err.message);
+        }
       }
     }
 
@@ -40,9 +33,6 @@ export default function InvoiceCreationConfirmation() {
 
   return (
     <>
-      <ThemeProvider theme={theme}>
-
-      <Navbar />
       
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
@@ -139,7 +129,6 @@ export default function InvoiceCreationConfirmation() {
         </Grid>
       </Container>
 
-      </ThemeProvider>
     </>
   );
 }

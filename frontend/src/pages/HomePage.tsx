@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -9,13 +10,20 @@ import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
 
-function HomePage() {
+function HomePage(props: { token: string }) {
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    console.log('HOME');
+    props.token === '' ? navigate('/') : navigate('/dashboard');
+  }, [props.token]);
+
   return (
     <>
-      <Navbar/>
+      {/* <Navbar /> */}
       <Box sx={{ display: 'flex', flexDirection: 'row', mt: 10 }}>
         <Box>
-          <Typography variant='h2' gutterBottom>
+          <Typography variant='h3' gutterBottom>
             Placeholder
           </Typography>
           <Typography variant='body1' gutterBottom>
@@ -118,8 +126,8 @@ function HomePage() {
       </Box>
 
       {/* Documentation Section */}
-      <Stack spacing={3} sx={{ mt: 15 }}>
-        <Typography variant='h3' gutterBottom>
+      <Stack spacing={3} sx={{ mt: 15, mx: 5 }}>
+        <Typography variant='h4' gutterBottom>
           Documentation
         </Typography>
         <Divider sx={{ borderColor: 'black' }} />

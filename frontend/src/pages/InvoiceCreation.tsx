@@ -1,10 +1,6 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Navbar from '../components/Navbar';
@@ -20,13 +16,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Roboto, Arial, sans-serif',
-  },
-});
-
 export default function SignIn() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
@@ -36,20 +25,22 @@ export default function SignIn() {
     setOpen(false);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const username = data.get('username');
-    const password = data.get('password');
+    const username = data.get('username') as string;
+    const password = data.get('password') as string;
     
-    if (username.length === 0 || password === 0) {
+    if (username.length === 0 || password.length === 0) {
       alert('Fill out all required fields');
     } else {
       try {
         // send to backend
       } catch (err) {
-        alert(err.response.data.error);
+        if (err instanceof Error) {
+          alert(err.message);
+        }
       }
     }
 
@@ -57,10 +48,7 @@ export default function SignIn() {
 
   return (
     <>
-      <ThemeProvider theme={theme}>
-
-      <Navbar />
-      
+     
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
           Invoice Creation
@@ -136,8 +124,7 @@ export default function SignIn() {
           </Button>
         </Box>
       </Container>
-
-      </ThemeProvider>
+      
     </>
   );
 }

@@ -7,21 +7,54 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Navbar from '../components/Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+export default function SignIn(props: {
+  token: string;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const navigate = useNavigate();
 
-export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  // React.useEffect(() => {
+  //   if (props.token) {
+  //     navigate('/dashboard');
+  //   }
+  // }, [props.token]);
+  if (props.token) {
+    console.log('SIGNIN');
+    navigate('/dashboard');
+  }
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const username = data.get('username') as string;
+    const email = data.get('email') as string;
     const password = data.get('password') as string;
 
-    if (username.length === 0 || password.length === 0) {
+    if (email.length === 0 || password.length === 0) {
       alert('Fill out all required fields');
     } else {
       try {
+        const response = await fetch('http://localhost:5000/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+          headers: {
+            'Content-type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+        props.setToken(data.token);
+        localStorage.setItem('token', data.token);
+
+        // Temporary Solution before backend TOKEN auth is done
+        // REMOVE WHEN FEATURE IS ADDED
+        localStorage.setItem('email', email);
+        navigate('/dashboard');
         // send to backend
       } catch (err) {
         if (err instanceof Error) {
@@ -33,7 +66,6 @@ export default function SignIn() {
 
   return (
     <>
-      <Navbar />
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
@@ -63,10 +95,10 @@ export default function SignIn() {
               margin='normal'
               required
               fullWidth
-              id='username'
-              label='Username'
-              name='username'
-              autoComplete='username'
+              id='email'
+              label='Email'
+              name='email'
+              autoComplete='email'
               autoFocus
             />
             <TextField

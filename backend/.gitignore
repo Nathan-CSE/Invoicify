@@ -1,5 +1,14 @@
+<<<<<<< HEAD
 database.db
 env/*
 __pycache__
 .env
 src/.env
+=======
+instance/*
+instance
+env
+__pycache__
+.pytest_cache
+.env
+>>>>>>> main
