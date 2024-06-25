@@ -17,6 +17,6 @@ def save_file(file, upload_folder):
     return None
 
 def allowed_file(filename):
-    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'csv'}
+    ALLOWED_EXTENSIONS = {'json', 'pdf'}
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
