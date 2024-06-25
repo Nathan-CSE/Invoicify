@@ -25,7 +25,7 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import InfoIcon from '@mui/icons-material/Info';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { DropzoneDialogBase } from 'mui-file-dropzone';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -34,13 +34,17 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import vatRates from '../VATRates.json';
 import ErrorModal from '../components/ErrorModal';
 
+interface FileObject {
+  file: File;
+}
+
 export default function CreationGUI() {
   const navigate = useNavigate();
   const countries = Object.keys(vatRates);
 
   // Form Information
   const [nextId, setNextId] = React.useState(2);
-  const [selectedRowIds, setSelectedRowIds] = React.useState([]);
+  const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
   const [sellerCountry, setSellerCountry] = React.useState('');
   const [buyerCountry, setBuyerCountry] = React.useState('');
   const [vatRate, setVatRate] = React.useState(0);
@@ -59,17 +63,19 @@ export default function CreationGUI() {
   
   // Uploading additional documents
   const [openFileUpload, setOpenFileUpload] = React.useState(false);
-  const [fileObjects, setFileObjects] = React.useState([]);
+  const [fileList, setFileList] = React.useState<FileObject[]>([]);
 
   // Error Handling
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
 
   // Popover Info
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
-  const handleClickPopover = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleClickPopover = (event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement>) => {
+    if (event.currentTarget instanceof Element) {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handleClosePopover = () => {
@@ -101,8 +107,8 @@ export default function CreationGUI() {
   const { totalGST, totalTaxable, totalAmount } = calculateTotals();
 
   // Changes the VAT rate based on the buyer's country
-  const handleChange = (event) => {
-    const selectedCountry = event.target.value;
+  const handleChange = (event: { target: { value: any; name: string; }; }) => {
+    const selectedCountry = event.target.value as keyof typeof vatRates;
     
     if (event.target.name == "buyerCountry") {
       setBuyerCountry(selectedCountry);
@@ -117,7 +123,7 @@ export default function CreationGUI() {
   };
 
   // For adding invoice items
-  const columns = [
+  const columns: GridColDef[] = [
     { field: 'quantity', headerName: 'Quantity', type: 'number', width: 75, editable: true },
     { field: 'unitCode', headerName: 'Unit Code', width: 100, editable: true },
     { field: 'item', headerName: 'Item', width: 120, editable: true },
@@ -148,7 +154,7 @@ export default function CreationGUI() {
     setSelectedRowIds([]);
   };
 
-  const handleCellValueChange = (newRow) => {
+  const handleCellValueChange = (newRow: { id: any; quantity: any; unitCode?: string; item?: string; description?: string; unitPrice: any; GST: any; totalPrice: any; }) => {
 
     newRow.GST = (vatRate / 100) * newRow.unitPrice;
     newRow.totalPrice = newRow.quantity * (newRow.unitPrice + newRow.GST);
@@ -160,7 +166,7 @@ export default function CreationGUI() {
   };
   
   // Form submission & sending to backend + error handling
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
     event.preventDefault();
     
     let errorCheck = false;
@@ -173,6 +179,7 @@ export default function CreationGUI() {
       seller: {
         ABN: formData.get('sellerABN'),
         companyName: formData.get('sellerCompanyName'),
+        companyAddress: formData.get('sellerAddress'),
         address: {
           streetName: formData.get('sellerStreetName'),
           additionalStreetName: formData.get('sellerAdditionalStreetName'),
@@ -184,6 +191,7 @@ export default function CreationGUI() {
       buyer: {
         ABN: formData.get('buyerABN'),
         companyName: formData.get('buyerCompanyName'),
+        companyAddress: formData.get('buyerAddress'),
         address: {
           streetName: formData.get('buyerStreetName'),
           additionalStreetName: formData.get('buyerAdditionalStreetName'),
@@ -204,7 +212,8 @@ export default function CreationGUI() {
       totalGST: totalGST,
       totalTaxable: totalTaxable,
       totalAmount: totalAmount,
-      additionalDocuments: fileObjects.map(file => ({
+      vatAmount: vatRate,
+      additionalDocuments: fileList.map(file => ({
         fileName: file.file.name,
         fileSize: file.file.size,
         fileMimeType: file.file.type,
@@ -236,7 +245,7 @@ export default function CreationGUI() {
       return;
     } else {
       // SEND TO BACKEND HERE -> if successful, go to confirmation page
-      navigate('/invoice-confirmation');
+      navigate('/invoice-confirmation', { state: invoiceData });
       return;
     }
 
@@ -312,7 +321,6 @@ export default function CreationGUI() {
                 <DemoContainer components={['DatePicker']}>
                   <DatePicker 
                     label="Invoice Issue Date"
-                    required
                     name='invoiceIssueDate'
                     format="dd/MM/yyyy"
                     sx={{ width: '100%' }}
@@ -548,9 +556,10 @@ export default function CreationGUI() {
                 disableRowSelectionOnClick
                 autoPageSize
                 disableColumnMenu
-                selectionModel={selectedRowIds}
+                rowSelectionModel={selectedRowIds}
                 onRowSelectionModelChange={(rowIds) => {
-                  setSelectedRowIds(rowIds);
+                  // console.log("this is rowIds: ", rowIds);
+                  setSelectedRowIds(rowIds.map((id) => Number(id)));
                 }}
                 processRowUpdate={(newRow) => {
                   handleCellValueChange(newRow);
@@ -612,21 +621,21 @@ export default function CreationGUI() {
           <DropzoneDialogBase
             dialogTitle={"Upload file"}
             acceptedFiles={['image/*']}
-            fileObjects={fileObjects}
+            fileObjects={fileList.map(fileObj => ({ ...fileObj, data: null }))}
             cancelButtonText={"cancel"}
             submitButtonText={"submit"}
             maxFileSize={5000000}
             open={openFileUpload}
-            onAdd={newFileObjs => {
+            onAdd={(newFileObjs: FileObject[]) => {
               console.log('onAdd', newFileObjs);
-              setFileObjects([].concat(fileObjects, newFileObjs));
+              setFileList(prevFileObjects => [...prevFileObjects, ...newFileObjs]);
             }}
             onDelete={deleteFileObj => {
               console.log('onDelete', deleteFileObj);
             }}
             onClose={() => setOpenFileUpload(false)}
             onSave={() => {
-              console.log('onSave', fileObjects);
+              console.log('onSave', fileList);
               setOpenFileUpload(false);
             }}
             showPreviews={true}

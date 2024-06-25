@@ -4,32 +4,19 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Grid from '@mui/material/Grid';
 
 export default function InvoiceCreationConfirmation() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const navigate = useNavigate();
+  const invoiceData = useLocation();
 
-    const username = data.get('username') as string;
-    const password = data.get('password') as string;
-    
-    if (username.length === 0 || password.length === 0) {
-      alert('Fill out all required fields');
-    } else {
-      try {
-        // send to backend
-      } catch (err) {
-        if (err instanceof Error) {
-          alert(err.message);
-        }
-      }
-    }
-
-  };
+  const handlePreview = () => {
+    console.log('this is the invoice data: ', invoiceData);
+    navigate('/invoice-preview', { state: invoiceData });
+  }
 
   return (
     <>
@@ -101,8 +88,7 @@ export default function InvoiceCreationConfirmation() {
 
           <Grid item>
             <Button
-              component={Link}
-              to='/sign-in'
+              onClick={handlePreview}
               variant='contained'
               sx={{
                 height: '50px',

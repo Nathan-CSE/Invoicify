@@ -3,15 +3,19 @@ import { DropzoneArea } from "mui-file-dropzone";
 import '../FileUploadStyles.css';
 // See https://yuvaleros.github.io/material-ui-dropzone/ for documentation
 
-class FileUpload extends Component {
-  constructor(props) {
+interface FileUploadState {
+  files: File[];
+}
+
+class FileUpload extends Component<{}, FileUploadState> {
+  constructor(props: {}) {
     super(props);
     this.state = {
       files: [],
     };
   }
 
-  handleChange(files) {
+  handleChange(files: any) {
     this.setState({
       files: files,
     });
@@ -25,6 +29,7 @@ class FileUpload extends Component {
         dropzoneText='Upload Invoice(s): CSV, Excel, SQL, PDF'
         dropzoneClass="FileUploadClass"
         dropzoneParagraphClass="FileUploadTextClass"
+        fileObjects={this.state.files}
       />
     );
   }

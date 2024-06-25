@@ -9,6 +9,7 @@ import InvoiceCreationConfirmation from './pages/InvoiceCreationConfirmation';
 import CreationGUI from './pages/CreationGUI';
 import Navbar from './components/Navbar';
 import SettingsPage from './pages/SettingsPage';
+import PreviewInvoice from './pages/PreviewInvoice';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -82,6 +83,15 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <InvoiceCreationConfirmation />
+            </>
+          } 
+        />
+        <Route 
+          path='/invoice-preview'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <PreviewInvoice />
             </>
           } 
         />
