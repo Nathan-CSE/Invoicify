@@ -132,7 +132,7 @@ def test_change_pw_with_account_that_doesnt_exist(client):
 
 # Forgot password 
 def test_change_forgot_pass(client):
-    db_insert(User(email="test", password=salt_and_hash("abc")))
+    db_insert(User(email="test", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM"))
 
     data = {
         "email": "test"
