@@ -9,11 +9,18 @@ from src.auth import auth_ns
 from models import db
 
 load_dotenv()
+authorizations = {
+    'apikey': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorisation'
+    }
+}
 
 def create_app(db_path="database.db"):
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
-    api = Api(app, validate=True, strict=True)
+    api = Api(app, validate=True, strict=True, security='apikey', authorizations=authorizations)
     CORS(app)
 
     db.init_app(app)
