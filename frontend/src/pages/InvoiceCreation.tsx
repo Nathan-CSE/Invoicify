@@ -62,7 +62,7 @@ export default function SignIn() {
         >
           <Typography
             component={Link}
-            to='/sign-in'
+            to='/dashboard'
           >
             Dashboard
           </Typography>

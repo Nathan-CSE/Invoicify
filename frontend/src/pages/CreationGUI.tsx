@@ -212,7 +212,7 @@ export default function CreationGUI() {
       totalGST: totalGST,
       totalTaxable: totalTaxable,
       totalAmount: totalAmount,
-      vatAmount: vatRate,
+      vatRate: vatRate,
       additionalDocuments: fileList.map(file => ({
         fileName: file.file.name,
         fileSize: file.file.size,

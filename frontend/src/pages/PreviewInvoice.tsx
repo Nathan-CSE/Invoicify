@@ -43,7 +43,7 @@ export default function PreviewInvoice() {
         >
           <Typography
             component={Link}
-            to='/sign-in'
+            to='/dashboard'
           >
             Dashboard
           </Typography>

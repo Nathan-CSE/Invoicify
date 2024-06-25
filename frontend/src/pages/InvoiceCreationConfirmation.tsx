@@ -34,7 +34,7 @@ export default function InvoiceCreationConfirmation() {
         >
           <Typography
             component={Link}
-            to='/sign-in'
+            to='/dashboard'
           >
             Dashboard
           </Typography>
