@@ -8,6 +8,8 @@ from src.utils import salt_and_hash, create_jwt_token, db_insert
 REGISTER_PATH = "/auth/register"
 LOGIN_PATH = "/auth/login"
 CHANGE_PW_PATH = "/auth/change-pw"
+GET_CODE = "/auth/reset-code"
+FORGOT_PASS = "/auth/reset-pw"
 
 def test_register_successfully(client):
     data = {
@@ -122,6 +124,69 @@ def test_change_pw_with_account_that_doesnt_exist(client):
 
     res = client.patch(
         CHANGE_PW_PATH,
+        data=json.dumps(data),
+        content_type="application/json"
+    )
+
+    assert res.status_code == 400
+
+# Forgot password 
+def test_change_forgot_pass(client):
+    db_insert(User(email="test", password=salt_and_hash("abc")))
+
+    data = {
+        "email": "test"
+    }
+
+    res = client.patch(
+        GET_CODE,
+        data=json.dumps(data),
+        content_type="application/json"
+    )
+    assert res.status_code == 200
+    user = User.query.where(User.email==data["email"]).first()
+    assert user.reset_code
+    data_reset = {
+        "email": "test",
+        "reset_code": f"{user.reset_code}",
+        "updated_password": "123abc"
+    }
+    
+    res = client.patch(
+        FORGOT_PASS,
+        data=json.dumps(data_reset),
+        content_type="application/json"
+    )
+    assert res.status_code == 204
+
+    user = User.query.where(User.email==data["email"]).first()
+    assert user.reset_code == None
+    assert user.password == salt_and_hash("123abc")
+
+
+
+def test_forgot_pw_with_account_that_doesnt_exist(client):
+    data = {
+        "email": "not_a_test",
+    }
+
+    res = client.patch(
+        GET_CODE,
+        data=json.dumps(data),
+        content_type="application/json"
+    )
+    
+    assert res.status_code == 400
+
+def test_forgot_pw_with_wrong_code(client):
+    data = {
+        "email": "test",
+        "password": "abc",
+        "updated_password": "abc123"
+    }
+
+    res = client.patch(
+        GET_CODE,
         data=json.dumps(data),
         content_type="application/json"
     )
