@@ -10,6 +10,7 @@ auth_ns = Namespace('auth', description='Operations related to authentication')
 
 email_field = fields.String(default="jane.smith@example.com", format="email", required=True)
 password_field = fields.String(default="password123", format="password", required=True)
+updated_password_field = fields.String(default="newpassword123", required=True)
 
 user_authentication_fields = auth_ns.model('UserAuthentication', {
     "email": email_field,
@@ -20,12 +21,13 @@ user_send_code_fields = auth_ns.model("UserSendCode", {
 })
 user_reset_pw_fields = auth_ns.model("UserResetPassword", {
     "email": email_field,
-    "reset_code": fields.String(default="XXXXXXXX", required=True)
+    "reset_code": fields.String(default="XXXXXXXX", required=True),
+    "updated_password": updated_password_field
 })
 user_change_pw_fields = auth_ns.model("UserChangePassword", {
     "email": email_field,
     "password": password_field,
-    "updated_password": fields.String(default="newpassword123", required=True)
+    "updated_password": updated_password_field
 })
 
 @auth_ns.route("/register")
@@ -125,6 +127,7 @@ class SendCode(Resource):
 
         code = secrets.token_hex(8)
         user.reset_code = code
+        db.session.commit()
         try:
             auth_request(email, code)
         except:
