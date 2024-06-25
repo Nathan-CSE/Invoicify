@@ -1,0 +1,150 @@
+<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+    <cbc:CustomizationID>urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0</cbc:CustomizationID>
+    <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
+    <cbc:ID>Invoice01</cbc:ID>
+    <cbc:IssueDate>8008</cbc:IssueDate>
+    <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+    <cbc:Note>Tax invoice</cbc:Note>
+    <cbc:DocumentCurrencyCode>AUD</cbc:DocumentCurrencyCode>
+    <cbc:BuyerReference>test</cbc:BuyerReference>
+    <cac:AccountingSupplierParty>
+        <cac:Party>
+            <cbc:EndpointID schemeID="0151">8008</cbc:EndpointID>
+            <!-- seller ABN -->
+            <cac:PartyName>
+                <cbc:Name>test</cbc:Name>
+            </cac:PartyName>
+            <cac:PostalAddress>
+                <cbc:StreetName>test</cbc:StreetName>
+                <cbc:AdditionalStreetName>test</cbc:AdditionalStreetName>
+                <cbc:CityName>test</cbc:CityName>
+                <cbc:PostalZone>8008</cbc:PostalZone>
+                <cac:Country>
+                    <cbc:IdentificationCode>AU</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:PostalAddress>
+            <cac:PartyLegalEntity>
+                <cbc:RegistrationName>test</cbc:RegistrationName>
+                <cbc:CompanyID schemeID="0151">8008</cbc:CompanyID>
+                <!-- seller ABN -->
+            </cac:PartyLegalEntity>
+            <cac:PartyTaxScheme>
+                <cbc:CompanyID>8008</cbc:CompanyID>
+                <!-- seller ABN -->
+                <cac:TaxScheme>
+                    <cbc:ID>GST</cbc:ID>
+                </cac:TaxScheme>
+            </cac:PartyTaxScheme>
+        </cac:Party>
+    </cac:AccountingSupplierParty>
+    <cac:AccountingCustomerParty>
+        <cac:Party>
+            <cbc:EndpointID schemeID="0151">8008</cbc:EndpointID>
+            <!-- Buyer/customer ABN -->
+            <cac:PartyName>
+                <cbc:Name>test</cbc:Name>
+            </cac:PartyName>
+            <cac:PostalAddress>
+                <cbc:StreetName>test</cbc:StreetName>
+                <cbc:AdditionalStreetName>test</cbc:AdditionalStreetName>
+                <cbc:CityName>test</cbc:CityName>
+                <cbc:PostalZone>8008</cbc:PostalZone>
+                <cac:Country>
+                    <cbc:IdentificationCode>AU</cbc:IdentificationCode>
+                </cac:Country>
+            </cac:PostalAddress>
+            <cac:PartyLegalEntity>
+                <cbc:RegistrationName>test</cbc:RegistrationName>
+                <cbc:CompanyID schemeID="0151">8008</cbc:CompanyID>
+                <!-- Buyer/customer ABN -->
+            </cac:PartyLegalEntity>
+            <cac:PartyTaxScheme>
+                <cac:TaxScheme>
+                    <cbc:CompanyID>8008</cbc:CompanyID>
+                    <cbc:ID>test</cbc:ID>
+                </cac:TaxScheme>
+            </cac:PartyTaxScheme>
+        </cac:Party>
+    </cac:AccountingCustomerParty>
+    <cac:TaxTotal>
+        <cbc:TaxAmount currencyID="AUD">test</cbc:TaxAmount>
+        <cac:TaxSubtotal>
+            <cbc:TaxableAmount currencyID="AUD">8008</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="AUD">test</cbc:TaxAmount>
+            <cac:TaxCategory>
+                <cbc:ID>S</cbc:ID>
+                <cbc:Percent>8008</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>test</cbc:ID>
+                </cac:TaxScheme>
+            </cac:TaxCategory>
+        </cac:TaxSubtotal>
+    </cac:TaxTotal>
+    <cac:LegalMonetaryTotal>
+        <cbc:LineExtensionAmount currencyID="AUD">8008</cbc:LineExtensionAmount>
+        <cbc:TaxExclusiveAmount currencyID="AUD">8008</cbc:TaxExclusiveAmount>
+        <cbc:TaxInclusiveAmount currencyID="AUD">8008</cbc:TaxInclusiveAmount>
+        <cbc:PayableAmount currencyID="AUD">8008</cbc:PayableAmount>
+    </cac:LegalMonetaryTotal>
+    <cac:InvoiceLine>
+        <cbc:ID>1</cbc:ID>
+        <cbc:Note>Texts Giving More Info about the Invoice Line</cbc:Note>
+        <cbc:InvoicedQuantity unitCode="E99">8008</cbc:InvoicedQuantity>
+        <cbc:LineExtensionAmount currencyID="AUD">8008</cbc:LineExtensionAmount>
+        <cac:Item>
+            <cbc:Description>8008</cbc:Description>
+            <!-- optional -->
+            <cbc:Name>True-Widgets</cbc:Name>
+            <cac:ClassifiedTaxCategory>
+                <cbc:ID>S</cbc:ID>
+                <cbc:Percent>8008</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>test</cbc:ID>
+                </cac:TaxScheme>
+            </cac:ClassifiedTaxCategory>
+        </cac:Item>
+        <cac:Price>
+            <cbc:PriceAmount currencyID="AUD">8008</cbc:PriceAmount>
+        </cac:Price>
+    </cac:InvoiceLine>
+    <cac:InvoiceLine>
+        <cbc:ID>1</cbc:ID>
+        <cbc:Note>Texts Giving More Info about the Invoice Line</cbc:Note>
+        <cbc:InvoicedQuantity unitCode="E99">8008</cbc:InvoicedQuantity>
+        <cbc:LineExtensionAmount currencyID="AUD">8008</cbc:LineExtensionAmount>
+        <cac:Item>
+            <cbc:Description>Widgets True and Fair</cbc:Description>
+            <cbc:Name>True-Widgets</cbc:Name>
+            <cac:ClassifiedTaxCategory>
+                <cbc:ID>S</cbc:ID>
+                <cbc:Percent>8008</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>test</cbc:ID>
+                </cac:TaxScheme>
+            </cac:ClassifiedTaxCategory>
+        </cac:Item>
+        <cac:Price>
+            <cbc:PriceAmount currencyID="AUD">8008</cbc:PriceAmount>
+        </cac:Price>
+    </cac:InvoiceLine>
+    <cac:InvoiceLine>
+        <cbc:ID>1</cbc:ID>
+        <cbc:Note>Texts Giving More Info about the Invoice Line</cbc:Note>
+        <cbc:InvoicedQuantity unitCode="E99">10</cbc:InvoicedQuantity>
+        <cbc:LineExtensionAmount currencyID="AUD">299.90</cbc:LineExtensionAmount>
+        <cac:Item>
+            <cbc:Description>Widgets True and Fair</cbc:Description>
+            <cbc:Name>True-Widgets</cbc:Name>
+            <cac:ClassifiedTaxCategory>
+                <cbc:ID>S</cbc:ID>
+                <cbc:Percent>10</cbc:Percent>
+                <cac:TaxScheme>
+                    <cbc:ID>GST</cbc:ID>
+                </cac:TaxScheme>
+        </cac:ClassifiedTaxCategory>
+        </cac:Item>
+        <cac:Price>
+            <cbc:PriceAmount currencyID="AUD">29.99</cbc:PriceAmount>
+        </cac:Price>
+    </cac:InvoiceLine>
+    </Invoice>
