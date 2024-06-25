@@ -1,6 +1,6 @@
 import pytest
 import json
-from unittest.mock import patch, Mock
+import base64
 
 from tests.fixtures import client
 from src.validation import validate_xml,generate_token
@@ -119,10 +119,11 @@ def test_xml_validate_function_success(client):
             <!-- Additional InvoiceLines omitted for brevity -->
         </Invoice>
 '''
+    encoded_data = base64.b64encode(data.encode('utf-8')).decode('utf-8')
 
-    result = validate_xml("test.xml", data, ["AUNZ_PEPPOL_1_0_10"])
+    result = validate_xml("test.xml", encoded_data, ["AUNZ_PEPPOL_1_0_10"])
     
-    assert result == {}
+    assert result["successful"] is True
 
 
 
