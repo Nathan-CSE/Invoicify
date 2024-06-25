@@ -56,8 +56,9 @@ class CreateUBL(Resource):
             400: 'Bad request',
         },
     )
-    def do_create_xml(self):
+    def post(self):
         data = request.json
+        print(data)
         try:
             create_xml(data)
             return make_response(jsonify({"message": "UBL create successfully"}), 201)
@@ -138,7 +139,7 @@ template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:C
             <cbc:TaxAmount currencyID="AUD">{tax_per}</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID>S</cbc:ID>
-                <cbc:Percent>{tax_amount}</cbc:Percent>
+                <cbc:Percent>{tax_per}</cbc:Percent>
                 <cac:TaxScheme>
                     <cbc:ID>{tax_name}</cbc:ID>
                 </cac:TaxScheme>
@@ -154,7 +155,7 @@ template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:C
     {products}
     </Invoice>
 """
-item = """<cac:InvoiceLine>
+item_format = """<cac:InvoiceLine>
     <cbc:ID>{item_id}</cbc:ID>
     <cbc:Note>Texts Giving More Info about the Invoice Line</cbc:Note>
     <cbc:InvoicedQuantity unitCode="E99">{amount_product}</cbc:InvoicedQuantity>
@@ -179,8 +180,9 @@ item = """<cac:InvoiceLine>
 
 def create_xml(file):
     products = ""
-    for item, no in enumerate(file["invoiceItems"]):
-        products += items.format(
+    for no, item in enumerate(file["invoiceItems"]):
+        print(item, no)
+        products += item_format.format(
             item_id = no,
             item_name = item["item"],
             item_description = item["description"],
@@ -188,12 +190,12 @@ def create_xml(file):
             cost_per_product = item["unitPrice"],
             cost_product = item["totalPrice"],
             tax_amount = 10,
-            tax_name = item["GST"],
+            tax_name = "GST",
         )
 
     content = template.format(
         issue_date=file["invoiceIssueDate"], 
-        note=variable2, 
+        note="test", 
         seller_abn=file["seller"]["ABN"], 
         company_name=file["seller"]["companyName"],
         street_name=file["seller"]["address"]["streetName"], 
@@ -206,10 +208,16 @@ def create_xml(file):
         buyer_additional_name=file["buyer"]["address"]["additionalStreetName"],
         buyer_city_name=file["buyer"]["address"]["cityName"],
         buyer_post_code=file["buyer"]["address"]["postalCode"],
-        products=products
+        products=products,
+        tax_name = "GST",
+        tax_per = 10,
+        total_tax = file["totalGST"],
+        total_without_tax = file["totalTaxable"],
+        total_after_tax = file["totalAmount"]
     )
+    print(content)
 
-    with open('output.xml', 'w') as file:
+    with open('hello.xml', 'w') as file:
         file.write(content)
 
 if __name__ == "__main__":
