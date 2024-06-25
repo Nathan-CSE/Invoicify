@@ -56,7 +56,7 @@ function PageList() {
           }
         />
         <Route
-          path='/sign-up'
+          path='/settings'
           element={
             <>
               <Navbar token={token} setToken={setToken} />

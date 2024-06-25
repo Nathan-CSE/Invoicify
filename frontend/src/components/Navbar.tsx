@@ -14,13 +14,6 @@ function Navbar(props: {
 }) {
   const navigate = useNavigate();
 
-  React.useEffect(() => {
-    if (props.token) {
-      console.log('HELLO?');
-      navigate('/');
-    }
-  }, [props.token]);
-
   // Replace with API call later
   function logout() {
     localStorage.removeItem('token');

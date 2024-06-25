@@ -12,9 +12,9 @@ import { ReactComponent as SendSvg } from '../assets/send.svg';
 
 function HomePage(props: { token: string }) {
   const navigate = useNavigate();
+
   React.useEffect(() => {
-    console.log('Hi');
-    console.log(props.token);
+    console.log('HOME');
     props.token === '' ? navigate('/') : navigate('/dashboard');
   }, [props.token]);
 
@@ -23,7 +23,7 @@ function HomePage(props: { token: string }) {
       {/* <Navbar /> */}
       <Box sx={{ display: 'flex', flexDirection: 'row', mt: 10 }}>
         <Box>
-          <Typography variant='h2' gutterBottom>
+          <Typography variant='h3' gutterBottom>
             Placeholder
           </Typography>
           <Typography variant='body1' gutterBottom>
@@ -126,8 +126,8 @@ function HomePage(props: { token: string }) {
       </Box>
 
       {/* Documentation Section */}
-      <Stack spacing={3} sx={{ mt: 15 }}>
-        <Typography variant='h3' gutterBottom>
+      <Stack spacing={3} sx={{ mt: 15, mx: 5 }}>
+        <Typography variant='h4' gutterBottom>
           Documentation
         </Typography>
         <Divider sx={{ borderColor: 'black' }} />
