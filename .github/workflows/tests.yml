@@ -1,0 +1,41 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: production
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Run tests
+      run: |
+          echo "Change directory to backend"
+          cd backend
+          echo "Change directory to backend- complete"
+          
+          echo "Load Environment Variables"
+          echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+          echo "Load Environment Variables - complete"
+
+          echo "Installing dependencies"
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          echo "Installing dependencies - complete"
+
+          echo "Running tests"
+          pytest
+          echo "Running tests - complete"

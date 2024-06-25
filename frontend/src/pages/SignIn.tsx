@@ -7,22 +7,63 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Navbar from '../components/Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import ErrorModal from '../components/ErrorModal';
 
-export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+export default function SignIn(props: {
+  token: string;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const navigate = useNavigate();
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
+  // React.useEffect(() => {
+  //   if (props.token) {
+  //     navigate('/dashboard');
+  //   }
+  // }, [props.token]);
+  if (props.token) {
+    console.log('SIGNIN');
+    navigate('/dashboard');
+  }
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
-    const username = data.get('username') as string;
+    const email = data.get('email') as string;
     const password = data.get('password') as string;
 
-    if (username.length === 0 || password.length === 0) {
+    if (email.length === 0 || password.length === 0) {
       alert('Fill out all required fields');
     } else {
       try {
-        // send to backend
+        const response = await fetch('http://localhost:5000/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            email,
+            password,
+          }),
+          headers: {
+            'Content-type': 'application/json',
+          },
+        });
+
+        const data = await response.json();
+        console.log(data);
+
+        if (response.status === 400) {
+          console.log('HERE');
+          setOpenError(true);
+          setError(data.message);
+        } else {
+          props.setToken(data.token);
+          localStorage.setItem('token', data.token);
+
+          // Temporary Solution before backend TOKEN auth is done
+          // REMOVE WHEN FEATURE IS ADDED
+          localStorage.setItem('email', email);
+          navigate('/dashboard');
+        }
       } catch (err) {
         if (err instanceof Error) {
           alert(err.message);
@@ -33,7 +74,6 @@ export default function SignIn() {
 
   return (
     <>
-      <Navbar />
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
@@ -63,10 +103,10 @@ export default function SignIn() {
               margin='normal'
               required
               fullWidth
-              id='username'
-              label='Username'
-              name='username'
-              autoComplete='username'
+              id='email'
+              label='Email'
+              name='email'
+              autoComplete='email'
               autoFocus
             />
             <TextField
@@ -97,6 +137,9 @@ export default function SignIn() {
           </Box>
         </Box>
       </Container>
+      <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
+        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
+      </Box>
     </>
   );
 }

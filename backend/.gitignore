@@ -1,5 +1,8 @@
-database.db
-env/*
+instance/*
+instance
+env
 __pycache__
+.pytest_cache
 .env
-src/.env
+.venv
+database.db

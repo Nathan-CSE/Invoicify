@@ -4,21 +4,66 @@ import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
-import InvoiceCreation from './pages/InvoiceCreation';
-import InvoiceCreationConfirmation from './pages/InvoiceCreationConfirmation';
-import CreationGUI from './pages/CreationGUI';
+import Navbar from './components/Navbar';
+import SettingsPage from './pages/SettingsPage';
 
 function PageList() {
+  const [token, setToken] = React.useState('');
+  React.useEffect(() => {
+    const checktoken = localStorage.getItem('token');
+    if (checktoken) {
+      setToken(checktoken);
+    }
+  }, []);
+
   return (
     <>
       <Routes>
-        {/* <Route path='/' element={<HomePage />} /> */}
-        <Route path='/' element={<InvoiceCreation />} />
-        <Route path='/invoice-creation' element={<InvoiceCreation />} />
-        <Route path='/invoice-creation-GUI' element={<CreationGUI />} />
-        <Route path='/invoice-confirmation' element={<InvoiceCreationConfirmation />} />
-        <Route path='/sign-in' element={<SignIn />} />
-        <Route path='/sign-up' element={<SignUp />} />
+        <Route
+          path='/'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <HomePage token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/dashboard'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <DashboardPage token={token} setToken={setToken} />
+            </>
+          }
+        />
+        <Route
+          path='/sign-in'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <SignIn token={token} setToken={setToken} />
+            </>
+          }
+        />
+        <Route
+          path='/sign-up'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <SignUp token={token} setToken={setToken} />
+            </>
+          }
+        />
+        <Route
+          path='/settings'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <SettingsPage token={token} />
+            </>
+          }
+        />
       </Routes>
     </>
   );

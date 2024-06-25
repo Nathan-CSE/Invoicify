@@ -8,24 +8,36 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Navbar from '../components/Navbar';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { WindowSharp } from '@mui/icons-material';
+import ErrorModal from '../components/ErrorModal';
 
-export default function SignUp() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+export default function SignUp(props: {
+  token: string;
+  setToken: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const navigate = useNavigate();
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
+  if (props.token) {
+    console.log('SIGNUP');
+    navigate('/dashboard');
+  }
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     const firstName = data.get('firstName') as string;
     const lastName = data.get('lastName') as string;
-    const username = data.get('username') as string;
+    const email = data.get('email') as string;
     const password = data.get('password') as string;
     const confirmPassword = data.get('confirmPassword') as string;
 
     if (
       firstName.length === 0 ||
       lastName.length === 0 ||
-      username.length === 0 ||
+      email.length === 0 ||
       password.length === 0 ||
       confirmPassword.length === 0
     ) {
@@ -33,7 +45,33 @@ export default function SignUp() {
     } else {
       if (password === confirmPassword) {
         try {
-          // send to backend
+          const response = await fetch('http://localhost:5000/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+            headers: {
+              'Content-type': 'application/json',
+            },
+          });
+
+          const data = await response.json();
+          console.log(data);
+
+          if (response.status === 400) {
+            console.log('HERE');
+            setOpenError(true);
+            setError(data.message);
+          } else {
+            props.setToken(data.token);
+            localStorage.setItem('token', data.token);
+
+            // Temporary Solution before backend TOKEN auth is done
+            // REMOVE WHEN FEATURE IS ADDED
+            localStorage.setItem('email', email);
+            navigate('/dashboard');
+          }
         } catch (err) {
           // alert(err.response.data.error);
           if (err instanceof Error) {
@@ -48,7 +86,7 @@ export default function SignUp() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
@@ -68,12 +106,7 @@ export default function SignUp() {
           <Typography component='h1' variant='h5'>
             Sign up
           </Typography>
-          <Box
-            component='form'
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
-          >
+          <Box component='form' noValidate onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -100,10 +133,10 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  name='username'
-                  label='Username'
-                  type='username'
-                  id='username'
+                  name='email'
+                  label='Email'
+                  type='email'
+                  id='email'
                 />
               </Grid>
               <Grid item xs={12}>
@@ -144,6 +177,9 @@ export default function SignUp() {
           </Box>
         </Box>
       </Container>
+      <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
+        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
+      </Box>
     </>
   );
 }
