@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields
+import secrets
 
 from models import db, User
-from src.utils import salt_and_hash, create_jwt_token, db_insert
-from src.send_mail import auth_request
-import secrets
+from src.services.utils import salt_and_hash, create_jwt_token, db_insert
+from src.services.send_mail import auth_request
 
 auth_ns = Namespace('auth', description='Operations related to authentication')
 
