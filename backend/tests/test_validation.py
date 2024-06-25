@@ -3,7 +3,7 @@ import json
 
 from tests.fixtures import client
 
-VALIDATION_PATH: "/validation/validation"
+VALIDATION_PATH = "/validation/validation"
 
 def test_xml_validate_success(client):
     data = {
