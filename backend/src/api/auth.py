@@ -37,9 +37,9 @@ class RegisterAPI(Resource):
         if User.query.where(User.email==email).first():
             return make_response(jsonify({"message": "email already registered, if you forgotten your password, please reset your password instead."}), 400)
         
-        db_insert(User(email=email, password=hashed_password))
-        
         token = create_jwt_token({'email': email})
+
+        db_insert(User(email=email, password=hashed_password, token=token))
         
         return make_response(jsonify({"message": "User registered successfully.", "token": token}), 201)
 
