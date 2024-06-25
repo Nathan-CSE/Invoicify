@@ -2,7 +2,7 @@ import pytest
 import json
 
 from tests.fixtures import client
-from src.validation import ValidationService
+from src.services.validation import ValidationService
 
 VALIDATION_PATH = "/validation/validation"
 
