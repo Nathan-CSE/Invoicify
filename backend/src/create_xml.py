@@ -1,3 +1,73 @@
+from flask import Flask, request, jsonify, make_response
+from flask_restx import Namespace, Resource, fields
+
+from models import db, User
+from src.utils import salt_and_hash, create_jwt_token, db_insert
+
+invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
+
+xml_fields = invoice_ns.model('XMLFields', {
+})
+@invoice_ns.route("/create")
+class CreateUBL(Resource):
+    @invoice_ns.doc(
+        description="""Takes a json file in the format
+        invoiceName: str,
+        invoiceNumber: int,
+        invoiceIssueDate: str,
+        seller: {
+            ABN: int,
+            companyName: str,
+            address: {
+                streetName: str,
+                additionalStreetName: str,
+                cityName: str,
+                postalCode: str,
+                country: str
+            }
+        }
+        buyer: {
+            ABN: int,
+            companyName: str,
+            address: {
+                streetName: str,
+                additionalStreetName: str,
+                cityName: str,
+                postalCode: str,
+                country: str
+            }
+        }
+        invoiceItems: [{
+            quantity: int,
+            unitCode: int,
+            item: str,
+            description: str,
+            unitPrice: float,
+            GST: str,
+            totalPrice: float
+        }],
+        totalGST: float,
+        totalTaxable: float,
+        totalAmount: float        
+        """,
+        body = xml_fields,
+        responses={
+            201: 'Created successfully',
+            400: 'Bad request',
+        },
+    )
+    def do_create_xml(self):
+        data = request.json
+        try:
+            create_xml(data)
+            return make_response(jsonify({"message": "UBL create successfully"}), 201)
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "UBL not created"}), 400)
+
+
+
+
 template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
     <cbc:CustomizationID>urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0</cbc:CustomizationID>
     <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
@@ -111,14 +181,14 @@ def create_xml(file):
     products = ""
     for item, no in enumerate(file["invoiceItems"]):
         products += items.format(
-            item_id = no
-            item_name = item["item"]
-            item_description = item["description"]
-            amount_product = item["quantity"] 
-            cost_per_product = item["unitPrice"]
-            cost_product = item["totalPrice"]
-            tax_amount = 10
-            tax_name = item["GST"]
+            item_id = no,
+            item_name = item["item"],
+            item_description = item["description"],
+            amount_product = item["quantity"] ,
+            cost_per_product = item["unitPrice"],
+            cost_product = item["totalPrice"],
+            tax_amount = 10,
+            tax_name = item["GST"],
         )
 
     content = template.format(
@@ -135,7 +205,7 @@ def create_xml(file):
         buyer_street_name=file["buyer"]["address"]["streetName"], 
         buyer_additional_name=file["buyer"]["address"]["additionalStreetName"],
         buyer_city_name=file["buyer"]["address"]["cityName"],
-        buyer_post_code=["buyer"]["address"]["postalCode"],
+        buyer_post_code=file["buyer"]["address"]["postalCode"],
         products=products
     )
 
