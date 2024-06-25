@@ -1,6 +1,9 @@
 import pytest
 import json
+import base64
+import requests
 
+from requests.exceptions import HTTPError
 from tests.fixtures import client
 from src.services.validation import ValidationService
 
