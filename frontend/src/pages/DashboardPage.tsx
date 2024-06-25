@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Link } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -27,23 +27,32 @@ function DashboardPage(props: {
 }) {
   console.log(props.token);
 
-  interface SVGDict {
-    [key: string]: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+  interface dashboardCardInfo {
+    svg: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+    route: string;
   }
 
+  interface dashboardDict {
+    [key: string]: dashboardCardInfo;
+  }
+
+  // REPLACE your route to the page when implemented
   const options = {
-    'Create/Upload an Invoice': PenSvg,
-    'Validate an Invoice': TickSvg,
-    'Send an Invoice': SendSvg,
-    'Manage Invoices': ManageSvg,
-    'Account Settings': CogSvg,
-    'Documentation Info': DocSvg,
+    'Create/Upload an Invoice': { svg: PenSvg, route: '/' },
+    'Validate an Invoice': { svg: TickSvg, route: '/' },
+    'Send an Invoice': { svg: SendSvg, route: '/' },
+    'Manage Invoices': { svg: ManageSvg, route: '/' },
+    'Account Settings': { svg: CogSvg, route: '/settings' },
+    'Documentation Info': { svg: DocSvg, route: '/' },
   };
 
-  function generateOptions(options: SVGDict): JSX.Element[] {
-    return Object.entries(options).map(([name, SVG], index) => (
+  // Function to generate the dashboard card
+  function generateOptions(options: dashboardDict): JSX.Element[] {
+    return Object.entries(options).map(([name, items], index) => (
       <Grid key={index} item>
         <Card
+          component={Link}
+          to={items.route}
           sx={{
             border: 1,
             borderRadius: '16px',
@@ -52,11 +61,12 @@ function DashboardPage(props: {
             alignContent: 'center',
             textAlign: 'center',
             display: 'flex',
+            textDecoration: 'none',
           }}
         >
           <CardActionArea>
             <CardContent>
-              <SVG />
+              <items.svg />
               <Typography variant='h6' component='div'>
                 {name}
               </Typography>
