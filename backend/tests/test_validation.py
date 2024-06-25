@@ -116,9 +116,10 @@ def test_xml_validate_success(client):
             <!-- Additional InvoiceLines omitted for brevity -->
         </Invoice>"""
     }
+    my_list = list(data)
     res = client.post(
         VALIDATION_PATH,
-        data=json.dumps(data),
+        data=json.dumps(my_list),
         content_type="application/json"
     )
   
@@ -214,10 +215,12 @@ def test_xml_missing_data_fail(client):
             <!-- Additional InvoiceLines omitted for brevity -->
         </Invoice>"""
     }
+    my_list = list(data)
     res = client.post(
         VALIDATION_PATH,
-        data=json.dumps(data),
+        data=json.dumps(my_list),
         content_type="application/json"
     )
+  
   
     assert res.status_code == 400
