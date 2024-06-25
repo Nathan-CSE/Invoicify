@@ -33,6 +33,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import vatRates from '../VATRates.json';
 import ErrorModal from '../components/ErrorModal';
+import axios from 'axios';
 
 interface FileObject {
   file: File;
@@ -166,7 +167,7 @@ export default function CreationGUI() {
   };
   
   // Form submission & sending to backend + error handling
-  const handleSubmit = (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
+  const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
     event.preventDefault();
     
     let errorCheck = false;
@@ -244,8 +245,20 @@ export default function CreationGUI() {
     if (errorCheck) {
       return;
     } else {
+      
+      try {
+        const response = await axios.post('http://localhost:5000/invoice/create', invoiceData);
+        if (response.status === 201) {
+          navigate('/invoice-confirmation', { state: invoiceData });
+
+        } else {
+          console.log(response);
+          alert("Unable to create invoice");
+        }
+      } catch (err) {
+        alert(err)
+      }
       // SEND TO BACKEND HERE -> if successful, go to confirmation page
-      navigate('/invoice-confirmation', { state: invoiceData });
       return;
     }
 
