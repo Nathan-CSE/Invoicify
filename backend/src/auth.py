@@ -3,7 +3,6 @@ from flask_restx import Namespace, Resource, fields
 
 from models import db, User
 from src.utils import salt_and_hash, create_jwt_token, db_insert
-from src.auth_token import token_required
 
 auth_ns = Namespace('auth', description='Operations related to authentication')
 
