@@ -2,8 +2,12 @@ import pytest
 import json
 
 from tests.fixtures import client
+from src.validation import validate_xml
 
 VALIDATION_PATH = "/validation/validation"
+
+
+def test_xml_validate_success
 
 def test_xml_validate_success(client):
     data = {
@@ -116,10 +120,10 @@ def test_xml_validate_success(client):
             <!-- Additional InvoiceLines omitted for brevity -->
         </Invoice>"""
     }
-    my_list = list(data)
+    data_list = list(data)
     res = client.post(
         VALIDATION_PATH,
-        data=json.dumps(my_list),
+        data=json.dumps(data_list),
         content_type="application/json"
     )
   
