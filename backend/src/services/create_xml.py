@@ -2,71 +2,9 @@ from flask import Flask, request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields
 
 from models import db, User
-from src.utils import salt_and_hash, create_jwt_token, db_insert
-
-invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
-
-xml_fields = invoice_ns.model('XMLFields', {
-})
-@invoice_ns.route("/create")
-class CreateUBL(Resource):
-    @invoice_ns.doc(
-        description="""Takes a json file in the format
-        invoiceName: str,
-        invoiceNumber: int,
-        invoiceIssueDate: str,
-        seller: {
-            ABN: int,
-            companyName: str,
-            address: {
-                streetName: str,
-                additionalStreetName: str,
-                cityName: str,
-                postalCode: str,
-                country: str
-            }
-        }
-        buyer: {
-            ABN: int,
-            companyName: str,
-            address: {
-                streetName: str,
-                additionalStreetName: str,
-                cityName: str,
-                postalCode: str,
-                country: str
-            }
-        }
-        invoiceItems: [{
-            quantity: int,
-            unitCode: int,
-            item: str,
-            description: str,
-            unitPrice: float,
-            GST: str,
-            totalPrice: float
-        }],
-        totalGST: float,
-        totalTaxable: float,
-        totalAmount: float        
-        """,
-        body = xml_fields,
-        responses={
-            201: 'Created successfully',
-            400: 'Bad request',
-        },
-    )
-    def post(self):
-        data = request.json
-        print(data)
-        try:
-            create_xml(data)
-            return make_response(jsonify({"message": "UBL create successfully"}), 201)
-        except Exception as e:
-            print(e)
-            return make_response(jsonify({"message": "UBL not created"}), 400)
-
-
+from src.services.utils import salt_and_hash, create_jwt_token, db_insert
+from src.services.validation import ValidationService
+import base64
 
 
 template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
@@ -181,7 +119,6 @@ item_format = """<cac:InvoiceLine>
 def create_xml(file):
     products = ""
     for no, item in enumerate(file["invoiceItems"]):
-        print(item, no)
         products += item_format.format(
             item_id = no,
             item_name = item["item"],
@@ -215,10 +152,14 @@ def create_xml(file):
         total_without_tax = file["totalTaxable"],
         total_after_tax = file["totalAmount"]
     )
-    print(content)
+    content_encode = base64.b64encode(content.encode('utf-8')).decode('utf-8')
+    va = ValidationService()
+    result = va.validate_xml("test.xml", content_encode, ["AUNZ_PEPPOL_1_0_10"])
+    return result
 
-    with open('hello.xml', 'w') as file:
-        file.write(content)
-
+    # with open("output.xml", 'w') as file:
+    #     file.write(content)
+    # with open("output.xml", 'rb') as file:
+    #     
 if __name__ == "__main__":
     create_xml("test")

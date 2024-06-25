@@ -3,7 +3,7 @@ import json
 
 from tests.fixtures import client
 from models import db, User
-from src.utils import salt_and_hash, create_jwt_token, db_insert
+from src.services.utils import salt_and_hash, create_jwt_token, db_insert
 
 REGISTER_PATH = "/auth/register"
 LOGIN_PATH = "/auth/login"
