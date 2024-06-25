@@ -8,13 +8,26 @@ from src.services.send_mail import auth_request
 
 auth_ns = Namespace('auth', description='Operations related to authentication')
 
-user_authentication_fields = auth_ns.model('UserAuthentication', {
-    'email': fields.String(default="jane.smith@example.com", format="email", required=True, ),
-    'password': fields.String(default="password123", format="password", required=True)
-})
+email_field = fields.String(default="jane.smith@example.com", format="email", required=True)
+password_field = fields.String(default="password123", format="password", required=True)
+updated_password_field = fields.String(default="newpassword123", required=True)
 
-user_change_pw_fields = auth_ns.inherit("UserChangePassword", user_authentication_fields, {
-    "updated_password": fields.String(default="newpassword123", required=True)
+user_authentication_fields = auth_ns.model('UserAuthentication', {
+    "email": email_field,
+    "password": password_field
+})
+user_send_code_fields = auth_ns.model("UserSendCode", {
+    "email": email_field
+})
+user_reset_pw_fields = auth_ns.model("UserResetPassword", {
+    "email": email_field,
+    "reset_code": fields.String(default="XXXXXXXX", required=True),
+    "updated_password": updated_password_field
+})
+user_change_pw_fields = auth_ns.model("UserChangePassword", {
+    "email": email_field,
+    "password": password_field,
+    "updated_password": updated_password_field
 })
 
 @auth_ns.route("/register")
@@ -98,6 +111,13 @@ class ChangePWAPI(Resource):
 
 @auth_ns.route("/reset-code")
 class SendCode(Resource):
+    @auth_ns.doc(
+    description="Sends an email to the user with a reset code",
+    body=user_send_code_fields,
+    responses={
+        200: 'Sent successfully',
+        400: 'Bad request',
+    })
     def patch(self):
         data = request.json
         email = data['email']
@@ -107,6 +127,7 @@ class SendCode(Resource):
 
         code = secrets.token_hex(8)
         user.reset_code = code
+        db.session.commit()
         try:
             auth_request(email, code)
         except:
@@ -115,6 +136,13 @@ class SendCode(Resource):
 
 @auth_ns.route("/reset-pw")
 class ResetPass(Resource):
+    @auth_ns.doc(
+    description="Resets the users password if the provided reset-code is correct",
+    body=user_reset_pw_fields,
+    responses={
+        204: 'Reset successfully',
+        400: 'Bad request',
+    })
     def patch(self):
         data = request.json
         email = data['email']
