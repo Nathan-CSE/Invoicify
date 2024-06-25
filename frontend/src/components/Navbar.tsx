@@ -51,7 +51,7 @@ function Navbar(props: {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, width: '100%', top: 0, position: 'fixed' }}>
+    <Box sx={{ flexGrow: 1, width: '100%', top: 0, position: 'fixed', zIndex: 'tooltip' }}>
       <AppBar>
         <Toolbar>
           <IconButton

@@ -10,13 +10,15 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
 import { WindowSharp } from '@mui/icons-material';
+import ErrorModal from '../components/ErrorModal';
 
 export default function SignUp(props: {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const navigate = useNavigate();
-
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
   if (props.token) {
     console.log('SIGNUP');
     navigate('/dashboard');
@@ -57,13 +59,19 @@ export default function SignUp(props: {
           const data = await response.json();
           console.log(data);
 
-          props.setToken(data.token);
-          localStorage.setItem('token', data.token);
+          if (response.status === 400) {
+            console.log('HERE');
+            setOpenError(true);
+            setError(data.message);
+          } else {
+            props.setToken(data.token);
+            localStorage.setItem('token', data.token);
 
-          // Temporary Solution before backend TOKEN auth is done
-          // REMOVE WHEN FEATURE IS ADDED
-          localStorage.setItem('email', email);
-          navigate('/dashboard');
+            // Temporary Solution before backend TOKEN auth is done
+            // REMOVE WHEN FEATURE IS ADDED
+            localStorage.setItem('email', email);
+            navigate('/dashboard');
+          }
         } catch (err) {
           // alert(err.response.data.error);
           if (err instanceof Error) {
@@ -98,12 +106,7 @@ export default function SignUp(props: {
           <Typography component='h1' variant='h5'>
             Sign up
           </Typography>
-          <Box
-            component='form'
-            noValidate
-            onSubmit={handleSubmit}
-            sx={{ mt: 3 }}
-          >
+          <Box component='form' noValidate onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -174,6 +177,9 @@ export default function SignUp(props: {
           </Box>
         </Box>
       </Container>
+      <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
+        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
+      </Box>
     </>
   );
 }

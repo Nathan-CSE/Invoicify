@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import {
@@ -11,6 +11,8 @@ import {
   TextField,
 } from '@mui/material';
 import ErrorModal from '../components/ErrorModal';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 function SettingsPage(props: { token: string }) {
   // Error Handling
@@ -74,6 +76,23 @@ function SettingsPage(props: { token: string }) {
       >
         <Typography variant='h4'>Account Settings</Typography>
         <Divider sx={{ borderColor: 'black', width: '100%' }} />
+        <Breadcrumbs
+          aria-label='breadcrumb'
+          separator={<NavigateNextIcon fontSize="small" />}
+          sx={{ mt: 1 }}
+        >
+          <Typography
+            component={Link}
+            to='/dashboard'
+          >
+            Dashboard
+          </Typography>
+
+          <Typography color='text.primary'>
+            Invoice Creation
+          </Typography>
+        </Breadcrumbs>
+
         <Box sx={{ mt: 5, width: '100%' }}>
           <Typography variant='subtitle1' gutterBottom>
             Email
