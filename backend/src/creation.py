@@ -4,18 +4,18 @@ from werkzeug.datastructures import FileStorage
 
 creation_ns = Namespace('creation', description='Operations related to uploading files for creaiton')
 
-# upload_parser = creation_ns.parser()
-# upload_parser.add_argument('files', location='files',
-#                            type=FileStorage, required=True)
+upload_parser = creation_ns.parser()
+upload_parser.add_argument('files', location='files',
+                           type=FileStorage, required=True)
 @creation_ns.route("/creationupload")
 class CreationUploadAPI(Resource):
-    # @creation_ns.doc(
-    # description="Creation endpoint for PDFs and JSONs",
-    # body=creation_upload_fields,
-    # responses={
-    #     200: 'Files received successfully',
-    #     400: 'Bad request',
-    # })
+    @creation_ns.doc(
+    description="Creation endpoint for PDFs and JSONs",
+    responses={
+        200: 'Files received successfully',
+        400: 'Bad request',
+    })
+    @creation_ns.expect(upload_parser)
     def post(self):
         # args = upload_parser.parse_args()
         # files = args['files']

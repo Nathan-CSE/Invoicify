@@ -1,48 +1,25 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Navbar from '../components/Navbar';
 import Divider from '@mui/material/Divider';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Grid from '@mui/material/Grid';
 
-const theme = createTheme({
-  typography: {
-    fontFamily: 'Roboto, Arial, sans-serif',
-  },
-});
-
 export default function InvoiceCreationConfirmation() {
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  const navigate = useNavigate();
+  const invoiceData = useLocation();
 
-    const username = data.get('username');
-    const password = data.get('password');
-    
-    if (username.length === 0 || password === 0) {
-      alert('Fill out all required fields');
-    } else {
-      try {
-        // send to backend
-      } catch (err) {
-        alert(err.response.data.error);
-      }
-    }
-
-  };
+  const handlePreview = () => {
+    console.log('this is the invoice data: ', invoiceData);
+    navigate('/invoice-preview', { state: invoiceData });
+  }
 
   return (
     <>
-      <ThemeProvider theme={theme}>
-
-      <Navbar />
       
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
@@ -57,7 +34,7 @@ export default function InvoiceCreationConfirmation() {
         >
           <Typography
             component={Link}
-            to='/sign-in'
+            to='/dashboard'
           >
             Dashboard
           </Typography>
@@ -111,8 +88,7 @@ export default function InvoiceCreationConfirmation() {
 
           <Grid item>
             <Button
-              component={Link}
-              to='/sign-in'
+              onClick={handlePreview}
               variant='contained'
               sx={{
                 height: '50px',
@@ -139,7 +115,6 @@ export default function InvoiceCreationConfirmation() {
         </Grid>
       </Container>
 
-      </ThemeProvider>
     </>
   );
 }
