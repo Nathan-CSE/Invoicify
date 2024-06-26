@@ -1,5 +1,6 @@
 from flask_restx import Namespace, Resource
 
+from src.services.validation import ValidationService
 validation_ns = Namespace('validation', description='Operations related to validation')
 
 # Temporary API endpoint to allow validate function to be tested

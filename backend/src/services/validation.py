@@ -56,14 +56,16 @@ class ValidationService():
         # generate a new access token if missing or has expired
         access_token = ValidationAccessToken.query.first()
         try:
-            if not access_token or datetime.now() - access_token.updated_at >= timedelta(hours=1):
-                access_token = self._generate_token(access_token)
+            # if not access_token or datetime.now() - access_token.updated_at >= timedelta(hours=1):
+            #     access_token = self._generate_token(access_token)
 
             res = requests.post(
                 url=self._VALIDATION_URL,
                 headers={
                     "Accept-Language": "en",
-                    "Authorization": f"Bearer {access_token.token}"
+                    # "Authorization": f"Bearer {access_token.token}"
+                    "Authorization": f"Bearer eyJraWQiOiJqUWhhc1B3MXlhODluWVV5VDFIWHNab2dJWEJmRXlZWEZPeCtxV01WZHVJPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI3ZDMwYmk4N2lwdGVnYnJmMmJwMzdwNDJnZyIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZWF0XC9yZWFkIiwiYXV0aF90aW1lIjoxNzE5Mzg0MzQ0LCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb21cL2V1LWNlbnRyYWwtMV9xdkNTNFdSdnoiLCJleHAiOjE3MTkzODc5NDQsImlhdCI6MTcxOTM4NDM0NCwidmVyc2lvbiI6MiwianRpIjoiZDJlNjE3NTEtMDZiMC00NDExLTg4ZjEtNGVhY2NjNWM1ZGU2IiwiY2xpZW50X2lkIjoiN2QzMGJpODdpcHRlZ2JyZjJicDM3cDQyZ2cifQ.jpvQ3nx0XtBlo7mIctm2JjJs-f9pbyxZsckCkXkI1G5fV96pEVGyopr5Jb_DzihvyvuBQ04B_DATvPeK6XR2_dVINgO1jFYgvxSqUWar6dR5xOMEno0BZuLE4BQYiDArXFIW5vxmmECjxFd9BPjr2smc21IIWpYcBlZPBi7dRW-gpngx-ZzjR8Vf9iTgM50AIrGSOLrnKBUKF1DFMlkTVcCRnG8LoQw6wIZy-d5F43ECt8ugTXDpGm-OnPZHdIV8icabONGrRZbldAxi9majaWKw64ztvgDQLm_SpZjeO4vCh50p8xcq2lVKz79Efh50YY478WgS63HXLfJAVMkvKA"
+                    
                 },
                 params={
                     "rules": ",".join(rules)
