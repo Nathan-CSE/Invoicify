@@ -84,7 +84,7 @@ function SettingsPage(props: { token: string }) {
             Dashboard
           </Typography>
 
-          <Typography color='text.primary'>Invoice Creation</Typography>
+          <Typography color='text.primary'>Account Settings</Typography>
         </Breadcrumbs>
 
         <Box sx={{ mt: 5, width: '100%' }}>
