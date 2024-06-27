@@ -63,6 +63,9 @@ export default function SignIn(props: {
           // REMOVE WHEN FEATURE IS ADDED
           localStorage.setItem('email', email);
           navigate('/dashboard');
+        } else {
+          setOpenError(true);
+          setError(response.data.message);
         }
 
         // if (response.status === 400) {
@@ -83,8 +86,9 @@ export default function SignIn(props: {
         if (err.response) {
           setOpenError(true);
           setError(err.response.data.message);
-        } else {
-          alert(err.message);
+        } else if (error instanceof Error) {
+          setOpenError(true);
+          setError(error.message);
         }
       }
     }
