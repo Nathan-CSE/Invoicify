@@ -1,6 +1,8 @@
 from flask_restx import Namespace, Resource
-from src.services.create_xml import create_xml
 from flask import Flask, request, jsonify, make_response
+
+from src.services.create_xml import create_xml
+from src.services.utils import token_required
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -54,7 +56,8 @@ class CreateUBL(Resource):
             400: 'Bad request',
         },
     )
-    def post(self):
+    @token_required
+    def post(self, user):
         data = request.json
         try:
             res = create_xml(data)

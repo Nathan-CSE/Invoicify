@@ -1,7 +1,10 @@
 import pytest
 import json
-from src.services.create_xml import create_xml
+
 from tests.fixtures import client
+from src.services.create_xml import create_xml
+from models import User
+from src.services.utils import db_insert, salt_and_hash
 
 test_json = {
     "invoiceName": "test",
@@ -43,5 +46,39 @@ test_json = {
     "totalAmount": 1000.0
 }
 
-def test_invoice_creation(client):
+INVOICE_CREATE_PATH = "/invoice/create"
+
+def test_invoice_creation_service(client):
     assert create_xml(test_json)["successful"] == True
+
+def test_invoice_creation_successful(client):
+    user_data = {
+        "email": "abc@gmail.com", 
+        "password": salt_and_hash("abc"), 
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM"
+    }
+    
+    db_insert(User(**user_data))
+
+    res = client.post(
+        INVOICE_CREATE_PATH,
+        data=json.dumps(test_json),
+        headers={
+            "Authorisation": user_data['token'],
+            "Content-Type": "application/json",
+        }
+    )
+
+    assert res.status_code == 201
+
+def test_invoice_creation_unauthorised(client):
+    res = client.post(
+        INVOICE_CREATE_PATH,
+        data=json.dumps(test_json),
+        headers={
+            "Authorisation": "blahaofsisja blah blah blah",
+            "Content-Type": "application/json",
+        }
+    )
+
+    assert res.status_code == 403
