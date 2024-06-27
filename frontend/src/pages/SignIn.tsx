@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
 import ErrorModal from '../components/ErrorModal';
+import axios, { AxiosError } from 'axios';
 
 export default function SignIn(props: {
   token: string;
@@ -37,35 +38,52 @@ export default function SignIn(props: {
       alert('Fill out all required fields');
     } else {
       try {
-        const response = await fetch('http://localhost:5000/auth/login', {
-          method: 'POST',
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-          headers: {
-            'Content-type': 'application/json',
-          },
+        const response = await axios.post('http://localhost:5000/auth/login', {
+          email,
+          password,
         });
+        // const response = await fetch('http://localhost:5000/auth/login', {
+        //   method: 'POST',
+        //   body: JSON.stringify({
+        //     email,
+        //     password,
+        //   }),
+        //   headers: {
+        //     'Content-type': 'application/json',
+        //   },
+        // });
 
-        const data = await response.json();
-        console.log(data);
-
-        if (response.status === 400) {
-          console.log('HERE');
-          setOpenError(true);
-          setError(data.message);
-        } else {
-          props.setToken(data.token);
-          localStorage.setItem('token', data.token);
+        // const data = await response.json();
+        // console.log(data);
+        if (response.status === 200) {
+          props.setToken(response.data.token);
+          localStorage.setItem('token', response.data.token);
 
           // Temporary Solution before backend TOKEN auth is done
           // REMOVE WHEN FEATURE IS ADDED
           localStorage.setItem('email', email);
           navigate('/dashboard');
         }
-      } catch (err) {
-        if (err instanceof Error) {
+
+        // if (response.status === 400) {
+        //   console.log('HERE');
+        //   setOpenError(true);
+        //   setError(data.message);
+        // } else {
+        //   props.setToken(data.token);
+        //   localStorage.setItem('token', data.token);
+
+        //   // Temporary Solution before backend TOKEN auth is done
+        //   // REMOVE WHEN FEATURE IS ADDED
+        //   localStorage.setItem('email', email);
+        //   navigate('/dashboard');
+        // }
+      } catch (error) {
+        const err = error as AxiosError<{ message: string }>;
+        if (err.response) {
+          setOpenError(true);
+          setError(err.response.data.message);
+        } else {
           alert(err.message);
         }
       }
