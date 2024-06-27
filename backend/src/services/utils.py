@@ -25,7 +25,6 @@ def token_required(func):
             if not (auth_token := request.headers.get("Authorisation")) or auth_token[:6] != "Bearer":
                 raise InvalidSignatureError()
 
-            print(auth_token)
             token_str_list = auth_token.split()
 
             if len(token_str_list) != 2:
