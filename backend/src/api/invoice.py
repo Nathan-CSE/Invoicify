@@ -57,7 +57,7 @@ class CreateUBL(Resource):
         },
     )
     @token_required
-    def post(self):
+    def post(self, user):
         data = request.json
         try:
             res = create_xml(data)

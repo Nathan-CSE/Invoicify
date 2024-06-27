@@ -22,21 +22,17 @@ def db_insert(model):
 def token_required(func):
     def wrapper(*args, **kwargs):
         try:
-            if not (auth_token := request.headers.get("Authorisation")) or auth_token[:6] != "Bearer":
+            if not (auth_token := request.headers.get("Authorisation")):
                 raise InvalidSignatureError()
 
-            token_str_list = auth_token.split()
-
-            if len(token_str_list) != 2:
-                raise InvalidSignatureError()
-
-            auth_token = token_str_list[1]
             decoded = decode_jwt_token(auth_token)
             email = decoded.get("email")
 
             if not (user:=User.query.filter(User.email==email).first()) or user.token != auth_token:
                 raise InvalidSignatureError()
-        except InvalidSignatureError as err:
+
+            kwargs["user"] = user
+        except Exception as err:
             return {"message": f"Unauthorised request: {err}"}, 403
         return func(*args, **kwargs)
     return wrapper

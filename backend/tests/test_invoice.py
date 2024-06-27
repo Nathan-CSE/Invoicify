@@ -64,7 +64,7 @@ def test_invoice_creation_successful(client):
         INVOICE_CREATE_PATH,
         data=json.dumps(test_json),
         headers={
-            "Authorisation": f"Bearer {user_data['token']}",
+            "Authorisation": user_data['token'],
             "Content-Type": "application/json",
         }
     )
@@ -76,7 +76,7 @@ def test_invoice_creation_unauthorised(client):
         INVOICE_CREATE_PATH,
         data=json.dumps(test_json),
         headers={
-            "Authorisation": "Bearer blah blah blah",
+            "Authorisation": "blahaofsisja blah blah blah",
             "Content-Type": "application/json",
         }
     )
