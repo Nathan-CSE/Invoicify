@@ -35,33 +35,6 @@ function SettingsPage(props: { token: string }) {
     } else {
       try {
         console.log(password, updated_password);
-
-        //   const response = await fetch('http://localhost:5000/auth/change-pw', {
-        //     method: 'PATCH',
-        //     body: JSON.stringify({
-        //       email,
-        //       password,
-        //       updated_password,
-        //     }),
-        //     headers: {
-        //       'Content-type': 'application/json',
-        //     },
-        //   });
-
-        //   const data = await response.json();
-
-        //   if (response.status === 400) {
-        //     console.log('HERE');
-        //     setOpenError(true);
-        //     setError(data.message);
-        //   } else {
-        //     alert(data.message);
-        //   }
-        // } catch (err) {
-        //   if (err instanceof Error) {
-        //     alert(err.message);
-        //   }
-        // }
         const response = await axios.patch(
           'http://localhost:5000/auth/change-pw',
           {

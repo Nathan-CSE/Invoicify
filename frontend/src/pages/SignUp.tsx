@@ -65,30 +65,6 @@ export default function SignUp(props: {
             setOpenError(true);
             setError(response.data.message);
           }
-          // const response = await fetch('http://localhost:5000/auth/register', {
-          //   method: 'POST',
-          //   body: JSON.stringify({
-          //     email,
-          //     password,
-          //   }),
-          //   headers: {
-          //     'Content-type': 'application/json',
-          //   },
-          // });
-          // const data = await response.json();
-          // console.log(data);
-          // if (response.status === 400) {
-          //   console.log('HERE');
-          //   setOpenError(true);
-          //   setError(data.message);
-          // } else {
-          //   props.setToken(data.token);
-          //   localStorage.setItem('token', data.token);
-          //   // Temporary Solution before backend TOKEN auth is done
-          //   // REMOVE WHEN FEATURE IS ADDED
-          //   localStorage.setItem('email', email);
-          //   navigate('/dashboard');
-          // }
         } catch (error) {
           const err = error as AxiosError<{ message: string }>;
           if (err.response) {
