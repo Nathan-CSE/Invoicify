@@ -5,7 +5,7 @@ import json
 
 from src.services.create_xml import create_xml
 from src.services.utils import token_required, db_insert
-from models import Invoice
+from models import db, Invoice
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -32,22 +32,25 @@ xml_fields = invoice_ns.model('XMLFields', {
 
 save_ubl_fields = invoice_ns.model("SaveUBLFields", {
     "name": fields.String(default="Invoice 1", required=True),
-    # "fields": fields.Nested(xml_fields, default={
-    #     "invoiceName": "test",
-    #     "invoiceNumber": "1",
-    #     "invoiceIssueDate": "2024-06-25",
-    #     "seller": {
-    #         "ABN": 47555222000,
-    #         "companyName": "Windows to Fit Pty Ltd",
-    #         "address": {
-    #             "streetName": "Test",
-    #             "additionalStreetName": "test",
-    #             "cityName": "test",
-    #             "postalCode": 2912,
-    #             "country": "AU"
-    #         }
-    #     }
-    # }, required=True)
+    "fields": fields.Raw(default={
+        "invoiceName": "test",
+        "invoiceNumber": "1",
+        "invoiceIssueDate": "2024-06-25",
+        "seller": {
+            "ABN": 47555222000,
+            "companyName": "Windows to Fit Pty Ltd",
+            "address": {
+                "streetName": "Test",
+                "additionalStreetName": "test",
+                "cityName": "test",
+                "postalCode": 2912,
+                "country": "AU"
+            }
+        }
+    }, required=True)
+})
+
+update_ubl_fields = invoice_ns.model("UpdateSavedUBLFields", {
     "fields": fields.Raw(default={
         "invoiceName": "test",
         "invoiceNumber": "1",
@@ -138,13 +141,15 @@ class Save(Resource):
     def put(self, user):
         data = request.json
 
-        db_insert(Invoice(name=data["name"], fields=json.dumps(data["fields"]), user_id=user.id, is_ready=False))
+        db_insert(Invoice(name=data["name"], fields=data["fields"], user_id=user.id, is_ready=False))
+        
+        return make_response(jsonify({"message": "UBL saved successfully"}), 201)
 
 @invoice_ns.route("/save/<int:id>")
 class UpdateSaved(Resource):
     @invoice_ns.doc(
         description="Ability to update saved UBLs that are incomplete",
-        body=save_ubl_fields,
+        body=update_ubl_fields,
         responses={
             204: 'Updated successfully',
             400: 'Bad request',
@@ -157,8 +162,10 @@ class UpdateSaved(Resource):
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 400)
 
+        invoice.fields = data["fields"]
+        db.session.commit()
+
         return make_response(jsonify(invoice.to_dict()), 204)
-        db_insert(Invoice(name=data["name"], fields=json.dumps(data["fields"]), user_id=user.id, is_ready=False))
 
 @invoice_ns.route("/history")
 class History(Resource):
