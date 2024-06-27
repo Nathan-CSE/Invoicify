@@ -18,11 +18,7 @@ export default function SignIn(props: {
   const navigate = useNavigate();
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
-  // React.useEffect(() => {
-  //   if (props.token) {
-  //     navigate('/dashboard');
-  //   }
-  // }, [props.token]);
+
   if (props.token) {
     console.log('SIGNIN');
     navigate('/dashboard');

@@ -9,7 +9,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
-import { WindowSharp } from '@mui/icons-material';
 import ErrorModal from '../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
 
@@ -83,7 +82,6 @@ export default function SignUp(props: {
 
   return (
     <>
-      {/* <Navbar /> */}
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
