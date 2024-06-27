@@ -9,8 +9,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
-import { WindowSharp } from '@mui/icons-material';
 import ErrorModal from '../components/ErrorModal';
+import axios, { AxiosError } from 'axios';
 
 export default function SignUp(props: {
   token: string;
@@ -45,37 +45,33 @@ export default function SignUp(props: {
     } else {
       if (password === confirmPassword) {
         try {
-          const response = await fetch('http://localhost:5000/auth/register', {
-            method: 'POST',
-            body: JSON.stringify({
+          const response = await axios.post(
+            'http://localhost:5000/auth/register',
+            {
               email,
               password,
-            }),
-            headers: {
-              'Content-type': 'application/json',
-            },
-          });
-
-          const data = await response.json();
-          console.log(data);
-
-          if (response.status === 400) {
-            console.log('HERE');
-            setOpenError(true);
-            setError(data.message);
-          } else {
-            props.setToken(data.token);
-            localStorage.setItem('token', data.token);
+            }
+          );
+          if (response.status === 201) {
+            props.setToken(response.data.token);
+            localStorage.setItem('token', response.data.token);
 
             // Temporary Solution before backend TOKEN auth is done
             // REMOVE WHEN FEATURE IS ADDED
             localStorage.setItem('email', email);
             navigate('/dashboard');
+          } else {
+            setOpenError(true);
+            setError(response.data.message);
           }
-        } catch (err) {
-          // alert(err.response.data.error);
-          if (err instanceof Error) {
-            alert(err.message);
+        } catch (error) {
+          const err = error as AxiosError<{ message: string }>;
+          if (err.response) {
+            setOpenError(true);
+            setError(err.response.data.message);
+          } else if (error instanceof Error) {
+            setOpenError(true);
+            setError(error.message);
           }
         }
       } else {
@@ -86,7 +82,6 @@ export default function SignUp(props: {
 
   return (
     <>
-      {/* <Navbar /> */}
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
