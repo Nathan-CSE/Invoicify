@@ -2,28 +2,25 @@ from flask import Flask, request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields
 from werkzeug.datastructures import FileStorage
 
-creation_ns = Namespace('creation', description='Operations related to uploading files for creaiton')
+sendInvoice_ns = Namespace('sendInvoice', description='Operations related to uploading files for creaiton')
 
-upload_parser = creation_ns.parser()
+upload_parser = sendInvoice_ns.parser()
 upload_parser.add_argument('files', location='files',
                            type=FileStorage, required=True)
-@creation_ns.route("/creationupload")
-class CreationUploadAPI(Resource):
-    @creation_ns.doc(
-    description="Creation endpoint for PDFs and JSONs",
+@sendInvoice_ns.route("/sendInvoiceUpload")
+class SendInvoiceUploadAPI(Resource):
+    @sendInvoice_ns.doc(
+    description="Invoice for sending endpoint for PDFs and JSONs",
     responses={
         200: 'Files received successfully',
         400: 'Bad request',
     })
-    @creation_ns.expect(upload_parser)
+    @sendInvoice_ns.expect(upload_parser)
     def post(self):
-        # args = upload_parser.parse_args()
-        # files = args['files']
         if 'files' not in request.files:
             return make_response(jsonify({"message": "No files found in the request"}), 400)
 
         files = request.files.getlist('files')
-        # print(files)
         allowed_extensions = {'pdf', 'json'}
 
         for file in files:

@@ -9,15 +9,9 @@ from werkzeug.datastructures import FileStorage
 
 CREATION_PATH = '/creation/creationupload'
 
-
 def test_file_upload_successful(client):
-    file = FileStorage(
-        stream=open("file1.pdf", "rb"),
-        filename="file1.pdf",
-        content_type="application/pdf",
-    )
     data = {}
-    data['files'] = [file]
+    data['files'] = [(io.BytesIO(b"abcdef"), 'test.pdf')]
     res = client.post(
         CREATION_PATH,
         data=data,  
@@ -27,10 +21,10 @@ def test_file_upload_successful(client):
     response_body = res.get_json()
 
     assert res.status_code == 200
-    assert response_body['message'] == 'Files received'
+    assert response_body['message'] == 'XMLs created'
 
     
-def test_file_upload_successful(client):
+def test_multiple_files_upload_successful(client):
     data = {}
     data['files'] = [(io.BytesIO(b"abcdef"), 'test.pdf'),(io.BytesIO(b"abcdef"), 'd.json')]
     
@@ -43,7 +37,7 @@ def test_file_upload_successful(client):
     response_body = res.get_json()
 
     assert res.status_code == 200
-    assert response_body['message'] == 'Files received'
+    assert response_body['message'] == 'XMLs created'
     
     
 def test_empty_file_upload_fail(client):
@@ -59,7 +53,7 @@ def test_empty_file_upload_fail(client):
     response_body = res.get_json()
 
     assert res.status_code == 400
-    assert response_body['message'] == 'No files found in the request'
+    assert response_body['message'] == 'No files were uploaded'
     
     
 def test_invalid_file_upload_fail(client):
@@ -75,4 +69,4 @@ def test_invalid_file_upload_fail(client):
     response_body = res.get_json()
 
     assert res.status_code == 400
-    assert response_body['message'] == 'File test.jpg is not a PDF or JSON'
+    assert response_body['message'] == 'test.jpg is not a PDF or JSON, please remove that file and try again'

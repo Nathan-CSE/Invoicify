@@ -9,6 +9,7 @@ from models import db
 from src.api.auth import auth_ns
 from src.api.validation import validation_ns
 from src.api.invoice import invoice_ns
+from src.api.creation import creation_ns
 
 load_dotenv()
 authorizations = {
@@ -33,6 +34,8 @@ def create_app(db_path="database.db"):
     api.add_namespace(auth_ns)
     api.add_namespace(invoice_ns)
     api.add_namespace(validation_ns)
+    api.add_namespace(creation_ns)
+    
     
     return app
 
