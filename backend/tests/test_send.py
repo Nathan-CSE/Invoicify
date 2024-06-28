@@ -18,8 +18,6 @@ def user(client):
     db_insert(user)
     return user
 
-
-
 def test_file_upload_no_perms(client):
     data = {}
     data['files'] = [(io.BytesIO(b"abcdef"), 'test.pdf')]

@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields
 from werkzeug.datastructures import FileStorage
 from src.services.upload import handle_file_upload
+from src.services.utils import token_required
 
 creation_ns = Namespace('creation', description='Operations related to uploading files for creaiton')
 
@@ -18,8 +19,10 @@ class CreationUploadAPI(Resource):
         400: 'Bad request',
     })
     @creation_ns.expect(upload_parser)
-    def post(self):
+    @token_required
+    def post(self, user):
         res = handle_file_upload(request)
+        print(res)
         if not res[1] == 200:
             return res
         
@@ -28,6 +31,8 @@ class CreationUploadAPI(Resource):
         # call the creation service 
         # collect all XMLs 
         # return
+        
+        # tempt response, full function will return XML 
         return make_response(jsonify({"message": f"XMLs created"}), 200)
 
 # @sendInvoice_ns.route("/sendInvoiceUpload")
