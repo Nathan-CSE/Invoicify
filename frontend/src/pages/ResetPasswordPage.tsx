@@ -11,9 +11,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import ErrorModal from '../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
 
-import { ReactComponent as DocSvg } from '../assets/documentation.svg';
 import { ReactComponent as BackSvg } from '../assets/backarrow.svg';
-import { relative } from 'path';
+
 import LoadingDialog from '../components/LoadingDialog';
 
 export default function ResetPassword(props: { token: string }) {
@@ -37,47 +36,100 @@ export default function ResetPassword(props: { token: string }) {
     setTimeout(() => setLoading(false), 3000);
   };
 
-  const handleSubmitEmail = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get('email') as string;
+    const reset_code = data.get('token') as string;
+    const updated_password = data.get('newpassword') as string;
+    console.log(email);
+
     if (submissionState) {
       console.log('STOP');
       return;
     }
     setSubmission(true);
-    if (email.length === 0) {
-      setOpenError(true);
-      setError('Please enter a valid email');
-    } else {
-      handleOpenLoadingDialog();
-      try {
-        const response = await axios.patch(
-          'http://localhost:5000/auth/reset-code',
-          {
-            email,
-          }
-        );
 
-        if (response.status === 200) {
-          setResetState(true);
-          setOpenError(false);
-          setError('');
+    if (resetState) {
+      if (reset_code && updated_password) {
+        if (reset_code.length === 0) {
+          setOpenError(true);
+          setError('Please enter a valid token');
+        } else if (updated_password.length === 0) {
+          setOpenError(true);
+          setError('Please enter a valid password');
         } else {
-          setOpenError(true);
-          setError(response.data.message);
+          try {
+            const response = await axios.patch(
+              'http://localhost:5000/auth/reset-pw',
+              {
+                email,
+                reset_code,
+                updated_password,
+              }
+            );
+
+            if (response.status === 204) {
+              alert('Password changed!');
+              setResetState(true);
+              setOpenError(false);
+              setError('');
+            } else {
+              setOpenError(true);
+              setError(response.data.message);
+            }
+          } catch (error) {
+            const err = error as AxiosError<{ message: string }>;
+            if (err.response) {
+              setOpenError(true);
+              setError(err.response.data.message);
+            } else if (error instanceof Error) {
+              setOpenError(true);
+              setError(error.message);
+            }
+          } finally {
+            setSubmission(false);
+          }
         }
-      } catch (error) {
-        const err = error as AxiosError<{ message: string }>;
-        if (err.response) {
-          setOpenError(true);
-          setError(err.response.data.message);
-        } else if (error instanceof Error) {
-          setOpenError(true);
-          setError(error.message);
+      } else {
+        setOpenError(true);
+        setError('Please fill in all fields');
+      }
+    } else if (email) {
+      console.log('Checkpt');
+      if (email.length === 0) {
+        setOpenError(true);
+        setError('Please enter a valid email');
+      } else {
+        handleOpenLoadingDialog();
+        try {
+          const response = await axios.patch(
+            'http://localhost:5000/auth/reset-code',
+            {
+              email,
+            }
+          );
+
+          if (response.status === 200) {
+            setResetState(true);
+            setOpenError(false);
+            setError('');
+          } else {
+            setOpenError(true);
+            setError(response.data.message);
+          }
+        } catch (error) {
+          const err = error as AxiosError<{ message: string }>;
+          if (err.response) {
+            setOpenError(true);
+            setError(err.response.data.message);
+          } else if (error instanceof Error) {
+            setOpenError(true);
+            setError(error.message);
+          }
+        } finally {
+          setSubmission(false);
         }
-      } finally {
-        setSubmission(false);
       }
     }
   };
@@ -124,7 +176,60 @@ export default function ResetPassword(props: { token: string }) {
             Reset Password
           </Typography>
           {resetState ? (
-            <></>
+            <>
+              <Typography variant='subtitle1' sx={{ mt: 3 }} gutterBottom>
+                An email should be sent to you shortly. Please input the token
+                given when received
+              </Typography>
+              <Box
+                component='form'
+                onSubmit={handleSubmit}
+                noValidate
+                sx={{ mt: 1 }}
+              >
+                <TextField
+                  margin='normal'
+                  fullWidth
+                  id='email'
+                  label='Email'
+                  name='email'
+                  autoComplete='email'
+                  autoFocus
+                  InputProps={{
+                    readOnly: true,
+                    style: { pointerEvents: 'none' },
+                  }}
+                />
+                <TextField
+                  margin='normal'
+                  fullWidth
+                  id='token'
+                  label='Token'
+                  name='token'
+                  autoComplete='token'
+                  autoFocus
+                  // value={tokenInput}
+                  // onChange={handleChange}
+                />
+                <TextField
+                  margin='normal'
+                  fullWidth
+                  id='newpassword'
+                  label='New Password'
+                  name='newpassword'
+                  autoComplete='newpassword'
+                  autoFocus
+                />
+                <Button
+                  type='submit'
+                  fullWidth
+                  variant='contained'
+                  sx={{ mt: 3 }}
+                >
+                  Submit
+                </Button>
+              </Box>
+            </>
           ) : (
             <>
               <Typography variant='subtitle1' sx={{ mt: 3 }} gutterBottom>
@@ -132,7 +237,7 @@ export default function ResetPassword(props: { token: string }) {
               </Typography>
               <Box
                 component='form'
-                onSubmit={handleSubmitEmail}
+                onSubmit={handleSubmit}
                 noValidate
                 sx={{ mt: 1 }}
               >
