@@ -10,10 +10,9 @@ import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
 import ErrorModal from '../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
-
 import { ReactComponent as BackSvg } from '../assets/backarrow.svg';
-
 import LoadingDialog from '../components/LoadingDialog';
+import { Dialog, DialogActions, DialogTitle } from '@mui/material';
 
 export default function ResetPassword(props: { token: string }) {
   const navigate = useNavigate();
@@ -23,8 +22,14 @@ export default function ResetPassword(props: { token: string }) {
   const [loading, setLoading] = React.useState(false);
   const [submissionState, setSubmission] = React.useState(false);
 
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => {
+    navigate('/sign-in');
+    setOpen(false);
+  };
+
   if (props.token) {
-    console.log('SIGNIN');
     navigate('/dashboard');
   }
   React.useEffect(() => {
@@ -45,7 +50,6 @@ export default function ResetPassword(props: { token: string }) {
     console.log(email);
 
     if (submissionState) {
-      console.log('STOP');
       return;
     }
     setSubmission(true);
@@ -70,7 +74,7 @@ export default function ResetPassword(props: { token: string }) {
             );
 
             if (response.status === 204) {
-              alert('Password changed!');
+              handleOpen();
               setResetState(true);
               setOpenError(false);
               setError('');
@@ -139,6 +143,21 @@ export default function ResetPassword(props: { token: string }) {
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <LoadingDialog open={loading} message='Checking Request...' />
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
+        >
+          <DialogTitle id='alert-dialog-title'>
+            {'Your password has been changed'}
+          </DialogTitle>
+          <DialogActions>
+            <Button onClick={handleClose} autoFocus>
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
         <Box
           sx={{
             marginTop: 20,
@@ -208,8 +227,6 @@ export default function ResetPassword(props: { token: string }) {
                   name='token'
                   autoComplete='token'
                   autoFocus
-                  // value={tokenInput}
-                  // onChange={handleChange}
                 />
                 <TextField
                   margin='normal'
@@ -218,6 +235,7 @@ export default function ResetPassword(props: { token: string }) {
                   label='New Password'
                   name='newpassword'
                   autoComplete='newpassword'
+                  type='password'
                   autoFocus
                 />
                 <Button
