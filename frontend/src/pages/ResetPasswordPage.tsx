@@ -16,12 +16,27 @@ import { Dialog, DialogActions, DialogTitle } from '@mui/material';
 
 export default function ResetPassword(props: { token: string }) {
   const navigate = useNavigate();
+
+  // Error handling
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
+
+  // To differentiate between the stage of resetting
+  // Stage 1: Only entering the email
+  // Stage 2: Entering the token sent by the web app and the password
   const [resetState, setResetState] = React.useState(false);
+
+  // Loading dialog handling
   const [loading, setLoading] = React.useState(false);
+  const handleOpenLoadingDialog = () => {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 3000);
+  };
+
+  // To prevent submitting multiple times in a row that causes a spam of requests
   const [submissionState, setSubmission] = React.useState(false);
 
+  // Dialog Confirmation handling
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -36,24 +51,26 @@ export default function ResetPassword(props: { token: string }) {
     setResetState(false);
   }, []);
 
-  const handleOpenLoadingDialog = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 3000);
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get('email') as string;
     const reset_code = data.get('token') as string;
     const updated_password = data.get('newpassword') as string;
-    console.log(email);
 
+    // Checks if a form has been submitted
+    // If so prevent further submits till completion
     if (submissionState) {
       return;
     }
     setSubmission(true);
 
+    // First case:
+    // - User has already submitted their email
+    // - User is now inputting the reset token and their new password
+    //
+    // Second case:
+    // - User is inputting their email
     if (resetState) {
       if (reset_code && updated_password) {
         if (reset_code.length === 0) {
