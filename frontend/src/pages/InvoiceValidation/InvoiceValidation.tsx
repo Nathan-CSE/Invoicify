@@ -3,27 +3,35 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Navbar from '../components/Navbar';
 import Divider from '@mui/material/Divider';
 import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FileUpload from '../components/FileUpload';
+import FileUpload from '../../components/FileUpload';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
-export default function SignIn() {
+export default function InvoiceValidation() {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    navigate('/invoice-confirmation');
-    setOpen(false);
+  const [invoice, setInvoice] = React.useState('');
+  const [ruleSet, setRuleSet] = React.useState('');
+
+
+  const handleChange = (event: SelectChangeEvent) => {
+    console.log('this is event.target: ', event.target);
+
+    if (event.target.name === 'rule-set') {
+      setRuleSet(event.target.value);
+    } else {
+      setInvoice(event.target.value);
+    }
+
+    setInvoice(event.target.value);
   };
+
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -51,7 +59,7 @@ export default function SignIn() {
      
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
-          Invoice Creation
+          Invoice Validation
         </Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
@@ -68,7 +76,7 @@ export default function SignIn() {
           </Typography>
 
           <Typography color='text.primary'>
-            Invoice Creation
+            Invoice Validation
           </Typography>
         </Breadcrumbs>
 
@@ -76,51 +84,55 @@ export default function SignIn() {
           <FileUpload />
         </Box>
 
-        <Box textAlign='center'>
-          <Button
-            onClick={handleOpen}
-            variant='contained'
-            sx={{
-              height: '50px',
-              padding: '25px',
-            }}
-          >
-            Generate Invoices
-          </Button>
-          {/* NOTE: Send to backend and create invoices */}
-        </Box>
-
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">
-            {"Your invoice has been created and saved to your account."}
-          </DialogTitle>
-          <DialogActions>
-            <Button onClick={handleClose} autoFocus>
-              Confirm
-            </Button>
-          </DialogActions>
-        </Dialog>
-
         <Typography variant='h5' textAlign='center' sx={{ my: 2 }}>
           OR
         </Typography>
 
+        <Box sx={{ minWidth: 120 }}>
+          <FormControl variant="standard" fullWidth>
+            <InputLabel id="select-invoice-label">Select Invoice</InputLabel>
+            <Select
+              labelId="select-invoice-label"
+              id="select-invoice"
+              name='select-invoice'
+              value={invoice}
+              label="Select Invoice"
+              onChange={handleChange}
+            >
+              <MenuItem value={10}>ANZ-Invoice</MenuItem>
+              <MenuItem value={10}>ANZ-Invoice</MenuItem>
+              <MenuItem value={10}>ANZ-Invoice</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
+        <Box sx={{ minWidth: 120, my: 3 }}>
+          <FormControl variant="standard" fullWidth>
+            <InputLabel id="select-rule-set">Rule Set</InputLabel>
+            <Select
+              labelId="select-rule-set"
+              id="rule-set"
+              name='rule-set'
+              value={ruleSet}
+              label="Rule Set"
+              onChange={handleChange}
+            >
+              <MenuItem value={10}>AU-NZ PEPPOL 1.0.10</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
+
         <Box textAlign='center'>
           <Button
             component={Link}
-            to='/invoice-creation-GUI'
+            to='/invoice-validation-report'
             variant='contained'
             sx={{
               height: '50px',
               padding: '25px',
             }}
           >
-            Create a New Invoice
+            Continue
           </Button>
         </Box>
       </Container>

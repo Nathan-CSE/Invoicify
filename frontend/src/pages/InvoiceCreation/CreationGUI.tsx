@@ -31,8 +31,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import vatRates from '../VATRates.json';
-import ErrorModal from '../components/ErrorModal';
+import vatRates from '../../VATRates.json';
+import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
 
 interface FileObject {
