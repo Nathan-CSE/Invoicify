@@ -116,7 +116,7 @@ export default function SignIn(props: {
               variant='subtitle1'
               sx={{ color: 'info.main', textDecoration: 'none' }}
               component={Link}
-              to='/sign-up'
+              to='/reset-pw'
               gutterBottom
             >
               Forgot password?
