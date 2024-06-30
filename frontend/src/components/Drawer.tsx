@@ -8,9 +8,8 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { IconButton, Link, Typography } from '@mui/material';
+
+import { IconButton, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
@@ -18,6 +17,7 @@ import { ReactComponent as SendSvg } from '../assets/send.svg';
 import { ReactComponent as ManageSvg } from '../assets/manage.svg';
 import { ReactComponent as CogSvg } from '../assets/settings.svg';
 import { ReactComponent as DocSvg } from '../assets/documentation.svg';
+import { ReactComponent as HomeSvg } from '../assets/home.svg';
 import { useNavigate } from 'react-router-dom';
 
 export default function TemporaryDrawer() {
@@ -38,6 +38,7 @@ export default function TemporaryDrawer() {
 
   // REPLACE your route to the page when implemented
   const options = {
+    'Home Page': { svg: HomeSvg, route: '/dashboard' },
     'Create/Upload an Invoice': { svg: PenSvg, route: '/invoice-creation' },
     'Validate an Invoice': { svg: TickSvg, route: '/' },
     'Send an Invoice': { svg: SendSvg, route: '/' },
