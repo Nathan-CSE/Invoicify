@@ -10,6 +10,7 @@ import CreationGUI from './pages/CreationGUI';
 import Navbar from './components/Navbar';
 import SettingsPage from './pages/SettingsPage';
 import PreviewInvoice from './pages/PreviewInvoice';
+import ResetPassword from './pages/ResetPasswordPage';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -60,15 +61,24 @@ function PageList() {
           }
         />
         <Route
+          path='/reset-pw'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <ResetPassword token={token} />
+            </>
+          }
+        />
+        <Route
           path='/invoice-creation'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
               <InvoiceCreation />
             </>
-          } 
+          }
         />
-        <Route 
+        <Route
           path='/invoice-creation-GUI'
           element={
             <>
@@ -77,23 +87,23 @@ function PageList() {
             </>
           }
         />
-        <Route 
+        <Route
           path='/invoice-confirmation'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
               <InvoiceCreationConfirmation />
             </>
-          } 
+          }
         />
-        <Route 
+        <Route
           path='/invoice-preview'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
               <PreviewInvoice />
             </>
-          } 
+          }
         />
         <Route
           path='/settings'

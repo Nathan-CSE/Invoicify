@@ -28,7 +28,7 @@ function Navbar(props: {
       return (
         <Button
           component={Link}
-          to='/'
+          to='/sign-in'
           variant='contained'
           color='secondary'
           onClick={logout}
@@ -51,7 +51,15 @@ function Navbar(props: {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, width: '100%', top: 0, position: 'fixed', zIndex: 'tooltip' }}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        width: '100%',
+        top: 0,
+        position: 'fixed',
+        zIndex: 'tooltip',
+      }}
+    >
       <AppBar>
         <Toolbar>
           <IconButton

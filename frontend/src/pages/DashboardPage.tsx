@@ -13,7 +13,6 @@ import { ReactComponent as SendSvg } from '../assets/send.svg';
 import { ReactComponent as ManageSvg } from '../assets/manage.svg';
 import { ReactComponent as CogSvg } from '../assets/settings.svg';
 import { ReactComponent as DocSvg } from '../assets/documentation.svg';
-import Navbar from '../components/Navbar';
 
 // Current Idea -> For loop to create each grid item and card to make it so we dont have to repeat code
 // Wow yeap
