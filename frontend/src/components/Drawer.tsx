@@ -10,7 +10,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import { IconButton, Link } from '@mui/material';
+import { IconButton, Link, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
@@ -49,6 +49,10 @@ export default function TemporaryDrawer() {
   const DrawerList = (
     <Box sx={{ width: 250 }} role='presentation' onClick={toggleDrawer(false)}>
       <List>
+        <Typography variant='h6' component='div' sx={{ textAlign: 'center' }}>
+          E-Invoice Manager
+        </Typography>
+        <Divider />
         {Object.entries(options).map(([name, items], index) => (
           <ListItem
             key={index}
