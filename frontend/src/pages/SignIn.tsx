@@ -111,6 +111,16 @@ export default function SignIn(props: {
               id='password'
               autoComplete='current-password'
             />
+
+            <Typography
+              variant='subtitle1'
+              sx={{ color: 'info.main', textDecoration: 'none' }}
+              component={Link}
+              to='/reset-pw'
+              gutterBottom
+            >
+              Forgot password?
+            </Typography>
             <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
               Sign In
             </Button>
