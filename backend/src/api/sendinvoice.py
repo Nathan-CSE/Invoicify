@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, make_response
 from flask_restx import Namespace, Resource
 from werkzeug.datastructures import FileStorage
-from src.services.upload import handle_file_upload
+from src.services.upload import handle_file_upload, save_file
 from src.services.utils import token_required
 
 sendInvoice_ns = Namespace('sendInvoice', description='Operations related to uploading files for creaiton')
@@ -24,6 +24,10 @@ class SendInvoiceUploadAPI(Resource):
         res = handle_file_upload(request)
         if not res[1] == 200:
             return res
+        
+        email = user.email
+        for f in request.files.getlist('files'):
+            save_file(f, email)
         
         # callsend 
         # collect all XMLs 

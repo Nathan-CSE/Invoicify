@@ -1,10 +1,8 @@
 from flask import Flask, request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields
 from werkzeug.datastructures import FileStorage
-from werkzeug.utils import secure_filename
-import os
 
-from src.services.upload import handle_file_upload
+from src.services.upload import handle_file_upload, save_file
 from src.services.utils import token_required
 
 creation_ns = Namespace('creation', description='Operations related to uploading files for creaiton')
@@ -33,22 +31,7 @@ class CreationUploadAPI(Resource):
         # call the creation service 
         # collect all XMLs 
         # return
-        email = user.email
-        for f in request.files.getlist('files'):
-            print(f)
-            save_file(f, email)
-        
         # tempt response, full function will return XML 
         return make_response(jsonify({"message": f"XMLs created"}), 200)
 
-
-def save_file(file, email):
-    base_path = "instance/documents"
-    user_folder = os.path.join(base_path, email)
-    file_destination = os.path.join(user_folder, "files", file.filename)
-    
-    # Create the directory structure if it doesn't exist
-    os.makedirs(os.path.dirname(file_destination), exist_ok=True)
-    
-    file.save(file_destination)
 

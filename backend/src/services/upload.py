@@ -1,4 +1,4 @@
-
+import os
 
 def handle_file_upload(request):
     if 'files' not in request.files:
@@ -11,16 +11,17 @@ def handle_file_upload(request):
         if file.filename == '':
             continue 
 
-        if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
-            print(file.filename)
-        else:
+        if not('.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions):
             return {"message": f"{file.filename} is not a PDF or JSON, please remove that file and try again"}, 400
 
     return {"message": f"Files uploaded"}, 200
 
-
-
-
-
-
-   
+def save_file(file, email):
+    base_path = "instance/documents"
+    user_folder = os.path.join(base_path, email)
+    file_destination = os.path.join(user_folder, "files", file.filename)
+    
+    # Create the directory structure if it doesn't exist
+    os.makedirs(os.path.dirname(file_destination), exist_ok=True)
+    
+    file.save(file_destination)
