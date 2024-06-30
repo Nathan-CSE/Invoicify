@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, make_response
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Namespace, Resource, fields, reqparse
 
 import json
 
@@ -50,7 +50,7 @@ save_ubl_fields = invoice_ns.model("SaveUBLFields", {
     }, required=True)
 })
 
-update_ubl_fields = invoice_ns.model("UpdateSavedUBLFields", {
+edit_fields = invoice_ns.model("EditUBLFields", {
     "fields": fields.Raw(default={
         "invoiceName": "test",
         "invoiceNumber": "1",
@@ -68,6 +68,9 @@ update_ubl_fields = invoice_ns.model("UpdateSavedUBLFields", {
         }
     }, required=True)
 })
+
+history_fields = reqparse.RequestParser()
+history_fields.add_argument('is_ready', type=bool, choices=['true', 'false'], help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
 
 @invoice_ns.route("/create")
 class CreateUBL(Resource):
@@ -138,18 +141,17 @@ class Save(Resource):
         },
     )
     @token_required
-    def put(self, user):
+    def post(self, user):
         data = request.json
-
         db_insert(Invoice(name=data["name"], fields=data["fields"], user_id=user.id, is_ready=False))
         
         return make_response(jsonify({"message": "UBL saved successfully"}), 201)
 
-@invoice_ns.route("/save/<int:id>")
-class UpdateSaved(Resource):
+@invoice_ns.route("/edit/<int:id>")
+class Edit(Resource):
     @invoice_ns.doc(
-        description="Ability to update saved UBLs that are incomplete",
-        body=update_ubl_fields,
+        description="Ability to edit UBLs",
+        body=edit_fields,
         responses={
             204: 'Updated successfully',
             400: 'Bad request',
@@ -169,8 +171,18 @@ class UpdateSaved(Resource):
 
 @invoice_ns.route("/history")
 class History(Resource):
+    def check_is_ready_param(self, is_ready):
+        is_ready = is_ready.lower().capitalize()
+        if is_ready == "True":
+            return True
+        elif is_ready == "False":
+            return False
+        else:
+            raise Exception("Invalid parameter value passed for is_ready")
+
     @invoice_ns.doc(
         description="UBL history of user",
+        body=history_fields,
         responses={
             200: 'Successful Request',
             400: 'Bad request',
@@ -178,4 +190,12 @@ class History(Resource):
     )
     @token_required
     def get(self, user):
-        return make_response(jsonify([invoice.to_dict() for invoice in Invoice.query.filter(Invoice.user_id==user.id).all()]), 200)
+        sql = Invoice.query.filter(Invoice.user_id==user.id)
+
+        if request.args.get("is_ready") != None:
+            try:
+                sql = sql.filter(Invoice.is_ready==self.check_is_ready_param(request.args.get("is_ready")))
+            except Exception as err:
+                return (make_response(jsonify({"message": str(err)}), 400))
+
+        return make_response(jsonify([invoice.to_dict() for invoice in sql.all()]), 200)
