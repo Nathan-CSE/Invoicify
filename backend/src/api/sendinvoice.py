@@ -20,7 +20,7 @@ class SendInvoiceUploadAPI(Resource):
     })
     @sendInvoice_ns.expect(upload_parser)
     @token_required
-    def post(self):
+    def post(self, user):
         res = handle_file_upload(request)
         if not res[1] == 200:
             return res

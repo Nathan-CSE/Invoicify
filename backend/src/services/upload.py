@@ -8,7 +8,6 @@ def handle_file_upload(request):
     allowed_extensions = {'pdf', 'json'}
 
     for file in files:
-        print(file)
         if file.filename == '':
             continue 
 

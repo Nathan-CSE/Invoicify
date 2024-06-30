@@ -1,6 +1,9 @@
 from flask import Flask, request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields
 from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
+import os
+
 from src.services.upload import handle_file_upload
 from src.services.utils import token_required
 
@@ -22,7 +25,6 @@ class CreationUploadAPI(Resource):
     @token_required
     def post(self, user):
         res = handle_file_upload(request)
-        print(res)
         if not res[1] == 200:
             return res
         
@@ -31,20 +33,22 @@ class CreationUploadAPI(Resource):
         # call the creation service 
         # collect all XMLs 
         # return
+        email = user.email
+        for f in request.files.getlist('files'):
+            print(f)
+            save_file(f, email)
         
         # tempt response, full function will return XML 
         return make_response(jsonify({"message": f"XMLs created"}), 200)
 
-# @sendInvoice_ns.route("/sendInvoiceUpload")
-# class SendInvoiceUploadAPI(Resource):
-#     @sendInvoice_ns.doc(
-#     description="Invoice for sending endpoint for PDFs and JSONs",
-#     responses={
-#         200: 'Files received successfully',
-#         400: 'Bad request',
-#     })
-#     @sendInvoice_ns.expect(upload_parser)
-#     def post(self):
-#         return handle_file_upload(request)
 
-   
+def save_file(file, email):
+    base_path = "instance/documents"
+    user_folder = os.path.join(base_path, email)
+    file_destination = os.path.join(user_folder, "files", file.filename)
+    
+    # Create the directory structure if it doesn't exist
+    os.makedirs(os.path.dirname(file_destination), exist_ok=True)
+    
+    file.save(file_destination)
+
