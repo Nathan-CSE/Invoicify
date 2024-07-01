@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields
 
-from models import db, User
-from src.services.utils import salt_and_hash, create_jwt_token, db_insert
+from models import db, Invoice
+from src.services.utils import db_insert
 from src.services.validation import ValidationService
 import base64
 
@@ -116,7 +116,7 @@ item_format = """<cac:InvoiceLine>
 """
 
 
-def create_xml(file):
+def create_xml(file, user):
     products = ""
     for no, item in enumerate(file["invoiceItems"]):
         products += item_format.format(
@@ -155,7 +155,17 @@ def create_xml(file):
     content_encode = base64.b64encode(content.encode('utf-8')).decode('utf-8')
     va = ValidationService()
     result = va.validate_xml("test.xml", content_encode, ["AUNZ_PEPPOL_1_0_10"])
-    return result
+    if result["successful"] == True:
+        db_insert(Invoice(name="test", fields=content,  user_id=user.id, is_ready=True))
+        invoice = Invoice.query.where(Invoice.fields==content).first()
+        return {invoice.id, user.id}
+    else:
+        raise ValueError(result)
+    
+def save_xml(file, user):
+    db_insert(Invoice(name="test", fields=file, user_id=user.id, is_ready=False))
+    invoice = Invoice.query.where(Invoice.fields==file).first()
+    return invoice.id
 
     # with open("output.xml", 'w') as file:
     #     file.write(content)

@@ -1,7 +1,9 @@
 from flask_restx import Namespace, Resource
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, send_file
+import io
+from models import Invoice
 
-from src.services.create_xml import create_xml
+from src.services.create_xml import create_xml, save_xml
 from src.services.utils import token_required
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
@@ -52,17 +54,71 @@ class CreateUBL(Resource):
         """,
         body = xml_fields,
         responses={
-            201: 'Created successfully',
+            201: '{{user_id: no, article_id: int}}',
             400: 'Bad request',
+            422: 'Failed validation'
+
         },
     )
     @token_required
     def post(self, user):
         data = request.json
         try:
-            res = create_xml(data)
+            res = create_xml(data, user)
             return make_response(jsonify(res), 201)
+        except ValueError as e:
+            return make_response(jsonify({e}, 422))
         except Exception as e:
-            print(e)
             return make_response(jsonify({"message": "UBL not created"}), 400)
+        
+@invoice_ns.route("/download")
+class SendUBL(Resource):
+    @invoice_ns.doc(
+    description="""Use this api to download xml
+        input:
+        article_id: int
+        output:
+            nothing (file should start downloading in browser)
+        """,
+    responses={
+        201: 'Created successfully',
+        400: 'Bad request',
+    })
+    @token_required
+    def post(self, user, article_id):
+        invoice = Invoice.query.where(Invoice.id==article_id).where(Invoice.user_id==user.id).where(Invoice.is_ready==True).first()
+        if invoice:
+            file = io.BytesIO()
+            file.write(invoice.fields.encode('utf-8'))
+            file.seek(0)
+            return send_file(file, mimetype='application/xml', as_attachment=True, download_name=invoice.name)
+        else:
+            return make_response(jsonify({"message": "Article not found"}), 400)
+        
+        # Create a BytesIO object
+        
+@invoice_ns.route("/save")
+class SaveUBL(Resource):
+    @invoice_ns.doc(
+        description="""Save fields for later
+        input:
+        fields: dict
+        output:
+            nothing
+        """,
+        responses={
+            201: 'Created Successfully',
+            400: 'Bad Request'
+        })
+    @token_required
+    def save(self, user, file):
+        try:
+            article_id = save_xml(file, user)
+            return make_response(jsonify({"article_id": article_id}), 201)
+
+        except:
+            return make_response(jsonify({"message": "Failed to Save"}), 400)
+            
+
+
 
