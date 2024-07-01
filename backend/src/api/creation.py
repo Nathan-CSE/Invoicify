@@ -25,7 +25,6 @@ class CreationUploadAPI(Resource):
         res = handle_file_upload(request)
         if not res[1] == 200:
             return res
-        
         # sort files by pdf and json
         # validate pdf extracted fields and json fields
         # call the creation service 
@@ -34,4 +33,25 @@ class CreationUploadAPI(Resource):
         # tempt response, full function will return XML 
         return make_response(jsonify({"message": f"XMLs created"}), 200)
 
+
+@creation_ns.route("/documentupload")
+class CreationUploadAPI(Resource):
+    @creation_ns.doc(
+    description="Creation endpoint for PDFs and JSONs",
+    responses={
+        200: 'Files received successfully',
+        400: 'Bad request',
+    })
+    @creation_ns.expect(upload_parser)
+    @token_required
+    def post(self, user):
+        res = handle_file_upload(request)
+        if not res[1] == 200:
+            return res
+
+        email = user.email
+        for f in request.files.getlist('files'):
+            save_file(f, email)
+
+        return make_response(jsonify({"message": f"XMLs created"}), 200)
 
