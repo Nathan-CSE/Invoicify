@@ -20,6 +20,25 @@ def db_insert(model):
     db.session.commit()
 
 def token_required(func):
+    """
+    Decorator that validates the token passed in through the Authorisation header
+
+    Usage:
+        - Add above any HTTP method defined in your class
+        - E.g.
+        =================================
+        |   @example_ns.route("/")      |
+        |   class ExampleClass():       |
+        |       @example_ns.doc(...)    |
+        |       @token_required         |
+        |       def post(self, user):   |
+        |           pass                |
+        =================================
+
+    Return Value:
+        Returns a User object if the token passed in was validated successfully
+        Otherwise, rejects HTTP request with error code 403
+    """
     def wrapper(*args, **kwargs):
         try:
             if not (auth_token := request.headers.get("Authorisation")):

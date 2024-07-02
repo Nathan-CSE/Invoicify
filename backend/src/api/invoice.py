@@ -1,11 +1,9 @@
-from flask import Flask, request, jsonify, make_response
+from flask import request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields, reqparse
 
-import json
-
+from models import db, Invoice
 from src.services.create_xml import create_xml
 from src.services.utils import token_required, db_insert
-from models import db, Invoice
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -16,19 +14,51 @@ address_fields = invoice_ns.model("Address", {
     "postalCode": fields.Integer(),
     "country": fields.String()
 })
-
 seller_fields = invoice_ns.model("Seller", {
     "ABN": fields.Integer(),
     "companyName": fields.String(),
     "address": fields.Nested(address_fields)
 })
-
-xml_fields = invoice_ns.model('XMLFields', {
+buyer_fields= invoice_ns.clone("Buyer", seller_fields)
+invoice_item_fields = invoice_ns.model("InvoiceItem", {
+    "quantity": fields.Integer(),
+    "unitCode": fields.Integer(),
+    "item": fields.String(),
+    "description": fields.String(),
+    "unitPrice": fields.Float(default=0.1),
+    "GST": fields.String(),
+    "totalPrice": fields.Float(default=0.1)
+})
+create_ubl_fields = invoice_ns.model('CreateUBLFields', {
     "invoiceName": fields.String(),
     "invoiceNumber": fields.String(),
     "invoiceIssueDate": fields.String(),
-    "seller": fields.Nested(seller_fields)
+    "seller": fields.Nested(seller_fields),
+    "buyer": fields.Nested(buyer_fields),
+    "invoiceItems": fields.List(fields.Nested(invoice_item_fields)),
+    "totalGST": fields.Float(default=0.1),
+    "totalTaxable": fields.Float(default=0.1),
+    "totalAmount": fields.Float(default=0.1)
 })
+@invoice_ns.route("/create")
+class Create(Resource):
+    @invoice_ns.doc(
+        description="Creates a UBL",
+        body=create_ubl_fields,
+        responses={
+            201: 'Created successfully',
+            400: 'Bad request',
+        },
+    )
+    @token_required
+    def post(self, user):
+        data = request.json
+        try:
+            res = create_xml(data)
+            return make_response(jsonify(res), 201)
+        except Exception as e:
+            print(e)
+            return make_response(jsonify({"message": "UBL not created"}), 400)
 
 save_ubl_fields = invoice_ns.model("SaveUBLFields", {
     "name": fields.String(default="Invoice 1", required=True),
@@ -49,6 +79,22 @@ save_ubl_fields = invoice_ns.model("SaveUBLFields", {
         }
     }, required=True)
 })
+@invoice_ns.route("/save")
+class Save(Resource):
+    @invoice_ns.doc(
+        description="Ability to save UBLs",
+        body=save_ubl_fields,
+        responses={
+            201: 'Saved Successfully',
+            400: 'Bad request',
+        },
+    )
+    @token_required
+    def post(self, user):
+        data = request.json
+        db_insert(Invoice(name=data["name"], fields=data["fields"], user_id=user.id, is_ready=False))
+        
+        return make_response(jsonify({"message": "UBL saved successfully"}), 201)
 
 edit_fields = invoice_ns.model("EditUBLFields", {
     "fields": fields.Raw(default={
@@ -68,85 +114,6 @@ edit_fields = invoice_ns.model("EditUBLFields", {
         }
     }, required=True)
 })
-
-history_fields = reqparse.RequestParser()
-history_fields.add_argument('is_ready', type=bool, choices=['true', 'false'], help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
-
-@invoice_ns.route("/create")
-class CreateUBL(Resource):
-    @invoice_ns.doc(
-        description="""Takes a json file in the format
-        invoiceName: str,
-        invoiceNumber: int,
-        invoiceIssueDate: str,
-        seller: {
-            ABN: int,
-            companyName: str,
-            address: {
-                streetName: str,
-                additionalStreetName: str,
-                cityName: str,
-                postalCode: str,
-                country: str
-            }
-        }
-        buyer: {
-            ABN: int,
-            companyName: str,
-            address: {
-                streetName: str,
-                additionalStreetName: str,
-                cityName: str,
-                postalCode: str,
-                country: str
-            }
-        }
-        invoiceItems: [{
-            quantity: int,
-            unitCode: int,
-            item: str,
-            description: str,
-            unitPrice: float,
-            GST: str,
-            totalPrice: float
-        }],
-        totalGST: float,
-        totalTaxable: float,
-        totalAmount: float        
-        """,
-        body = xml_fields,
-        responses={
-            201: 'Created successfully',
-            400: 'Bad request',
-        },
-    )
-    @token_required
-    def post(self, user):
-        data = request.json
-        try:
-            res = create_xml(data)
-            return make_response(jsonify(res), 201)
-        except Exception as e:
-            print(e)
-            return make_response(jsonify({"message": "UBL not created"}), 400)
-
-@invoice_ns.route("/save")
-class Save(Resource):
-    @invoice_ns.doc(
-        description="Ability to save UBLs",
-        body=save_ubl_fields,
-        responses={
-            201: 'Saved Successfully',
-            400: 'Bad request',
-        },
-    )
-    @token_required
-    def post(self, user):
-        data = request.json
-        db_insert(Invoice(name=data["name"], fields=data["fields"], user_id=user.id, is_ready=False))
-        
-        return make_response(jsonify({"message": "UBL saved successfully"}), 201)
-
 @invoice_ns.route("/edit/<int:id>")
 class Edit(Resource):
     @invoice_ns.doc(
@@ -169,6 +136,8 @@ class Edit(Resource):
 
         return make_response(jsonify(invoice.to_dict()), 204)
 
+history_fields = reqparse.RequestParser()
+history_fields.add_argument('is_ready', type=bool, choices=['true', 'false'], help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
 @invoice_ns.route("/history")
 class History(Resource):
     def check_is_ready_param(self, is_ready):
