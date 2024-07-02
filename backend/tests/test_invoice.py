@@ -28,7 +28,7 @@ test_json = {
             "streetName": "Jam",
             "additionalStreetName": "a man",
             "cityName": "of fortune",
-            "postalCode": "1994",
+            "postalCode": 1994,
             "country": "AU"
         }
     },
