@@ -1,9 +1,12 @@
 import pytest
 import json
+import os
+
+from werkzeug.datastructures import FileStorage
 
 from tests.fixtures import client
-from src.services.create_xml import create_xml
 from models import User
+from src.services.create_xml import create_xml
 from src.services.utils import db_insert, salt_and_hash
 
 test_json = {
@@ -47,6 +50,7 @@ test_json = {
 }
 
 INVOICE_CREATE_PATH = "/invoice/create"
+INVOICE_UPLOAD_PATH = "/invoice/validatenewupload"
 
 def test_invoice_creation_service(client):
     assert create_xml(test_json)["successful"] == True
@@ -82,3 +86,34 @@ def test_invoice_creation_unauthorised(client):
     )
 
     assert res.status_code == 403
+    
+@pytest.fixture
+def user(client):
+    user = User(email="abc@gmail.com", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM")
+    
+    db_insert(user)
+    return user
+
+def test_validate_success(client, user):
+    data = {}
+    
+    file = FileStorage(
+        stream=open("AUInvoice.xml", "rb"),
+        filename="AUInvoice.xml",
+        content_type="application/pdf",
+    )
+    data['files'] = [file]
+    
+    res = client.post(
+        INVOICE_UPLOAD_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+    response_body = res.get_json()
+
+    assert res.status_code == 200
+    assert response_body['message'] == 'XMLs created'
