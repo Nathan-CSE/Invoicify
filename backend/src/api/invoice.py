@@ -206,6 +206,6 @@ class ValidationAPI(Resource):
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully "}), 200)
         else:
-            retmessage = retval["summary"]
+            retmessage = retval["report"]["summary"]
             
             return make_response(jsonify({"message": retmessage}), 400)
