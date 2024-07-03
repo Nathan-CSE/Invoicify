@@ -197,8 +197,10 @@ class ValidationAPI(Resource):
         encoded_content = base64.b64encode(content).decode('utf-8') 
         vs = ValidationService()
 
-        return vs.validate_xml(
+        r = vs.validate_xml(
             filename=file.filename,
             content=encoded_content,
             rules=["AUNZ_PEPPOL_1_0_10"]
         )
+        print(r)
+        return r
