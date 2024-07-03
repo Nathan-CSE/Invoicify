@@ -210,5 +210,5 @@ class ValidationAPI(Resource):
             retmessage = "Validation failed. "
             retmessage += 'Failed assertion check:'
             for err in retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["firedAssertionErrors"]:
-                retmessage += f''' {err["id"]}: {err["text"]}.'''
+                retmessage += f''' {err["id"]}: {err["text"]}'''
             return make_response(jsonify({"message": retmessage}), 400)
