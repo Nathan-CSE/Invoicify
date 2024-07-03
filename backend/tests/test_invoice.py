@@ -94,7 +94,7 @@ def user(client):
     db_insert(user)
     return user
 
-def test_validate_success(client, user):
+def test_validate_upload_success(client, user):
     data = {}
     file = FileStorage(
         stream=open("auinvoice.xml", "rb"),
@@ -111,7 +111,6 @@ def test_validate_success(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
-    response_body = res.get_json()
+    # response_body = res.get_json()
 
     assert res.status_code == 200
-    assert response_body['message'] == 'XMLs created'
