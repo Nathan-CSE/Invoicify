@@ -269,10 +269,26 @@ def test_validate_upload_success(client, user):
 
     assert res.status_code == 200
     
-def test_validate_upload_unsucessful(client, user):
+def test_validate_upload_nonXML(client, user):
     data = {}
     data['files'] = [(io.BytesIO(b'fail, not xml'),
         'test.pdf')]
+    res = client.post(
+        INVOICE_UPLOAD_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+
+    assert res.status_code == 400
+    
+def test_validate_upload_unsucessful(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(b'fail, not xml'),
+        'test.xml')]
     res = client.post(
         INVOICE_UPLOAD_PATH,
         headers={
