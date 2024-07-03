@@ -308,4 +308,7 @@ def test_validate_upload_unsucessful(client, user):
         follow_redirects=True
     )
 
+    response_body = res.get_json()
+
     assert res.status_code == 400
+    assert response_body['message'] == "Validation result for AUNZ_PEPPOL_1_0_10: Failed. Failed assertions count = 2. Assertion errors: { PEPPOL-EN16931-R003, PEPPOL-EN16931-R053 }. Schematron Reports fired: no schematron reports fired. "

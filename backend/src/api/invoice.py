@@ -202,8 +202,10 @@ class ValidationAPI(Resource):
             content=encoded_content,
             rules=["AUNZ_PEPPOL_1_0_10"]
         )
-        print(retval)
+
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully "}), 200)
         else:
-            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+            retmessage = retval["summary"]
+            
+            return make_response(jsonify({"message": retmessage}), 400)
