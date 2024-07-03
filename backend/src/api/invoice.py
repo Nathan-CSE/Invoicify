@@ -197,10 +197,13 @@ class ValidationAPI(Resource):
         encoded_content = base64.b64encode(content).decode('utf-8') 
         vs = ValidationService()
 
-        r = vs.validate_xml(
+        retval = vs.validate_xml(
             filename=file.filename,
             content=encoded_content,
             rules=["AUNZ_PEPPOL_1_0_10"]
         )
-        print(r)
-        return r
+        print(retval)
+        if retval["successful"] is True:
+            return make_response(jsonify({"message": "Invoice validated sucessfully "}), 200)
+        else:
+            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
