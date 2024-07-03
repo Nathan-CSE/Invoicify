@@ -206,7 +206,6 @@ class ValidationAPI(Resource):
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully "}), 200)
         else:
-            # retmessage = retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["summary"]
             retmessage = "Validation failed. "
             retmessage += 'Failed assertion check:'
             for err in retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["firedAssertionErrors"]:
