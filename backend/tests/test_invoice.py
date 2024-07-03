@@ -96,14 +96,12 @@ def user(client):
 
 def test_validate_success(client, user):
     data = {}
-    
     file = FileStorage(
-        stream=open("AUInvoice.xml", "rb"),
-        filename="AUInvoice.xml",
-        content_type="application/pdf",
+        stream=open("auinvoice.xml", "rb"),
+        filename="auinvoice.xml",
+        content_type="application/xml",
     )
     data['files'] = [file]
-    
     res = client.post(
         INVOICE_UPLOAD_PATH,
         headers={
