@@ -295,7 +295,6 @@ def test_validate_upload_unsucessful(client, user):
             <cbc:ID>Invoice01</cbc:ID>
             <cbc:IssueDate>2022-07-29</cbc:IssueDate>
             <cbc:DueDate>2022-08-30</cbc:DueDate>
-            </cac:InvoiceLine>
         </Invoice>
         '''),
         'test.xml')]
