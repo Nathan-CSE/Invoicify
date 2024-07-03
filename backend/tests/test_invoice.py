@@ -311,5 +311,4 @@ def test_validate_upload_unsucessful(client, user):
     response_body = res.get_json()
 
     assert res.status_code == 400
-    assert response_body['message'] == "Validation failed. Failed assertion check: PEPPOL-EN16931-R003: A buyer reference or purchase order reference MUST be provided.\
-        PEPPOL-EN16931-R053: Only one tax total with tax subtotals MUST be provided."
+    assert response_body['message'] == "Validation failed. Failed assertion check: PEPPOL-EN16931-R003: A buyer reference or purchase order reference MUST be provided. PEPPOL-EN16931-R053: Only one tax total with tax subtotals MUST be provided."
