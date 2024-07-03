@@ -1,7 +1,6 @@
 import io
 import pytest
 import json
-import os
 
 from werkzeug.datastructures import FileStorage
 
@@ -96,13 +95,6 @@ def user(client):
     return user
 
 def test_validate_upload_success(client, user):
-    # data = {}
-    # file = FileStorage(
-    #     stream=open("auinvoice.xml", "rb"),
-    #     filename="auinvoice.xml",
-    #     content_type="application/xml",
-    # )
-    # data['files'] = [file]
     data = {}
     data['files'] = [(io.BytesIO(b'''<?xml version="1.0" encoding="UTF-8"?>
         <!-- Example of a simple invoice with 'mixed' taxable and non-taxable supplies including a non-taxable solar rebate (e.g. micro-business not registered for GST) -->
@@ -274,6 +266,21 @@ def test_validate_upload_success(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
-    # response_body = res.get_json()
 
     assert res.status_code == 200
+    
+def test_validate_upload_unsucessful(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(b'fail, not xml'),
+        'test.pdf')]
+    res = client.post(
+        INVOICE_UPLOAD_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+
+    assert res.status_code == 400
