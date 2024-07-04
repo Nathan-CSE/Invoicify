@@ -6,6 +6,7 @@ from tests.fixtures import client
 from models import User
 from src.services.create_xml import create_xml
 from src.services.utils import db_insert, salt_and_hash
+from tests.const_data import json_str_1, xml_from_json_str_1
 
 test_json = {
     "invoiceName": "test",
@@ -49,6 +50,7 @@ test_json = {
 
 INVOICE_CREATE_PATH = "/invoice/create"
 INVOICE_UPLOAD_PATH = "/invoice/validate"
+INVOICE_UPLOAD_CREATE_PATH = "/invoice/uploadCreate"
 
 def test_invoice_creation_service(client):
     assert create_xml(test_json)["successful"] == True
@@ -319,3 +321,23 @@ def test_validate_upload_unsucessful(client, user):
 Failed assertion check:\n\
 Failed the test cbc:BuyerReference or cac:OrderReference/cbc:ID with error code PEPPOL-EN16931-R003: A buyer reference or purchase order reference MUST be provided. This error happened at /*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]\n\
 Failed the test count(cac:TaxTotal[cac:TaxSubtotal]) = 1 with error code PEPPOL-EN16931-R053: Only one tax total with tax subtotals MUST be provided. This error happened at /*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]\n"
+
+
+def test_uploadcreate_json(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(json_str_1), 'test.xml')]
+
+    res = client.post(
+        INVOICE_UPLOAD_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+    response_body = res.get_json()
+
+    assert res.status_code == 200
+    assert response_body['message'] == "Invoice(s) created successfully"
+

@@ -8,7 +8,8 @@ from models import db, Invoice
 from src.services.create_xml import create_xml
 from src.services.utils import token_required, db_insert
 from src.services.validation import ValidationService
-from src.services.upload import handle_xml_uplaod
+from src.services.upload import handle_file_upload, handle_xml_uplaod
+from src.services.conversion import json_to_xml
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -213,3 +214,49 @@ class ValidationAPI(Resource):
             for err in retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["firedAssertionErrors"]:
                 retmessage += f'''Failed the test {err["test"]} with error code {err["id"]}: {err["text"]} This error happened at {err["location"]}\n'''
             return make_response(jsonify({"message": retmessage}), 400)
+        
+@invoice_ns.route("/uploadCreate")
+class CreateAPI(Resource):
+    @invoice_ns.doc(
+    description="Upload endpoint for PDFs and Jsons to create UBLs",
+    responses={
+        200: 'UBL2.1 created successfully',
+        400: 'Bad request',
+    })
+    @invoice_ns.expect(upload_parser)
+    @token_required
+    def post(self, user):
+        res = handle_file_upload(request)
+        if not res[1] == 200:
+            return res
+        
+        vs = ValidationService()
+        ublretval = []
+        for f in request.files.getlist('files'):
+            if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
+                pass
+            json_str = f.read()
+            encoded_content = base64.b64encode(json_str).decode('utf-8') 
+            
+            ubl = json_to_xml(encoded_content)
+
+            retval = vs.validate_xml(
+                filename=f.filename,
+                content=ubl,
+                rules=["AUNZ_PEPPOL_1_0_10"]
+            )
+            temp_xml_filename = f.filename.replace('.pdf', '.xml')
+            with open(temp_xml_filename, 'wb') as xml_file:
+                xml_file.write(ubl.encode('utf-8'))
+
+            if retval["successful"] is not True:
+                retmessage = "Validation failed.\n"
+                retmessage += 'Failed assertion check:\n'
+                for err in retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["firedAssertionErrors"]:
+                    retmessage += f'''Failed the test {err["test"]} with error code {err["id"]}: {err["text"]} This error happened at {err["location"]}\n'''
+                return make_response(jsonify({"message": retmessage}), 400)
+
+            ublretval.append((temp_xml_filename, ubl)) 
+        
+        return make_response(jsonify({"message": "Invoice(s) created successfully", "data": ublretval}), 200)
+        
