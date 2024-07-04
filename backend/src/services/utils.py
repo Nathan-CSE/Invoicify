@@ -1,3 +1,4 @@
+import base64
 import os
 import hashlib
 import jwt
@@ -55,3 +56,9 @@ def token_required(func):
             return {"message": f"Unauthorised request: {err}"}, 403
         return func(*args, **kwargs)
     return wrapper
+
+def base64_encode(data):
+    return base64.b64encode(data.encode('utf-8')).decode('utf-8')
+
+def base64_decode(data):
+    return base64.b64decode(data.encode('utf-8')).decode('utf-8')
