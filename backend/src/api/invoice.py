@@ -8,7 +8,7 @@ from models import db, Invoice
 from src.services.create_xml import create_xml
 from src.services.utils import token_required, db_insert
 from src.services.validation import ValidationService
-from src.services.upload import handle_file_upload, handle_xml_uplaod
+from src.services.upload import handle_file_upload, handle_xml_upload
 from src.services.conversion import json_to_xml
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
