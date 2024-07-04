@@ -178,10 +178,10 @@ class History(Resource):
 upload_parser = invoice_ns.parser()
 upload_parser.add_argument('files', location='files',
                            type=FileStorage, required=True)
-@invoice_ns.route("/validatenewupload")
+@invoice_ns.route("/validate")
 class ValidationAPI(Resource):
     @invoice_ns.doc(
-    description="Upload endpoint for validation of UBL2.1 XMLs",
+    description="Upload endpoint for validation of UBL2.1 XML",
     responses={
         200: 'Files received successfully',
         400: 'Bad request',
@@ -192,13 +192,24 @@ class ValidationAPI(Resource):
         res = handle_xml_uplaod(request)
         if not res[1] == 200:
             return res
+        
+        # takes one file then encodes it to feed to validation service
         file = request.files['files']
-        content = file.read()  # Read the file content
+        content = file.read()  
         encoded_content = base64.b64encode(content).decode('utf-8') 
         vs = ValidationService()
 
-        return vs.validate_xml(
+        retval = vs.validate_xml(
             filename=file.filename,
             content=encoded_content,
             rules=["AUNZ_PEPPOL_1_0_10"]
         )
+
+        if retval["successful"] is True:
+            return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
+        else:
+            retmessage = "Validation failed.\n"
+            retmessage += 'Failed assertion check:\n'
+            for err in retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["firedAssertionErrors"]:
+                retmessage += f'''Failed the test {err["test"]} with error code {err["id"]}: {err["text"]} This error happened at {err["location"]}\n'''
+            return make_response(jsonify({"message": retmessage}), 400)
