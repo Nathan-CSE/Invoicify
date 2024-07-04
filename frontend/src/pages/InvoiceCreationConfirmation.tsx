@@ -9,7 +9,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Grid from '@mui/material/Grid';
 
-export default function InvoiceCreationConfirmation() {
+export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const navigate = useNavigate();
   const invoiceData = useLocation();
 
