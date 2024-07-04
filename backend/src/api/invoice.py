@@ -238,16 +238,14 @@ class CreateAPI(Resource):
             if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
                 pass
             json_str = f.read()
-            # encoded_content = base64.b64encode(json_str).decode('utf-8') 
-            encoded_content = base64_encode(json_str.decode('utf-8'))
-            ubl = cs.json_to_xml(encoded_content)
+            ubl = cs.json_to_xml(json_str.decode('utf-8'))
 
             retval = vs.validate_xml(
                 filename=f.filename,
-                content=ubl,
+                content=base64_encode(ubl),
                 rules=["AUNZ_PEPPOL_1_0_10"]
             )
-            temp_xml_filename = f.filename.replace('.pdf', '.xml')
+            temp_xml_filename = f.filename.replace('.json', '.xml')
             with open(temp_xml_filename, 'wb') as xml_file:
                 xml_file.write(ubl.encode('utf-8'))
 

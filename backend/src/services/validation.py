@@ -55,14 +55,14 @@ class ValidationService():
         # generate a new access token if missing or has expired
         access_token = ValidationAccessToken.query.first()
         try:
-            # if not access_token or datetime.now() - access_token.updated_at >= timedelta(hours=1):
-            #     access_token = self._generate_token(access_token)
-            access_token = "eyJraWQiOiJqUWhhc1B3MXlhODluWVV5VDFIWHNab2dJWEJmRXlZWEZPeCtxV01WZHVJPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI3ZDMwYmk4N2lwdGVnYnJmMmJwMzdwNDJnZyIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZWF0XC9yZWFkIiwiYXV0aF90aW1lIjoxNzIwMDkxNTk4LCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb21cL2V1LWNlbnRyYWwtMV9xdkNTNFdSdnoiLCJleHAiOjE3MjAwOTUxOTgsImlhdCI6MTcyMDA5MTU5OCwidmVyc2lvbiI6MiwianRpIjoiNTBjNDhjMDctMGQzZC00ZmFhLWE3Y2QtMmZlOTU3YjE0NDM0IiwiY2xpZW50X2lkIjoiN2QzMGJpODdpcHRlZ2JyZjJicDM3cDQyZ2cifQ.QOsxyTMkjAsC8n8HlPGoDohwnVH9R4iDV4qKbds-KIeAwNqE4SF8w0qjUmE2ZpvXmsUay1QEVdILOcalIDj4n336Gj3wXNwSqL5pZyplZFbv1aE6LhpvjpwLwODDZxASfJgQu3MjvneUbBJL-kS9RuQwIxVx784og8_wzKB3RBlZpmiXVFBPKgbdhCOX2fVtjgpWmlkzw1IM9njXRjPxQmd774xgzGBNensL3E3HrEXdvYqZKEtJKN4vEFk-NeUXcbqag8-Cn_jmEbg4rBu-LBq9hsRNCI97yoVPwK0QVWScXBXrgigdkWvxsG43Q5GTJSPSAkOgWklPR7Zwwm5Kvw"
+            if not access_token or datetime.now() - access_token.updated_at >= timedelta(hours=1):
+                access_token = self._generate_token(access_token)
+            # access_token = "eyJraWQiOiJqUWhhc1B3MXlhODluWVV5VDFIWHNab2dJWEJmRXlZWEZPeCtxV01WZHVJPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI3ZDMwYmk4N2lwdGVnYnJmMmJwMzdwNDJnZyIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZWF0XC9yZWFkIiwiYXV0aF90aW1lIjoxNzIwMDkxNTk4LCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb21cL2V1LWNlbnRyYWwtMV9xdkNTNFdSdnoiLCJleHAiOjE3MjAwOTUxOTgsImlhdCI6MTcyMDA5MTU5OCwidmVyc2lvbiI6MiwianRpIjoiNTBjNDhjMDctMGQzZC00ZmFhLWE3Y2QtMmZlOTU3YjE0NDM0IiwiY2xpZW50X2lkIjoiN2QzMGJpODdpcHRlZ2JyZjJicDM3cDQyZ2cifQ.QOsxyTMkjAsC8n8HlPGoDohwnVH9R4iDV4qKbds-KIeAwNqE4SF8w0qjUmE2ZpvXmsUay1QEVdILOcalIDj4n336Gj3wXNwSqL5pZyplZFbv1aE6LhpvjpwLwODDZxASfJgQu3MjvneUbBJL-kS9RuQwIxVx784og8_wzKB3RBlZpmiXVFBPKgbdhCOX2fVtjgpWmlkzw1IM9njXRjPxQmd774xgzGBNensL3E3HrEXdvYqZKEtJKN4vEFk-NeUXcbqag8-Cn_jmEbg4rBu-LBq9hsRNCI97yoVPwK0QVWScXBXrgigdkWvxsG43Q5GTJSPSAkOgWklPR7Zwwm5Kvw"
             res = requests.post(
                 url=self._VALIDATION_URL,
                 headers={
                     "Accept-Language": "en",
-                    "Authorization": f"Bearer {access_token}" #{access_token.token}"
+                    "Authorization": f"Bearer {access_token.token}"
                 },
                 params={
                     "rules": ",".join(rules)

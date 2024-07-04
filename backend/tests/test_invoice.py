@@ -319,10 +319,10 @@ def test_validate_upload_unsucessful(client, user):
 
 def test_uploadcreate_json(client, user):
     data = {}
-    data['files'] = [(io.BytesIO(json_str_1.encode('utf-8')), 'test.xml')]
+    data['files'] = [(io.BytesIO(json_str_1.encode("utf-8")), 'test.json')]
 
     res = client.post(
-        INVOICE_UPLOAD_PATH,
+        INVOICE_UPLOAD_CREATE_PATH,
         headers={
             "Authorisation": user.token
         },
@@ -331,6 +331,7 @@ def test_uploadcreate_json(client, user):
         follow_redirects=True
     )
     response_body = res.get_json()
+    print(response_body)
 
     assert res.status_code == 200
     assert response_body['message'] == "Invoice(s) created successfully"
