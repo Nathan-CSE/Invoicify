@@ -190,7 +190,7 @@ class ValidationAPI(Resource):
     @invoice_ns.expect(upload_parser)
     @token_required
     def post(self, user):
-        res = handle_xml_uplaod(request)
+        res = handle_xml_upload(request)
         if not res[1] == 200:
             return res
         
