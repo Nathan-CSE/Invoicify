@@ -18,7 +18,7 @@ def handle_file_upload(request):
 
 
 
-def handle_xml_uplaod(request):
+def handle_xml_upload(request):
     if 'files' not in request.files:
         return {"message": "No file was uploaded"}, 400
 

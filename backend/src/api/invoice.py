@@ -8,7 +8,7 @@ from models import db, Invoice
 from src.services.create_xml import create_xml
 from src.services.utils import token_required, db_insert
 from src.services.validation import ValidationService
-from src.services.upload import handle_xml_uplaod
+from src.services.upload import handle_xml_upload
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -189,7 +189,7 @@ class ValidationAPI(Resource):
     @invoice_ns.expect(upload_parser)
     @token_required
     def post(self, user):
-        res = handle_xml_uplaod(request)
+        res = handle_xml_upload(request)
         if not res[1] == 200:
             return res
         
