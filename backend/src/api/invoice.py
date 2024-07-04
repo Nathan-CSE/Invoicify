@@ -1,12 +1,10 @@
-import base64
-
 from flask import request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields, reqparse
 from werkzeug.datastructures import FileStorage
 
 from models import db, Invoice
 from src.services.create_xml import create_xml
-from src.services.utils import token_required, db_insert
+from src.services.utils import token_required, db_insert, base64_encode
 from src.services.validation import ValidationService
 from src.services.upload import handle_file_upload, handle_xml_upload
 from src.services.conversion import ConversionService
@@ -197,7 +195,8 @@ class ValidationAPI(Resource):
         # takes one file then encodes it to feed to validation service
         file = request.files['files']
         content = file.read()  
-        encoded_content = base64.b64encode(content).decode('utf-8') 
+        encoded_content = base64_encode(content.decode())
+         
         vs = ValidationService()
 
         retval = vs.validate_xml(
@@ -232,13 +231,14 @@ class CreateAPI(Resource):
         
         vs = ValidationService()
         cs = ConversionService()
+        
         ublretval = []
         for f in request.files.getlist('files'):
             if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
                 pass
             json_str = f.read()
-            encoded_content = base64.b64encode(json_str).decode('utf-8') 
-            
+            # encoded_content = base64.b64encode(json_str).decode('utf-8') 
+            encoded_content = base64_encode(json_str.decode('utf-8'))
             ubl = cs.json_to_xml(encoded_content)
 
             retval = vs.validate_xml(

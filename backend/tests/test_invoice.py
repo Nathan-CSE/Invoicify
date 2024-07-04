@@ -325,7 +325,7 @@ Failed the test count(cac:TaxTotal[cac:TaxSubtotal]) = 1 with error code PEPPOL-
 
 def test_uploadcreate_json(client, user):
     data = {}
-    data['files'] = [(io.BytesIO(json_str_1), 'test.xml')]
+    data['files'] = [(io.BytesIO(json_str_1.encode('utf-8')), 'test.xml')]
 
     res = client.post(
         INVOICE_UPLOAD_PATH,
