@@ -11,30 +11,6 @@ validation_ns = Namespace('validation', description='Operations related to valid
 upload_parser = validation_ns.parser()
 upload_parser.add_argument('files', location='files',
                            type=FileStorage, required=True)
-
-@validation_ns.route("/creationupload")
-class ValidationAPI(Resource):
-    @validation_ns.doc(
-    description="Upload endpoint for validation of UBL2.1 XMLs",
-    responses={
-        200: 'Files received successfully',
-        400: 'Bad request',
-    })
-    @validation_ns.expect(upload_parser)
-    @token_required
-    def post(self, user):
-        res = handle_file_upload(request)
-        if not res[1] == 200:
-            return res
-        
-        vs = ValidationService()
-        # sort files by pdf and json
-        # validate pdf extracted fields and json fields
-        # call the creation service 
-        # collect all XMLs 
-        # return
-        # tempt response, full function will return XML 
-        return make_response(jsonify({"message": f"XMLs created"}), 200)
     
 # Temporary API endpoint to allow validate function to be tested
 @validation_ns.route("/")

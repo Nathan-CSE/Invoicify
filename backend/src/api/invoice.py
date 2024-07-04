@@ -181,7 +181,7 @@ upload_parser.add_argument('files', location='files',
 @invoice_ns.route("/validate")
 class ValidationAPI(Resource):
     @invoice_ns.doc(
-    description="Upload endpoint for validation of UBL2.1 XMLs",
+    description="Upload endpoint for validation of UBL2.1 XML",
     responses={
         200: 'Files received successfully',
         400: 'Bad request',
@@ -192,8 +192,10 @@ class ValidationAPI(Resource):
         res = handle_xml_uplaod(request)
         if not res[1] == 200:
             return res
+        
+        # takes one file then encodes it to feed to validation service
         file = request.files['files']
-        content = file.read()  # Read the file content
+        content = file.read()  
         encoded_content = base64.b64encode(content).decode('utf-8') 
         vs = ValidationService()
 
@@ -204,7 +206,7 @@ class ValidationAPI(Resource):
         )
 
         if retval["successful"] is True:
-            return make_response(jsonify({"message": "Invoice validated sucessfully "}), 200)
+            return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
         else:
             retmessage = "Validation failed.\n"
             retmessage += 'Failed assertion check:\n'

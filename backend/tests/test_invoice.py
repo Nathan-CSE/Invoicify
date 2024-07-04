@@ -267,7 +267,11 @@ def test_validate_upload_success(client, user):
         follow_redirects=True
     )
 
+    response_body = res.get_json()
+    
     assert res.status_code == 200
+    assert response_body['message'] == "Invoice validated sucessfully"
+    
     
 def test_validate_upload_nonXML(client, user):
     data = {}
@@ -282,8 +286,10 @@ def test_validate_upload_nonXML(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
+    response_body = res.get_json()
 
     assert res.status_code == 400
+    assert response_body['message'] == "test.pdf is not a XML, please upload a valid file"
     
 def test_validate_upload_unsucessful(client, user):
     data = {}
