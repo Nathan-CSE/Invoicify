@@ -1,12 +1,10 @@
-import base64
-
 from flask import request, jsonify, make_response
 from flask_restx import Namespace, Resource, fields, reqparse
 from werkzeug.datastructures import FileStorage
 
 from models import db, Invoice
 from src.services.create_xml import create_xml
-from src.services.utils import token_required, db_insert
+from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.upload import handle_xml_upload
 
@@ -196,7 +194,7 @@ class ValidationAPI(Resource):
         # takes one file then encodes it to feed to validation service
         file = request.files['files']
         content = file.read()  
-        encoded_content = base64.b64encode(content).decode('utf-8') 
+        encoded_content = base64_encode(content.decode())
         vs = ValidationService()
 
         retval = vs.validate_xml(
