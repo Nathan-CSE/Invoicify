@@ -9,7 +9,7 @@ from src.services.create_xml import create_xml
 from src.services.utils import token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.upload import handle_file_upload, handle_xml_upload
-from src.services.conversion import json_to_xml
+from src.services.conversion import ConversionService
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -231,6 +231,7 @@ class CreateAPI(Resource):
             return res
         
         vs = ValidationService()
+        cs = ConversionService()
         ublretval = []
         for f in request.files.getlist('files'):
             if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
@@ -238,7 +239,7 @@ class CreateAPI(Resource):
             json_str = f.read()
             encoded_content = base64.b64encode(json_str).decode('utf-8') 
             
-            ubl = json_to_xml(encoded_content)
+            ubl = cs.json_to_xml(encoded_content)
 
             retval = vs.validate_xml(
                 filename=f.filename,
