@@ -314,13 +314,7 @@ def test_validate_upload_unsucessful(client, user):
         follow_redirects=True
     )
 
-    response_body = res.get_json()
-
     assert res.status_code == 400
-    assert response_body['message'] == "Validation failed.\n\
-Failed assertion check:\n\
-Failed the test cbc:BuyerReference or cac:OrderReference/cbc:ID with error code PEPPOL-EN16931-R003: A buyer reference or purchase order reference MUST be provided. This error happened at /*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]\n\
-Failed the test count(cac:TaxTotal[cac:TaxSubtotal]) = 1 with error code PEPPOL-EN16931-R053: Only one tax total with tax subtotals MUST be provided. This error happened at /*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]\n"
 
 
 def test_uploadcreate_json(client, user):

@@ -208,10 +208,11 @@ class ValidationAPI(Resource):
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
         else:
-            retmessage = "Validation failed.\n"
-            retmessage += 'Failed assertion check:\n'
-            for err in retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["firedAssertionErrors"]:
-                retmessage += f'''Failed the test {err["test"]} with error code {err["id"]}: {err["text"]} This error happened at {err["location"]}\n'''
+            # retmessage = "Validation failed.\n"
+            # retmessage += 'Failed assertion check:\n'
+            # for err in retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["firedAssertionErrors"]:
+            #     retmessage += f'''Failed the test {err["test"]} with error code {err["id"]}: {err["text"]} This error happened at {err["location"]}\n'''
+            retmessage = retval["report"]
             return make_response(jsonify({"message": retmessage}), 400)
         
 @invoice_ns.route("/uploadCreate")
@@ -251,10 +252,11 @@ class CreateAPI(Resource):
                 xml_file.write(ubl.encode('utf-8'))
 
             if retval["successful"] is not True:
-                retmessage = "Validation failed.\n"
-                retmessage += 'Failed assertion check:\n'
-                for err in retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["firedAssertionErrors"]:
-                    retmessage += f'''Failed the test {err["test"]} with error code {err["id"]}: {err["text"]} This error happened at {err["location"]}\n'''
+                # retmessage = "Validation failed.\n"
+                # retmessage += 'Failed assertion check:\n'
+                # for err in retval["report"]["reports"]["AUNZ_PEPPOL_1_0_10"]["firedAssertionErrors"]:
+                #     retmessage += f'''Failed the test {err["test"]} with error code {err["id"]}: {err["text"]} This error happened at {err["location"]}\n'''
+                retmessage = retval["report"]
                 return make_response(jsonify({"message": retmessage}), 400)
 
             ublretval.append((temp_xml_filename, ubl)) 
