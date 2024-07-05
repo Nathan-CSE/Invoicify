@@ -27,9 +27,9 @@ def handle_xml_upload(request):
 
     # Check if the file is XML
     if '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in allowed_extensions:
-        return {"message": f"File {file.filename} uploaded successfully"}, 200
+        return True
     else:
-        return {"message": f"{file.filename} is not a XML, please upload a valid file"}, 400
+        return False
 
 
 def save_file(file, email):
