@@ -16,9 +16,12 @@ class Invoice(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
-    fields = db.Column(db.Text, nullable=False)
+    fields = db.Column(db.JSON, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     is_ready = db.Column(db.Boolean, nullable=False)
+
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class ValidationAccessToken(db.Model):
     __tablename__ = "validation_access_token"
