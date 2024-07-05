@@ -29,7 +29,7 @@ invoice_item_fields = invoice_ns.model("InvoiceItem", {
     "item": fields.String(),
     "description": fields.String(),
     "unitPrice": fields.Float(default=0.1),
-    "GST": fields.String(),
+    "GST": fields.Integer(),
     "totalPrice": fields.Float(default=0.1)
 })
 create_ubl_fields = invoice_ns.model('CreateUBLFields', {
@@ -62,7 +62,7 @@ class Create(Resource):
             res = create_xml(data, user)
             return make_response(jsonify(res), 201)
         except ValueError as e:
-            return make_response(jsonify({e}, 422))
+            print(e)
         except Exception as e:
             return make_response(jsonify({"message": "UBL not created"}), 400)
         
@@ -73,7 +73,7 @@ class SendUBL(Resource):
         input:
         article_id: int
         output:
-            nothing (file should start downloading in browser)
+            nothing (file should start downloading in browser)c
         """,
     responses={
         201: 'Created successfully',

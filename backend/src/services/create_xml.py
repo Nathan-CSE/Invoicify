@@ -119,6 +119,7 @@ item_format = """<cac:InvoiceLine>
 def create_xml(file, user):
     products = ""
     for no, item in enumerate(file["invoiceItems"]):
+        print(item)
         products += item_format.format(
             item_id = no,
             item_name = item["item"],
@@ -126,39 +127,43 @@ def create_xml(file, user):
             amount_product = item["quantity"] ,
             cost_per_product = item["unitPrice"],
             cost_product = item["totalPrice"],
-            tax_amount = 10,
+            tax_amount = item["GST"],
             tax_name = "GST",
         )
+    try:
+        content = template.format(
+            issue_date=file["invoiceIssueDate"], 
+            note=file["invoiceName"],
+            seller_abn=file["seller"]["ABN"], 
+            company_name=file["seller"]["companyName"],
+            street_name=file["seller"]["address"]["streetName"], 
+            additional_name=file["seller"]["address"]["additionalStreetName"],
+            city_name=file["seller"]["address"]["cityName"], 
+            post_code=file["seller"]["address"]["postalCode"],
+            buyer_abn=file["buyer"]["ABN"], 
+            buyer_company_name=file["buyer"]["companyName"],
+            buyer_street_name=file["buyer"]["address"]["streetName"], 
+            buyer_additional_name=file["buyer"]["address"]["additionalStreetName"],
+            buyer_city_name=file["buyer"]["address"]["cityName"],
+            buyer_post_code=file["buyer"]["address"]["postalCode"],
+            products=products,
+            tax_name="GST",
+            tax_per=10,
+            total_tax=file["totalGST"],
+            total_without_tax=file["totalTaxable"],
+            total_after_tax=file["totalAmount"]
+        )
+    except Exception as e:
+        print("test")
+        print(e)
+    
 
-    content = template.format(
-        issue_date=file["invoiceIssueDate"], 
-        note="test", 
-        seller_abn=file["seller"]["ABN"], 
-        company_name=file["seller"]["companyName"],
-        street_name=file["seller"]["address"]["streetName"], 
-        additional_name=file["seller"]["address"]["additionalStreetName"],
-        city_name=file["seller"]["address"]["cityName"], 
-        post_code=file["seller"]["address"]["postalCode"],
-        buyer_abn=file["buyer"]["ABN"], 
-        buyer_company_name=file["buyer"]["companyName"],
-        buyer_street_name=file["buyer"]["address"]["streetName"], 
-        buyer_additional_name=file["buyer"]["address"]["additionalStreetName"],
-        buyer_city_name=file["buyer"]["address"]["cityName"],
-        buyer_post_code=file["buyer"]["address"]["postalCode"],
-        products=products,
-        tax_name = "GST",
-        tax_per = 10,
-        total_tax = file["totalGST"],
-        total_without_tax = file["totalTaxable"],
-        total_after_tax = file["totalAmount"]
-    )
     content_encode = base64.b64encode(content.encode('utf-8')).decode('utf-8')
     va = ValidationService()
     result = va.validate_xml("test.xml", content_encode, ["AUNZ_PEPPOL_1_0_10"])
     if result["successful"] == True:
-        db_insert(Invoice(name="test", fields=content,  user_id=user.id, is_ready=True))
-        invoice = Invoice.query.where(Invoice.fields==content).first()
-        return {invoice.id, user.id}
+        db_insert(Invoice(name=file["invoiceName"], fields=content,  user_id=user.id, is_ready=True))
+        return content
     else:
         raise ValueError(result)
     

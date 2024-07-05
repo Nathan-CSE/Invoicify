@@ -39,7 +39,7 @@ test_json = {
         "item": "Booty",
         "description": "Pirate",
         "unitPrice": 100.0,
-        "GST": "GST",
+        "GST": 10,
         "totalPrice": 1000.0
     }],
     "totalGST": 100.0,
