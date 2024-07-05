@@ -96,29 +96,4 @@ class SendUBL(Resource):
             return make_response(jsonify({"message": "Article not found"}), 400)
         
         # Create a BytesIO object
-        
-@invoice_ns.route("/save")
-class SaveUBL(Resource):
-    @invoice_ns.doc(
-        description="""Save fields for later
-        input:
-        fields: dict
-        output:
-            nothing
-        """,
-        responses={
-            201: 'Created Successfully',
-            400: 'Bad Request'
-        })
-    @token_required
-    def save(self, user, file):
-        try:
-            article_id = save_xml(file, user)
-            return make_response(jsonify({"article_id": article_id}), 201)
-
-        except:
-            return make_response(jsonify({"message": "Failed to Save"}), 400)
-            
-
-
 
