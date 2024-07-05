@@ -176,6 +176,7 @@ class History(Resource):
 upload_parser = invoice_ns.parser()
 upload_parser.add_argument('files', location='files',
                            type=FileStorage, required=True)
+upload_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
 @invoice_ns.route("/validate")
 class ValidationAPI(Resource):
     @invoice_ns.doc(
@@ -188,22 +189,25 @@ class ValidationAPI(Resource):
     @token_required
     def post(self, user):
         res = handle_xml_upload(request)
-        if not res[1] == 200:
-            return res
-        
+        args = upload_parser.parse_args()
         # takes one file then encodes it to feed to validation service
-        file = request.files['files']
+        file = args['files']
         content = file.read()  
+        rules = args['rules']
+        if not res:
+            return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
+        
+
         vs = ValidationService()
 
         try:
             retval = vs.validate_xml(
                 filename=file.filename,
                 content=base64_encode(content),
-                rules=["AUNZ_PEPPOL_1_0_10"]
+                rules=[rules]
             )
         except Exception as err:
-            return make_response(jsonify({"message": str(err)}), 400)
+            return make_response(jsonify({"message": str(err)}), 200)
 
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
