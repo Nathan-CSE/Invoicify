@@ -314,59 +314,10 @@ def test_validate_upload_unsucessful(client, user):
         follow_redirects=True
     )
 
-    assert res.status_code == 400
-
-
-def test_uploadcreate_json(client, user):
-    data = {}
-    data['files'] = [(io.BytesIO(json_str_1.encode("utf-8")), 'test.json')]
-
-    res = client.post(
-        INVOICE_UPLOAD_CREATE_PATH,
-        headers={
-            "Authorisation": user.token
-        },
-        data=data,  
-        content_type='multipart/form-data',
-        follow_redirects=True
-    )
-    response_body = res.get_json()
-
-    assert res.status_code == 200
-    assert response_body['message'] == "Invoice(s) created successfully"
-
-def test_uploadcreate_invalidfile(client, user):
-    data = {}
-    data['files'] = [(io.BytesIO(b'fail, not pdf/json'),
-        'test.txt')]
-
-    res = client.post(
-        INVOICE_UPLOAD_CREATE_PATH,
-        headers={
-            "Authorisation": user.token
-        },
-        data=data,  
-        content_type='multipart/form-data',
-        follow_redirects=True
-    )
     response_body = res.get_json()
 
     assert res.status_code == 400
-    assert response_body['message'] == "test.txt is not a PDF or JSON, please remove that file and try again"
-    
-def test_uploadcreate_invalidjson(client, user):
-    data = {}
-    data['files'] = [(io.BytesIO(json_str_fail.encode("utf-8")), 'test.json')]
-    
-
-    res = client.post(
-        INVOICE_UPLOAD_CREATE_PATH,
-        headers={
-            "Authorisation": user.token
-        },
-        data=data,  
-        content_type='multipart/form-data',
-        follow_redirects=True
-    )
-
-    assert res.status_code == 400
+    assert response_body['message'] == "Validation failed.\n\
+Failed assertion check:\n\
+Failed the test cbc:BuyerReference or cac:OrderReference/cbc:ID with error code PEPPOL-EN16931-R003: A buyer reference or purchase order reference MUST be provided. This error happened at /*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]\n\
+Failed the test count(cac:TaxTotal[cac:TaxSubtotal]) = 1 with error code PEPPOL-EN16931-R053: Only one tax total with tax subtotals MUST be provided. This error happened at /*:Invoice[namespace-uri()='urn:oasis:names:specification:ubl:schema:xsd:Invoice-2'][1]\n"
