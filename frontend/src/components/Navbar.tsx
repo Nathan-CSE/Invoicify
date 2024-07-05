@@ -5,8 +5,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
+
 import { Link, useNavigate } from 'react-router-dom';
+import TemporaryDrawer from './Drawer';
 
 function Navbar(props: {
   token: string;
@@ -28,7 +29,7 @@ function Navbar(props: {
       return (
         <Button
           component={Link}
-          to='/'
+          to='/sign-in'
           variant='contained'
           color='secondary'
           onClick={logout}
@@ -51,30 +52,29 @@ function Navbar(props: {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, width: '100%', top: 0, position: 'fixed', zIndex: 'tooltip' }}>
+    <Box
+      sx={{
+        flexGrow: 1,
+        width: '100%',
+        top: 0,
+        position: 'fixed',
+        zIndex: 'tooltip',
+      }}
+    >
       <AppBar>
         <Toolbar>
-          <IconButton
-            size='large'
-            edge='start'
-            color='inherit'
-            aria-label='menu'
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
+          {props.token ? (
+            <>
+              <TemporaryDrawer></TemporaryDrawer>
+            </>
+          ) : (
+            <></>
+          )}
+
           <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
             E-Invoice Manager
           </Typography>
           {buttonCreation()}
-          {/* <Button
-            component={Link}
-            to='/sign-in'
-            variant='contained'
-            color='secondary'
-          >
-            Login
-          </Button> */}
         </Toolbar>
       </AppBar>
     </Box>

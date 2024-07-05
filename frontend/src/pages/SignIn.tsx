@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
 import ErrorModal from '../components/ErrorModal';
+import axios, { AxiosError } from 'axios';
 
 export default function SignIn(props: {
   token: string;
@@ -17,11 +18,7 @@ export default function SignIn(props: {
   const navigate = useNavigate();
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
-  // React.useEffect(() => {
-  //   if (props.token) {
-  //     navigate('/dashboard');
-  //   }
-  // }, [props.token]);
+
   if (props.token) {
     console.log('SIGNIN');
     navigate('/dashboard');
@@ -37,36 +34,31 @@ export default function SignIn(props: {
       alert('Fill out all required fields');
     } else {
       try {
-        const response = await fetch('http://localhost:5000/auth/login', {
-          method: 'POST',
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-          headers: {
-            'Content-type': 'application/json',
-          },
+        const response = await axios.post('http://localhost:5000/auth/login', {
+          email,
+          password,
         });
 
-        const data = await response.json();
-        console.log(data);
-
-        if (response.status === 400) {
-          console.log('HERE');
-          setOpenError(true);
-          setError(data.message);
-        } else {
-          props.setToken(data.token);
-          localStorage.setItem('token', data.token);
+        if (response.status === 200) {
+          props.setToken(response.data.token);
+          localStorage.setItem('token', response.data.token);
 
           // Temporary Solution before backend TOKEN auth is done
           // REMOVE WHEN FEATURE IS ADDED
           localStorage.setItem('email', email);
           navigate('/dashboard');
+        } else {
+          setOpenError(true);
+          setError(response.data.message);
         }
-      } catch (err) {
-        if (err instanceof Error) {
-          alert(err.message);
+      } catch (error) {
+        const err = error as AxiosError<{ message: string }>;
+        if (err.response) {
+          setOpenError(true);
+          setError(err.response.data.message);
+        } else if (error instanceof Error) {
+          setOpenError(true);
+          setError(error.message);
         }
       }
     }
@@ -119,6 +111,16 @@ export default function SignIn(props: {
               id='password'
               autoComplete='current-password'
             />
+
+            <Typography
+              variant='subtitle1'
+              sx={{ color: 'info.main', textDecoration: 'none' }}
+              component={Link}
+              to='/reset-pw'
+              gutterBottom
+            >
+              Forgot password?
+            </Typography>
             <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
               Sign In
             </Button>

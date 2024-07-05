@@ -1,18 +1,12 @@
 import React from 'react';
-import { Routes, Route, useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {
-  Button,
-  Container,
-  CssBaseline,
-  Stack,
-  Divider,
-  TextField,
-} from '@mui/material';
+import { Button, Divider, TextField } from '@mui/material';
 import ErrorModal from '../components/ErrorModal';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import axios, { AxiosError } from 'axios';
 
 function SettingsPage(props: { token: string }) {
   // Error Handling
@@ -34,30 +28,28 @@ function SettingsPage(props: { token: string }) {
     } else {
       try {
         console.log(password, updated_password);
-        const response = await fetch('http://localhost:5000/auth/change-pw', {
-          method: 'PATCH',
-          body: JSON.stringify({
+        const response = await axios.patch(
+          'http://localhost:5000/auth/change-pw',
+          {
             email,
             password,
             updated_password,
-          }),
-          headers: {
-            'Content-type': 'application/json',
-          },
-        });
-
-        const data = await response.json();
-
-        if (response.status === 400) {
-          console.log('HERE');
-          setOpenError(true);
-          setError(data.message);
+          }
+        );
+        if (response.status === 200) {
+          alert(response.data.message);
         } else {
-          alert(data.message);
+          setOpenError(true);
+          setError(response.data.message);
         }
-      } catch (err) {
-        if (err instanceof Error) {
-          alert(err.message);
+      } catch (error) {
+        const err = error as AxiosError<{ message: string }>;
+        if (err.response) {
+          setOpenError(true);
+          setError(err.response.data.message);
+        } else if (error instanceof Error) {
+          setOpenError(true);
+          setError(error.message);
         }
       }
     }
@@ -78,19 +70,14 @@ function SettingsPage(props: { token: string }) {
         <Divider sx={{ borderColor: 'black', width: '100%' }} />
         <Breadcrumbs
           aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize="small" />}
+          separator={<NavigateNextIcon fontSize='small' />}
           sx={{ mt: 1 }}
         >
-          <Typography
-            component={Link}
-            to='/dashboard'
-          >
+          <Typography component={Link} to='/dashboard'>
             Dashboard
           </Typography>
 
-          <Typography color='text.primary'>
-            Invoice Creation
-          </Typography>
+          <Typography color='text.primary'>Account Settings</Typography>
         </Breadcrumbs>
 
         <Box sx={{ mt: 5, width: '100%' }}>
