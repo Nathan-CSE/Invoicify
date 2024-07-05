@@ -8,10 +8,10 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
-import ErrorModal from '../components/ErrorModal';
+import ErrorModal from '../../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
-import { ReactComponent as BackSvg } from '../assets/backarrow.svg';
-import LoadingDialog from '../components/LoadingDialog';
+import { ReactComponent as BackSvg } from '../../assets/backarrow.svg';
+import LoadingDialog from '../../components/LoadingDialog';
 import { Dialog, DialogActions, DialogTitle } from '@mui/material';
 
 export default function ResetPassword(props: { token: string }) {

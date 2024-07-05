@@ -6,19 +6,21 @@ import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import FileUpload from '../../components/FileUpload';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { DropzoneArea } from "mui-file-dropzone";
+import axios from 'axios';
 
-export default function InvoiceValidation() {
+export default function InvoiceValidation(props: { token: string; }) {
+  console.log('user token: ', props.token);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [invoice, setInvoice] = React.useState('');
   const [ruleSet, setRuleSet] = React.useState('');
-
+  const [file, setFile] = React.useState<File>();
 
   const handleChange = (event: SelectChangeEvent) => {
     console.log('this is event.target: ', event.target);
@@ -32,24 +34,40 @@ export default function InvoiceValidation() {
     setInvoice(event.target.value);
   };
 
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
 
-    const username = data.get('username') as string;
-    const password = data.get('password') as string;
-    
-    if (username.length === 0 || password.length === 0) {
-      alert('Fill out all required fields');
-    } else {
-      try {
-        // send to backend
-      } catch (err) {
-        if (err instanceof Error) {
-          alert(err.message);
+    const formData = new FormData();
+
+    if (file) {
+      formData.append("files", file);
+    }
+
+    console.log('this is formData: ', formData);
+
+    try {
+      // Placeholder until backend endpoint has been created
+      const response = await axios.post('http://localhost:5000/invoice/validate', formData, {
+        headers: {
+          'Authorisation': `${props.token}`,
+          'Content-Type': 'multipart/form-data'
         }
+      });
+      
+      if (response.status === 200) {
+        console.log(response.data);
+        navigate('/invoice-validation-report');
+
+      } else if (response.status === 400) {
+        console.log(response);
+        alert("Invoice error");
+      } else {
+        console.log(response);
+        alert("Unable to create invoice");
       }
+    } catch (err) {
+      // console.log(err);
+      alert(err);
     }
 
   };
@@ -81,7 +99,16 @@ export default function InvoiceValidation() {
         </Breadcrumbs>
 
         <Box sx={{ my: 5 }}>
-          <FileUpload />
+          <DropzoneArea
+            acceptedFiles={['.xml']}
+            fileObjects={file}
+            onChange={(loadedFile) => {
+              console.log('Currently loaded:', loadedFile)
+              setFile(loadedFile[0]);
+            }}
+            dropzoneText={'Upload a UBL2.1 XML Invoice File'}
+            filesLimit={1}
+          />
         </Box>
 
         <Typography variant='h5' textAlign='center' sx={{ my: 2 }}>
@@ -99,9 +126,9 @@ export default function InvoiceValidation() {
               label="Select Invoice"
               onChange={handleChange}
             >
-              <MenuItem value={10}>ANZ-Invoice</MenuItem>
-              <MenuItem value={10}>ANZ-Invoice</MenuItem>
-              <MenuItem value={10}>ANZ-Invoice</MenuItem>
+              <MenuItem value={10}>Invoice 1</MenuItem>
+              <MenuItem value={11}>Invoice 2</MenuItem>
+              <MenuItem value={12}>Invoice 3</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -117,15 +144,16 @@ export default function InvoiceValidation() {
               label="Rule Set"
               onChange={handleChange}
             >
-              <MenuItem value={10}>AU-NZ PEPPOL 1.0.10</MenuItem>
+              <MenuItem value={1}>AU-NZ PEPPOL-1.0.10</MenuItem>
+              <MenuItem value={2}>AU-NZ PEPPOL-SB-1.0.10</MenuItem>
+              <MenuItem value={3}>AU-NZ UBL-1.0.10</MenuItem>
             </Select>
           </FormControl>
         </Box>
 
         <Box textAlign='center'>
           <Button
-            component={Link}
-            to='/invoice-validation-report'
+            onClick={handleSubmit}
             variant='contained'
             sx={{
               height: '50px',

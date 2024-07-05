@@ -12,7 +12,7 @@ import Navbar from './components/Navbar';
 import PreviewInvoice from './pages/PreviewInvoice';
 import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
 import InvoiceValidationReport from './pages/InvoiceValidation/InvoiceValidationReport';
-import ResetPassword from './pages/ResetPasswordPage';
+import ResetPassword from './pages/UserAuth/ResetPasswordPage';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -112,7 +112,7 @@ function PageList() {
           element={
             <>
               <Navbar token={token} setToken={setToken} />
-              <InvoiceValidation />
+              <InvoiceValidation token={token} />
             </>
           } 
         />
