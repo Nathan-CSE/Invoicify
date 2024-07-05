@@ -91,6 +91,7 @@ def user(client):
     
     db_insert(user)
     return user
+
 def test_validate_upload_success(client, user):
     data = {}
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'

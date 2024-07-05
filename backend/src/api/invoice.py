@@ -6,7 +6,7 @@ from models import db, Invoice
 from src.services.create_xml import create_xml
 from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
-from src.services.upload import handle_xml_upload
+from src.services.upload import UploadService
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -189,7 +189,9 @@ class ValidationAPI(Resource):
     @invoice_ns.expect(upload_parser)
     @token_required
     def post(self, user):
-        res = handle_xml_upload(request)
+        ups = UploadService()
+        
+        res = ups.handle_xml_upload(request)
         args = upload_parser.parse_args()
         # takes one file then encodes it to feed to validation service
         file = args['files']
