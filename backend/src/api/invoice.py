@@ -244,7 +244,7 @@ class CreateAPI(Resource):
             
             retval = vs.validate_xml(
                 filename=f.filename,
-                content=ubl.encode('latin-1'),
+                content=base64_encode(ubl.encode()),
                 rules=["AUNZ_PEPPOL_1_0_10"]
             )
             temp_xml_filename = f.filename.replace('.json', '.xml')
