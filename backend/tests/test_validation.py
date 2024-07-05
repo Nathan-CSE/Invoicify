@@ -1,9 +1,8 @@
 import pytest
-import json
 import base64
-import requests
 
 from requests.exceptions import HTTPError
+
 from tests.fixtures import client
 from src.services.validation import ValidationService
 
@@ -33,8 +32,6 @@ def test_xml_validate_function_uncode_xml_fail(client):
         vs.validate_xml("test.xml", xml_data, ["AUNZ_PEPPOL_1_0_10"])
 
     assert "500 Server Error" in str(error.value)
-
-
 
 
 

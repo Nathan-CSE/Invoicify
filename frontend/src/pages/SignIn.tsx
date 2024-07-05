@@ -8,12 +8,15 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
+import ErrorModal from '../components/ErrorModal';
+
 export default function SignIn(props: {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const navigate = useNavigate();
-
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
   // React.useEffect(() => {
   //   if (props.token) {
   //     navigate('/dashboard');
@@ -48,14 +51,19 @@ export default function SignIn(props: {
         const data = await response.json();
         console.log(data);
 
-        props.setToken(data.token);
-        localStorage.setItem('token', data.token);
+        if (response.status === 400) {
+          console.log('HERE');
+          setOpenError(true);
+          setError(data.message);
+        } else {
+          props.setToken(data.token);
+          localStorage.setItem('token', data.token);
 
-        // Temporary Solution before backend TOKEN auth is done
-        // REMOVE WHEN FEATURE IS ADDED
-        localStorage.setItem('email', email);
-        navigate('/dashboard');
-        // send to backend
+          // Temporary Solution before backend TOKEN auth is done
+          // REMOVE WHEN FEATURE IS ADDED
+          localStorage.setItem('email', email);
+          navigate('/dashboard');
+        }
       } catch (err) {
         if (err instanceof Error) {
           alert(err.message);
@@ -129,6 +137,9 @@ export default function SignIn(props: {
           </Box>
         </Box>
       </Container>
+      <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
+        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
+      </Box>
     </>
   );
 }

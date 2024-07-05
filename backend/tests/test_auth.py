@@ -31,7 +31,7 @@ def test_register_successfully(client):
     assert user
 
 def test_register_user_already_exists(client):
-    db_insert(User(email="abc@gmail.com", password=salt_and_hash("abc")))
+    db_insert(User(email="abc@gmail.com", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM"))
 
     res = client.post(
         REGISTER_PATH, 
@@ -45,7 +45,7 @@ def test_register_user_already_exists(client):
     assert res.status_code == 400
 
 def test_login_successfully(client):
-    db_insert(User(email="abc@gmail.com", password=salt_and_hash("abc")))
+    db_insert(User(email="abc@gmail.com", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM"))
 
     data = {
         "email": "abc@gmail.com",
@@ -66,7 +66,7 @@ def test_login_successfully(client):
     assert jwt_token == create_jwt_token({"email": data["email"]})
     
 def test_login_with_wrong_password(client):
-    db_insert(User(email="abc@gmail.com", password=salt_and_hash("abc")))
+    db_insert(User(email="abc@gmail.com", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM"))
 
     data = {
         "email": "abc@gmail.com",
@@ -96,7 +96,7 @@ def test_login_with_account_that_doesnt_exist(client):
     assert res.status_code == 400
 
 def test_change_pw_successfully(client):
-    db_insert(User(email="abc@gmail.com", password=salt_and_hash("abc")))
+    db_insert(User(email="abc@gmail.com", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM"))
 
     data = {
         "email": "abc@gmail.com",
@@ -132,7 +132,7 @@ def test_change_pw_with_account_that_doesnt_exist(client):
 
 # Forgot password 
 def test_change_forgot_pass(client):
-    db_insert(User(email="test", password=salt_and_hash("abc")))
+    db_insert(User(email="test", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM"))
 
     data = {
         "email": "test"
