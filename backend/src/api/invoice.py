@@ -241,11 +241,10 @@ class CreateAPI(Resource):
                 ubl = cs.json_to_xml(json_str.decode('utf-8'))
             except Exception as err:
                 return make_response(jsonify({"message": str(err)}), 400)
-
             
             retval = vs.validate_xml(
                 filename=f.filename,
-                content=base64_encode(ubl),
+                content=ubl.encode('latin-1'),
                 rules=["AUNZ_PEPPOL_1_0_10"]
             )
             temp_xml_filename = f.filename.replace('.json', '.xml')
