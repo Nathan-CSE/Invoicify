@@ -98,10 +98,10 @@ export default function InvoiceValidationReport() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {firedErrors.map((item: any) => {
-                const errorText = `${item.text}\nLocation: ${item.location}`;
+              {firedErrors.map((item: any, index: any) => {
+                const errorText = `${item.text}\n\nLocation: ${item.location}`;
                 return (
-                  <TableRow>
+                  <TableRow key={index}>
                     <TableCell>{item.id}</TableCell>
                     <TableCell style={{ whiteSpace: 'pre-wrap' }}>{errorText}</TableCell>
                   </TableRow>
