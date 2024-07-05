@@ -183,6 +183,7 @@ class ValidationAPI(Resource):
     description="Upload endpoint for validation of UBL2.1 XML",
     responses={
         200: 'Files received successfully',
+        203: 'Files received but failed to validate',
         400: 'Bad request',
     })
     @invoice_ns.expect(upload_parser)
@@ -207,10 +208,10 @@ class ValidationAPI(Resource):
                 rules=[rules]
             )
         except Exception as err:
-            return make_response(jsonify({"message": str(err)}), 200)
+            return make_response(jsonify({"message": str(err)}), 400)
 
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
         else:
             retmessage = retval["report"]
-            return make_response(jsonify({"message": retmessage}), 400)
+            return make_response(jsonify({"message": retmessage}), 203)
