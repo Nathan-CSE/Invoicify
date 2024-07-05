@@ -207,7 +207,7 @@ class ValidationAPI(Resource):
                 rules=[rules]
             )
         except Exception as err:
-            return make_response(jsonify({"message": str(err)}), 400)
+            return make_response(jsonify({"message": str(err)}), 200)
 
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
