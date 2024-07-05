@@ -239,8 +239,9 @@ class CreateAPI(Resource):
             
             try:
                 ubl = cs.json_to_xml(json_str.decode('utf-8'))
-            except Exception as e:
-                return make_response(jsonify({"message": e}), 400)
+            except Exception as err:
+                return make_response(jsonify({"message": str(err)}), 400)
+
             
             retval = vs.validate_xml(
                 filename=f.filename,
