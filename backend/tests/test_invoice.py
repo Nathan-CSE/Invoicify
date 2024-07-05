@@ -91,6 +91,7 @@ def user(client):
     
     db_insert(user)
     return user
+
 def test_validate_upload_success(client, user):
     data = {}
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'
@@ -445,7 +446,10 @@ def test_validate_upload_fail_rules(client, user):
         follow_redirects=True
     )
     
-    assert res.status_code == 400
+    response_body = res.get_json()
+
+    assert res.status_code == 203
+    assert response_body['message']["successful"] is False
  
 def test_validate_upload_nonXML(client, user):
     data = {}
@@ -491,5 +495,5 @@ def test_validate_upload_unsucessful(client, user):
     )
     response_body = res.get_json()
 
-    assert res.status_code == 400
+    assert res.status_code == 203
     assert response_body['message']["successful"] is False
