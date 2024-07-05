@@ -2,6 +2,7 @@ import base64
 import os
 import hashlib
 import jwt
+from xml.etree.ElementTree import ParseError
 from jwt.exceptions import InvalidSignatureError
 from flask import request
 
@@ -58,7 +59,13 @@ def token_required(func):
     return wrapper
 
 def base64_encode(data):
-    return base64.b64encode(data.encode('utf-8')).decode('utf-8')
+    try:
+        return base64.b64encode(data).decode()
+    except UnicodeEncodeError as err:
+        raise err
 
 def base64_decode(data):
-    return base64.b64decode(data.encode('utf-8')).decode('utf-8')
+    try:
+        return base64.b64decode(data).decode()
+    except UnicodeDecodeError as err:
+        raise err
