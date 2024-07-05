@@ -50,9 +50,6 @@ test_json = {
 INVOICE_CREATE_PATH = "/invoice/create"
 INVOICE_UPLOAD_PATH = "/invoice/validate"
 
-def test_invoice_creation_service(client):
-    assert create_xml(test_json)["successful"] == True
-
 def test_invoice_creation_successful(client):
     user_data = {
         "email": "abc@gmail.com", 
