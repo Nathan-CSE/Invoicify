@@ -57,15 +57,12 @@ export default function InvoiceValidation(props: { token: string; }) {
       
       if (response.status === 200) {
         console.log(response.data);
-        // navigate('/invoice-validation-report-valid');
-        navigate('/invoice-validation-report-invalid');
-
-      } else if (response.status === 400) {
-        console.log(response);
-        alert("Invoice error");
+        navigate('/invoice-validation-report-valid', { state: { fileName: file?.name, ruleSet: ruleSet } });
+        
       } else {
-        console.log(response);
-        alert("Unable to create invoice");
+        console.log(response.data);
+        navigate('/invoice-validation-report-invalid', { state: { response: response.data, ruleSet: ruleSet } });
+        // alert("Unable to create invoice");
       }
     } catch (err) {
       // console.log(err);

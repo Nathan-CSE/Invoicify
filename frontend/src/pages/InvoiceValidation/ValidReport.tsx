@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import FileUpload from '../../components/FileUpload';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -17,10 +17,8 @@ import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, T
 
 export default function InvoiceValidationReport() {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const [invoice, setInvoice] = React.useState('');
-  const [ruleSet, setRuleSet] = React.useState('');
-
+  const fileName = useLocation().state.fileName;
+  const ruleSet = useLocation().state.ruleSet;
 
   return (
     <>
@@ -56,7 +54,7 @@ export default function InvoiceValidationReport() {
         </Breadcrumbs>
 
         <Typography variant='h5' fontWeight='bold' textAlign='center' sx={{ my: 2 }}>
-          AU-NZ PEPPOL 1.0.10 Validation Report
+          {ruleSet} Validation Report
         </Typography>
 
         <Box
@@ -74,40 +72,11 @@ export default function InvoiceValidationReport() {
           <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
             <CheckCircleIcon sx={{ color: 'green', fontSize: '3rem' }} />
             <Typography>
-              The file FILENAME is valid/invalid. It contains X failed assertsion, 
-              check individual reports for details.
+              The file {fileName} is valid.
             </Typography>
           </Stack>
         </Box>
-
-        <Typography variant='h5' sx={{ mt: 4 }}>
-          Errors
-        </Typography>
-
-        <TableContainer component={Paper} sx={{ mt: 2 }}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Assertion Rule</TableCell>
-                <TableCell>Error Message</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {/* {invoiceItems.map((item: any, index: number) => (
-                <TableRow key={index}>
-                  <TableCell>{item.quantity}</TableCell>
-                  <TableCell>{item.unitCode}</TableCell>
-                  <TableCell>{item.item}</TableCell>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell>{item.unitPrice}</TableCell>
-                  <TableCell>{item.GST}</TableCell>
-                  <TableCell>{item.totalPrice}</TableCell>
-                </TableRow>
-              ))} */}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        
+       
         <Stack direction="row" spacing={4} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
           <Button
             component={Link}

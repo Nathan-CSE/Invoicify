@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import FileUpload from '../../components/FileUpload';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -12,20 +12,18 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import testResponse from './sample.json';
 
 export default function InvoiceValidationReport() {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const [invoice, setInvoice] = React.useState('');
-  const [ruleSet, setRuleSet] = React.useState('');
+  const errorData = useLocation().state.response;
+  const ruleSet = useLocation().state.ruleSet;
+  console.log('error data: ', errorData);
 
-  const errorReport = testResponse.message.reports.FR_EN16931_UBL_1_3_11;
-  const fileName = testResponse.message.filename;
+  const errorReport = errorData.message.reports[ruleSet];
+  const fileName = errorData.message.filename;
   const firedErrors = errorReport.firedAssertionErrors;
-  // console.log('allErrors: ', allErrors);
 
   return (
     <>
@@ -61,7 +59,7 @@ export default function InvoiceValidationReport() {
         </Breadcrumbs>
 
         <Typography variant='h5' fontWeight='bold' textAlign='center' sx={{ my: 2 }}>
-          AU-NZ PEPPOL 1.0.10 Validation Report
+          {ruleSet} Validation Report
         </Typography>
 
         <Box
@@ -77,9 +75,9 @@ export default function InvoiceValidationReport() {
           }}
         >
           <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
-            <CheckCircleIcon sx={{ color: 'green', fontSize: '3rem' }} />
+            <CancelIcon sx={{ color: 'red', fontSize: '3rem' }} />
             <Typography>
-              The file FILENAME is valid/invalid. It contains X failed assertsion, 
+              The file {fileName} is invalid. It contains {errorReport.firedAssertionErrorsCount} failed assertion(s), 
               check individual reports for details.
             </Typography>
           </Stack>
