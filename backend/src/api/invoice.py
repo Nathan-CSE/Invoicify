@@ -197,16 +197,13 @@ class ValidationAPI(Resource):
         file = args['files']
         content = file.read()  
         rules = args['rules']
-        # takes one file then encodes it to feed to validation service
-        file = request.files['files']
-        content = file.read()  
         vs = ValidationService()
 
         try:
             retval = vs.validate_xml(
                 filename=file.filename,
                 content=base64_encode(content),
-                rules=["AUNZ_PEPPOL_1_0_10"]
+                rules=[rules]
             )
         except Exception as err:
             return make_response(jsonify({"message": str(err)}), 400)
