@@ -189,14 +189,15 @@ class ValidationAPI(Resource):
     @token_required
     def post(self, user):
         res = handle_xml_upload(request)
-        if not res:
-            return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
-        
         args = upload_parser.parse_args()
         # takes one file then encodes it to feed to validation service
         file = args['files']
         content = file.read()  
         rules = args['rules']
+        if not res:
+            return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
+        
+
         vs = ValidationService()
 
         try:
