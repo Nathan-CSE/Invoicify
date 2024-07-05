@@ -182,7 +182,7 @@ class ValidationAPI(Resource):
     @invoice_ns.doc(
     description="Upload endpoint for validation of UBL2.1 XML",
     responses={
-        200: 'Files received successfully',
+        200: 'Invoice validated sucessfully',
         400: 'Bad request',
     })
     @invoice_ns.expect(upload_parser)
@@ -216,7 +216,7 @@ class CreateAPI(Resource):
     @invoice_ns.doc(
     description="Upload endpoint for PDFs and Jsons to create UBLs",
     responses={
-        200: 'UBL2.1 created successfully',
+        200: 'Invoice(s) created successfully',
         400: 'Bad request',
     })
     @invoice_ns.expect(upload_parser)
