@@ -194,14 +194,16 @@ class ValidationAPI(Resource):
         # takes one file then encodes it to feed to validation service
         file = request.files['files']
         content = file.read()  
-        encoded_content = base64_encode(content.decode())
         vs = ValidationService()
 
-        retval = vs.validate_xml(
-            filename=file.filename,
-            content=encoded_content,
-            rules=["AUNZ_PEPPOL_1_0_10"]
-        )
+        try:
+            retval = vs.validate_xml(
+                filename=file.filename,
+                content=base64_encode(content),
+                rules=["AUNZ_PEPPOL_1_0_10"]
+            )
+        except Exception as err:
+            return make_response(jsonify({"message": str(err)}), 400)
 
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)

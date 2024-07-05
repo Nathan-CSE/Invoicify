@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
+from xml.etree.ElementTree import fromstring, ParseError
 import requests
 import hashlib
 import os
 
 from models import db, ValidationAccessToken
-from src.services.utils import db_insert
+from src.services.utils import db_insert, base64_decode
 
 class ValidationService():
     """
@@ -48,13 +49,16 @@ class ValidationService():
 
         Raises:
             - HTTPError: If any HTTP requests fail to execute successfully
+            - ParseError: If the XML passed is formatted invalidly OR not base-64 encoded
 
         Return Value:
             Returns {}
         '''
-        # generate a new access token if missing or has expired
-        access_token = ValidationAccessToken.query.first()
         try:
+            self._check_for_invalid_xml(base64_decode(content))
+
+            # generate a new access token if missing or has expired
+            access_token = ValidationAccessToken.query.first()
             if not access_token or datetime.now() - access_token.updated_at >= timedelta(hours=1):
                 access_token = self._generate_token(access_token)
 
@@ -74,7 +78,7 @@ class ValidationService():
                 }
             )
             res.raise_for_status()
-        except requests.exceptions.HTTPError as err:
+        except (requests.exceptions.HTTPError, ParseError) as err:
             raise err
         
         response_body = res.json()
@@ -129,3 +133,20 @@ class ValidationService():
             db.session.commit()
 
         return access_token
+
+    def _check_for_invalid_xml(self, content):
+        '''
+        Checks if the XML string passed in is formatted correctly by attempting to convert it into an XML object
+        This function has no return value
+
+        Arguments:
+            content: String
+                - contents of the XML as a string
+
+        Raises:
+            - ParseError: If the XML passed is formatted invalidly
+        '''
+        try:
+            fromstring(content)
+        except ParseError as err:
+            raise err
