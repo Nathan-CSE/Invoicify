@@ -1,0 +1,141 @@
+import * as React from 'react';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
+import { Link, useNavigate } from 'react-router-dom';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import FileUpload from '../../components/FileUpload';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+
+export default function InvoiceValidationReport() {
+  const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+  const [invoice, setInvoice] = React.useState('');
+  const [ruleSet, setRuleSet] = React.useState('');
+
+
+  return (
+    <>
+     
+      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
+        <Typography variant='h4'>
+          Invoice Validation Report
+        </Typography>
+
+        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
+
+        <Breadcrumbs
+          aria-label='breadcrumb'
+          separator={<NavigateNextIcon fontSize="small" />}
+        >
+          <Typography
+            component={Link}
+            to='/dashboard'
+          >
+            Dashboard
+          </Typography>
+
+          <Typography
+            component={Link}
+            to='/invoice-validation'
+          >
+            Invoice Validation
+          </Typography>
+
+          <Typography color='text.primary'>
+            Invoice Validation Report
+          </Typography>
+        </Breadcrumbs>
+
+        <Typography variant='h5' fontWeight='bold' textAlign='center' sx={{ my: 2 }}>
+          AU-NZ PEPPOL 1.0.10 Validation Report
+        </Typography>
+
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center" 
+          sx={{ 
+            maxWidth: '40vh',
+            border: 'solid 0.5px',
+            borderRadius: 4, 
+            paddingX: 2,
+            margin: '0 auto'
+          }}
+        >
+          <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
+            <CheckCircleIcon sx={{ color: 'green', fontSize: '3rem' }} />
+            <Typography>
+              The file FILENAME is valid/invalid. It contains X failed assertsion, 
+              check individual reports for details.
+            </Typography>
+          </Stack>
+        </Box>
+
+        <Typography variant='h5' sx={{ mt: 4 }}>
+          Errors
+        </Typography>
+
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Assertion Rule</TableCell>
+                <TableCell>Error Message</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {/* {invoiceItems.map((item: any, index: number) => (
+                <TableRow key={index}>
+                  <TableCell>{item.quantity}</TableCell>
+                  <TableCell>{item.unitCode}</TableCell>
+                  <TableCell>{item.item}</TableCell>
+                  <TableCell>{item.description}</TableCell>
+                  <TableCell>{item.unitPrice}</TableCell>
+                  <TableCell>{item.GST}</TableCell>
+                  <TableCell>{item.totalPrice}</TableCell>
+                </TableRow>
+              ))} */}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        
+        <Stack direction="row" spacing={4} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
+          <Button
+            component={Link}
+            to='/invoice-validation-report'
+            variant='contained'
+            sx={{
+              height: '50px',
+              padding: '25px',
+            }}
+          >
+            Download Report
+          </Button>
+
+          <Button
+            component={Link}
+            to='/invoice-validation'
+            variant='contained'
+            sx={{
+              height: '50px',
+              padding: '25px',
+            }}
+          >
+            Validate Another Report
+          </Button>
+        </Stack>
+
+      </Container>
+      
+    </>
+  );
+}

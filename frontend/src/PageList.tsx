@@ -11,7 +11,8 @@ import CreationGUI from './pages/InvoiceCreation/CreationGUI';
 import Navbar from './components/Navbar';
 import PreviewInvoice from './pages/PreviewInvoice';
 import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
-import InvoiceValidationReport from './pages/InvoiceValidation/InvoiceValidationReport';
+import InvalidReport from './pages/InvoiceValidation/InvalidReport';
+import ValidReport from './pages/InvoiceValidation/ValidReport';
 import ResetPassword from './pages/UserAuth/ResetPasswordPage';
 
 function PageList() {
@@ -117,11 +118,20 @@ function PageList() {
           } 
         />
         <Route 
-          path='/invoice-validation-report'
+          path='/invoice-validation-report-valid'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
-              <InvoiceValidationReport />
+              <ValidReport />
+            </>
+          } 
+        />
+        <Route 
+          path='/invoice-validation-report-invalid'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvalidReport />
             </>
           } 
         />

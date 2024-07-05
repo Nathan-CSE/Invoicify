@@ -14,6 +14,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import testResponse from './sample.json';
 
 export default function InvoiceValidationReport() {
   const navigate = useNavigate();
@@ -21,40 +22,10 @@ export default function InvoiceValidationReport() {
   const [invoice, setInvoice] = React.useState('');
   const [ruleSet, setRuleSet] = React.useState('');
 
-
-  const handleChange = (event: SelectChangeEvent) => {
-    console.log('this is event.target: ', event.target);
-
-    if (event.target.name === 'rule-set') {
-      setRuleSet(event.target.value);
-    } else {
-      setInvoice(event.target.value);
-    }
-
-    setInvoice(event.target.value);
-  };
-
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-    const username = data.get('username') as string;
-    const password = data.get('password') as string;
-    
-    if (username.length === 0 || password.length === 0) {
-      alert('Fill out all required fields');
-    } else {
-      try {
-        // send to backend
-      } catch (err) {
-        if (err instanceof Error) {
-          alert(err.message);
-        }
-      }
-    }
-
-  };
+  const errorReport = testResponse.message.reports.FR_EN16931_UBL_1_3_11;
+  const fileName = testResponse.message.filename;
+  const firedErrors = errorReport.firedAssertionErrors;
+  // console.log('allErrors: ', allErrors);
 
   return (
     <>
@@ -127,17 +98,15 @@ export default function InvoiceValidationReport() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {/* {invoiceItems.map((item: any, index: number) => (
-                <TableRow key={index}>
-                  <TableCell>{item.quantity}</TableCell>
-                  <TableCell>{item.unitCode}</TableCell>
-                  <TableCell>{item.item}</TableCell>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell>{item.unitPrice}</TableCell>
-                  <TableCell>{item.GST}</TableCell>
-                  <TableCell>{item.totalPrice}</TableCell>
-                </TableRow>
-              ))} */}
+              {firedErrors.map((item: any) => {
+                const errorText = `${item.text}\nLocation: ${item.location}`;
+                return (
+                  <TableRow>
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell style={{ whiteSpace: 'pre-wrap' }}>{errorText}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

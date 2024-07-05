@@ -44,10 +44,11 @@ export default function InvoiceValidation(props: { token: string; }) {
     }
 
     console.log('this is formData: ', formData);
+    console.log('this is the rule set: ', ruleSet);
 
     try {
       // Placeholder until backend endpoint has been created
-      const response = await axios.post('http://localhost:5000/invoice/validate', formData, {
+      const response = await axios.post(`http://localhost:5000/invoice/validate?rules=${ruleSet}`, formData, {
         headers: {
           'Authorisation': `${props.token}`,
           'Content-Type': 'multipart/form-data'
@@ -56,7 +57,8 @@ export default function InvoiceValidation(props: { token: string; }) {
       
       if (response.status === 200) {
         console.log(response.data);
-        navigate('/invoice-validation-report');
+        // navigate('/invoice-validation-report-valid');
+        navigate('/invoice-validation-report-invalid');
 
       } else if (response.status === 400) {
         console.log(response);
@@ -144,9 +146,14 @@ export default function InvoiceValidation(props: { token: string; }) {
               label="Rule Set"
               onChange={handleChange}
             >
-              <MenuItem value={1}>AU-NZ PEPPOL-1.0.10</MenuItem>
-              <MenuItem value={2}>AU-NZ PEPPOL-SB-1.0.10</MenuItem>
-              <MenuItem value={3}>AU-NZ UBL-1.0.10</MenuItem>
+              <MenuItem value={'AUNZ_PEPPOL_1_0_10'}>AU-NZ PEPPOL-1.0.10</MenuItem>
+              <MenuItem value={'AUNZ_PEPPOL_SB_1_0_10'}>AU-NZ PEPPOL-SB-1.0.10</MenuItem>
+              <MenuItem value={'AUNZ_UBL_1_0_10'}>AU-NZ UBL-1.0.10</MenuItem>
+              <MenuItem value={'FR_EN16931_CII_1_3_11'}>FR-EN16931-CII-1.3.11</MenuItem>
+              <MenuItem value={'FR_EN16931_UBL_1_3_11'}>FR-EN16931-UBL-1.3.11</MenuItem>
+              <MenuItem value={'FR_EN16931_UBL_1_3_11'}>FR-EN16931-UBL-1.3.11</MenuItem>
+              <MenuItem value={'RO_RO16931_UBL_1_0_8_EN16931'}>RO-RO16931-UBL-1.0.8-EN16931</MenuItem>
+              <MenuItem value={'RO_RO16931_UBL_1_0_8_CIUS_RO'}>RO-RO16931-UBL-1.0.8-CIUS-RO</MenuItem>
             </Select>
           </FormControl>
         </Box>
