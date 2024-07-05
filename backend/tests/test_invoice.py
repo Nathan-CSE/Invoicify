@@ -6,7 +6,7 @@ from tests.fixtures import client
 from models import User
 from src.services.create_xml import create_xml
 from src.services.utils import db_insert, salt_and_hash
-from tests.const_data import json_str_1, xml_from_json_str_1
+from tests.const_data import json_str_1, json_str_fail
 
 test_json = {
     "invoiceName": "test",
@@ -331,8 +331,42 @@ def test_uploadcreate_json(client, user):
         follow_redirects=True
     )
     response_body = res.get_json()
-    print(response_body)
 
     assert res.status_code == 200
     assert response_body['message'] == "Invoice(s) created successfully"
 
+def test_uploadcreate_invalidfile(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(b'fail, not pdf/json'),
+        'test.txt')]
+
+    res = client.post(
+        INVOICE_UPLOAD_CREATE_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+    response_body = res.get_json()
+
+    assert res.status_code == 400
+    assert response_body['message'] == "test.txt is not a PDF or JSON, please remove that file and try again"
+    
+def test_uploadcreate_invalidjson(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(json_str_fail.encode("utf-8")), 'test.json')]
+    
+
+    res = client.post(
+        INVOICE_UPLOAD_CREATE_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+
+    assert res.status_code == 400
