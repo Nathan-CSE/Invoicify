@@ -62,10 +62,10 @@ def base64_encode(data):
     try:
         return base64.b64encode(data).decode()
     except UnicodeEncodeError as err:
-        raise ParseError(str(err))
+        raise err
 
 def base64_decode(data):
     try:
         return base64.b64decode(data).decode()
     except UnicodeDecodeError as err:
-        raise ParseError(str(err))
+        raise err

@@ -49,7 +49,8 @@ class ValidationService():
 
         Raises:
             - HTTPError: If any HTTP requests fail to execute successfully
-            - ParseError: If the XML passed is formatted invalidly OR not base-64 encoded
+            - ParseError: If the XML passed is formatted invalidly
+            - UnicodeDecodeError: If the content passed in has not been base-64 encoded
 
         Return Value:
             Returns {}
@@ -78,7 +79,7 @@ class ValidationService():
                 }
             )
             res.raise_for_status()
-        except (requests.exceptions.HTTPError, ParseError) as err:
+        except (requests.exceptions.HTTPError, ParseError, UnicodeDecodeError) as err:
             raise err
         
         response_body = res.json()

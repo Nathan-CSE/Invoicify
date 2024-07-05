@@ -2,7 +2,6 @@ import pytest
 import base64
 
 from requests.exceptions import HTTPError
-from xml.etree.ElementTree import ParseError
 
 from tests.fixtures import client
 from src.services.validation import ValidationService
@@ -29,7 +28,7 @@ def test_xml_validate_function_uncode_xml_fail(client):
     decoded_data = base64.b64decode(encoded_data)
     xml_data = decoded_data.decode('utf-8')
 
-    with pytest.raises(ParseError) as error:
+    with pytest.raises(UnicodeDecodeError) as error:
         vs.validate_xml("test.xml", xml_data, ["AUNZ_PEPPOL_1_0_10"])
 
     assert "'utf-8' codec can't decode byte 0xc6 in position 0: invalid continuation byte" in str(error.value)
