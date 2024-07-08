@@ -43,7 +43,7 @@ export default function InvoiceCreation(props: { token: string }) {
         file,
         {
           headers: {
-            Authorization: `Bearer ${props.token}`,
+            Authorisation: `${props.token}`,
           },
         }
       );

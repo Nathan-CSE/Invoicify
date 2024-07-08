@@ -303,7 +303,7 @@ export default function CreationGUI(props: { token: string }) {
           filteredInvoiceData,
           {
             headers: {
-              Authorization: `Bearer ${props.token}`,
+              Authorisation: `${props.token}`,
             },
           }
         );
