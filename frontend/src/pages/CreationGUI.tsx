@@ -48,7 +48,7 @@ export default function CreationGUI(props: { token: string }) {
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
   const [sellerCountry, setSellerCountry] = React.useState('');
   const [buyerCountry, setBuyerCountry] = React.useState('');
-  const [vatRate, setVatRate] = React.useState(0);
+  const [vatRate, setVatRate] = React.useState<number>(0);
   const [rows, setRows] = React.useState([
     {
       id: 1,
@@ -217,7 +217,7 @@ export default function CreationGUI(props: { token: string }) {
     let errorCheck = false;
 
     const formData = new FormData(event.currentTarget);
-    const invoiceData = {
+    const invoiceData: any = {
       invoiceName: formData.get('invoiceName'),
       invoiceNumber: formData.get('invoiceNumber'),
       invoiceIssueDate: formData.get('invoiceIssueDate'),
@@ -257,7 +257,7 @@ export default function CreationGUI(props: { token: string }) {
       totalGST: totalGST,
       totalTaxable: totalTaxable,
       totalAmount: totalAmount,
-      vatRate: vatRate,
+      buyerVatRate: vatRate,
       additionalDocuments: fileList.map((file) => ({
         fileName: file.file.name,
         fileSize: file.file.size,
@@ -285,21 +285,29 @@ export default function CreationGUI(props: { token: string }) {
       }
     }
 
-    console.log('Formatted Invoice Data:', invoiceData);
+    const {
+      buyerVatRate,
+      additionalDocuments,
+      extraComments,
+      ...filteredInvoiceData
+    } = invoiceData;
+    console.log('filtered: ', filteredInvoiceData);
 
     if (errorCheck) {
       return;
     } else {
+      // Currently this fails, most likely because there are bugs with the backend endpoint
       try {
         const response = await axios.post(
           'http://localhost:5000/invoice/create',
-          invoiceData,
+          filteredInvoiceData,
           {
             headers: {
               Authorization: `Bearer ${props.token}`,
             },
           }
         );
+
         if (response.status === 201) {
           navigate('/invoice-confirmation', { state: invoiceData });
         } else {
@@ -307,6 +315,7 @@ export default function CreationGUI(props: { token: string }) {
           alert('Unable to create invoice');
         }
       } catch (err) {
+        console.error(err);
         alert(err);
       }
       // SEND TO BACKEND HERE -> if successful, go to confirmation page

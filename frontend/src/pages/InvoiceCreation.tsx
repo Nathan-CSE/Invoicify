@@ -15,33 +15,47 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import axios from 'axios';
+import { DropzoneArea } from 'mui-file-dropzone';
 
 export default function InvoiceCreation(props: { token: string }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const [file, setFile] = React.useState<File[]>([]);
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     navigate('/invoice-confirmation');
     setOpen(false);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
 
-    const username = data.get('username') as string;
-    const password = data.get('password') as string;
+    handleOpen();
 
-    if (username.length === 0 || password.length === 0) {
-      alert('Fill out all required fields');
-    } else {
-      try {
-        // send to backend
-      } catch (err) {
-        if (err instanceof Error) {
-          alert(err.message);
+    console.log('file to be sent: ', file);
+
+    try {
+      // Placeholder until backend endpoint has been created
+      const response = await axios.post(
+        'http://localhost:5000/invoice/create',
+        file,
+        {
+          headers: {
+            Authorization: `Bearer ${props.token}`,
+          },
         }
+      );
+
+      if (response.status === 201) {
+        navigate('/invoice-confirmation');
+      } else {
+        console.log(response);
+        alert('Unable to create invoice');
       }
+    } catch (err) {
+      alert(err);
     }
   };
 
@@ -64,12 +78,20 @@ export default function InvoiceCreation(props: { token: string }) {
         </Breadcrumbs>
 
         <Box sx={{ my: 5 }}>
-          <FileUpload />
+          <DropzoneArea
+            acceptedFiles={['.pdf', '.json']}
+            fileObjects={file}
+            onChange={(loadedFile) => {
+              console.log('Currently loaded:', loadedFile);
+              setFile(loadedFile);
+            }}
+            filesLimit={1}
+          />
         </Box>
 
         <Box textAlign='center'>
           <Button
-            onClick={handleOpen}
+            onClick={handleSubmit}
             variant='contained'
             sx={{
               height: '50px',
