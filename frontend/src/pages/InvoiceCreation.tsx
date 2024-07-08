@@ -16,7 +16,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-export default function SignIn() {
+export default function InvoiceCreation(props: { token: string }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -31,7 +31,7 @@ export default function SignIn() {
 
     const username = data.get('username') as string;
     const password = data.get('password') as string;
-    
+
     if (username.length === 0 || password.length === 0) {
       alert('Fill out all required fields');
     } else {
@@ -43,33 +43,24 @@ export default function SignIn() {
         }
       }
     }
-
   };
 
   return (
     <>
-     
-      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>
-          Invoice Creation
-        </Typography>
+      <Container maxWidth='lg' sx={{ marginTop: 11 }}>
+        <Typography variant='h4'>Invoice Creation</Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
 
         <Breadcrumbs
           aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize="small" />}
+          separator={<NavigateNextIcon fontSize='small' />}
         >
-          <Typography
-            component={Link}
-            to='/dashboard'
-          >
+          <Typography component={Link} to='/dashboard'>
             Dashboard
           </Typography>
 
-          <Typography color='text.primary'>
-            Invoice Creation
-          </Typography>
+          <Typography color='text.primary'>Invoice Creation</Typography>
         </Breadcrumbs>
 
         <Box sx={{ my: 5 }}>
@@ -93,11 +84,11 @@ export default function SignIn() {
         <Dialog
           open={open}
           onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
         >
-          <DialogTitle id="alert-dialog-title">
-            {"Your invoice has been created and saved to your account."}
+          <DialogTitle id='alert-dialog-title'>
+            {'Your invoice has been created and saved to your account.'}
           </DialogTitle>
           <DialogActions>
             <Button onClick={handleClose} autoFocus>
@@ -124,7 +115,6 @@ export default function SignIn() {
           </Button>
         </Box>
       </Container>
-      
     </>
   );
 }

@@ -75,7 +75,7 @@ function PageList() {
           element={
             <>
               <Navbar token={token} setToken={setToken} />
-              <InvoiceCreation />
+              <InvoiceCreation token={token} />
             </>
           }
         />
@@ -84,7 +84,7 @@ function PageList() {
           element={
             <>
               <Navbar token={token} setToken={setToken} />
-              <CreationGUI />
+              <CreationGUI token={token} />
             </>
           }
         />

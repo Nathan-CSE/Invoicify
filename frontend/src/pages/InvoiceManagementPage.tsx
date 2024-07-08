@@ -18,6 +18,7 @@ export default function InvoiceManagement(props: { token: string }) {
         {
           headers: {
             Authorisation: `${props.token}`,
+            'Content-Type': 'application/json',
           },
         }
       );
