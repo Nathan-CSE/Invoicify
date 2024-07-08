@@ -32,15 +32,14 @@ export default function InvoiceManagement(props: { token: string }) {
 
   const [details, setDetails] = React.useState<Details[]>([]);
   const openSettings = () => () => {
-    console.log('DESTROY');
+    alert(1);
   };
-  console.log(details);
+
   // Error Handling
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
   // Just to fetch data on load
   const getDetails = async () => {
-    console.log(props.token);
     try {
       const response = await axios.get(
         'http://localhost:5000/invoice/history',
@@ -94,11 +93,19 @@ export default function InvoiceManagement(props: { token: string }) {
             position: 'relative',
           }}
         >
-          <Box sx={{ position: 'absolute' }} onClick={openSettings()}>
+          <Box
+            sx={{ position: 'absolute', zIndex: 1000, cursor: 'pointer' }}
+            onClick={openSettings()}
+          >
             <InvoiceSettings></InvoiceSettings>
           </Box>
           <CardActionArea>
-            <CardContent>
+            <CardContent
+              sx={{
+                mt: 2,
+                height: '24rem',
+              }}
+            >
               <InvoiceSvg></InvoiceSvg>
               <Typography variant='h6' component='div'>
                 {items.name}
