@@ -7,6 +7,7 @@ from src.services.create_xml import create_xml
 from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.upload import UploadService
+from src.services.send_mail import send_attachment
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -217,3 +218,36 @@ class ValidationAPI(Resource):
         else:
             retmessage = retval["report"]
             return make_response(jsonify({"message": retmessage}), 203)
+        
+
+send_parser = invoice_ns.parser()
+send_parser.add_argument('files', location='files',
+                           type=FileStorage, required=True)
+send_parser.add_argument('email', type=str, help='email to send to', required=True)
+@invoice_ns.route("/send/<int:id>")
+class Send(Resource):
+    @invoice_ns.doc(
+        description="Ability to send",
+        body=edit_fields,
+        responses={
+            204: 'Sent successfully',
+            203: 'Files sent, but failed to validate',
+            400: 'Bad request',
+        },
+    )
+    @invoice_ns.expect(send_parser)
+    def post(self, id, user):
+        # send mail 
+
+        if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
+            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+        send_attachment()
+        
+
+        
+
+        
+
+
+
+
