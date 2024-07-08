@@ -49,10 +49,9 @@ class Create(Resource):
         description="Creates a UBL",
         body=create_ubl_fields,
         responses={
-            201: '{{user_id: no, article_id: int}}',
+            201: 'Invoice in XML',
             400: 'Bad request',
             422: 'Failed validation'
-
         },
     )
     @token_required
@@ -62,7 +61,7 @@ class Create(Resource):
             res = create_xml(data, user)
             return make_response(jsonify(res), 201)
         except ValueError as e:
-            print(e)
+            return make_response(e, 422)
         except Exception as e:
             return make_response(jsonify({"message": "UBL not created"}), 400)
         

@@ -154,8 +154,7 @@ def create_xml(file, user):
             total_after_tax=file["totalAmount"]
         )
     except Exception as e:
-        print("test")
-        print(e)
+        raise Exception("Couldn't make UBL")
     
 
     content_encode = base64.b64encode(content.encode('utf-8')).decode('utf-8')
