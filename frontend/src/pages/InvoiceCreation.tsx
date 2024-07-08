@@ -40,7 +40,7 @@ export default function InvoiceCreation(props: { token: string; }) {
       // Placeholder until backend endpoint has been created
       const response = await axios.post('http://localhost:5000/invoice/create', file, {
         headers: {
-          'Authorization': `Bearer ${props.token}`
+          'Authorization': `${props.token}`
         }
       });
       

@@ -222,6 +222,48 @@ export default function CreationGUI(props: { token: string; }) {
       extraComments: formData.get('extraComments'),
     };
 
+    const dummyData = {
+      "invoiceName": "string",
+      "invoiceNumber": "string",
+      "invoiceIssueDate": "string",
+      "seller": {
+        "ABN": 0,
+        "companyName": "string",
+        "address": {
+          "streetName": "string",
+          "additionalStreetName": "string",
+          "cityName": "string",
+          "postalCode": 0,
+          "country": "string"
+        }
+      },
+      "buyer": {
+        "ABN": 0,
+        "companyName": "string",
+        "address": {
+          "streetName": "string",
+          "additionalStreetName": "string",
+          "cityName": "string",
+          "postalCode": 0,
+          "country": "string"
+        }
+      },
+      "invoiceItems": [
+        {
+          "quantity": 0,
+          "unitCode": 0,
+          "item": "string",
+          "description": "string",
+          "unitPrice": 0.1,
+          "GST": "string",
+          "totalPrice": 0.1
+        }
+      ],
+      "totalGST": 0.1,
+      "totalTaxable": 0.1,
+      "totalAmount": 0.1
+    }
+
     if (invoiceData.invoiceIssueDate === "") {
       setOpenError(true);
       setError("Please select an invoice issue date.");
@@ -251,7 +293,7 @@ export default function CreationGUI(props: { token: string; }) {
       try {
         const response = await axios.post('http://localhost:5000/invoice/create', filteredInvoiceData, {
           headers: {
-            'Authorization': `Bearer ${props.token}`
+            'Authorisation': `${props.token}`
           }
         });
 
