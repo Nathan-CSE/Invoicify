@@ -14,6 +14,8 @@ import axios, { AxiosError } from 'axios';
 import { Link } from 'react-router-dom';
 import ErrorModal from '../components/ErrorModal';
 import { ReactComponent as InvoiceSvg } from '../assets/invoice.svg';
+import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
+import { TempleBuddhist } from '@mui/icons-material';
 
 export default function InvoiceManagement(props: { token: string }) {
   interface Fields {
@@ -29,12 +31,16 @@ export default function InvoiceManagement(props: { token: string }) {
   }
 
   const [details, setDetails] = React.useState<Details[]>([]);
-
+  const openSettings = () => () => {
+    console.log('DESTROY');
+  };
+  console.log(details);
   // Error Handling
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
   // Just to fetch data on load
   const getDetails = async () => {
+    console.log(props.token);
     try {
       const response = await axios.get(
         'http://localhost:5000/invoice/history',
@@ -45,11 +51,9 @@ export default function InvoiceManagement(props: { token: string }) {
           },
         }
       );
-
       if (response.status === 200) {
         const data: Record<string, Details> = response.data;
         let temp: Details[] = [];
-        console.log(response.data);
         for (let d of Object.values(data)) {
           temp.push(d);
         }
@@ -61,9 +65,7 @@ export default function InvoiceManagement(props: { token: string }) {
     } catch (error) {
       if (error instanceof AxiosError) {
         if (error.response) {
-          console.log(error.response.status);
           if (error.response.status !== 403) {
-            console.log('Tere');
             setOpenError(true);
             setError(error.response.data.message);
           }
@@ -76,7 +78,6 @@ export default function InvoiceManagement(props: { token: string }) {
   };
 
   function generateInvoiceCards(): JSX.Element[] {
-    console.log(Object.keys(details).length);
     return Object.values(details).map((items) => (
       <Grid key={items.id} item>
         <Card
@@ -88,15 +89,34 @@ export default function InvoiceManagement(props: { token: string }) {
             alignContent: 'center',
             textAlign: 'center',
             display: 'flex',
+            flexDirection: 'column',
             textDecoration: 'none',
+            position: 'relative',
           }}
         >
+          <Box sx={{ position: 'absolute' }} onClick={openSettings()}>
+            <InvoiceSettings></InvoiceSettings>
+          </Box>
           <CardActionArea>
             <CardContent>
               <InvoiceSvg></InvoiceSvg>
               <Typography variant='h6' component='div'>
                 {items.name}
               </Typography>
+
+              {items.is_ready ? (
+                <>
+                  <Typography variant='subtitle1' gutterBottom>
+                    Status: Verified
+                  </Typography>
+                </>
+              ) : (
+                <>
+                  <Typography variant='subtitle1' gutterBottom>
+                    Status: Unverified
+                  </Typography>
+                </>
+              )}
             </CardContent>
           </CardActionArea>
         </Card>
@@ -106,6 +126,13 @@ export default function InvoiceManagement(props: { token: string }) {
   React.useEffect(() => {
     getDetails();
   }, []);
+
+  // We need this because it seems like when we refresh the page
+  // We lose the token so the data is not rendered again
+  // The token will pop in and render and then will render the data again
+  React.useEffect(() => {
+    getDetails();
+  }, [props.token]);
 
   return (
     <>
