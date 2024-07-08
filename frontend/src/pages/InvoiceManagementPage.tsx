@@ -94,7 +94,13 @@ export default function InvoiceManagement(props: { token: string }) {
           }}
         >
           <Box
-            sx={{ position: 'absolute', zIndex: 1000, cursor: 'pointer' }}
+            sx={{
+              position: 'absolute',
+              zIndex: 1000,
+              cursor: 'pointer',
+              pl: 1,
+              pt: 1,
+            }}
             onClick={openSettings()}
           >
             <InvoiceSettings></InvoiceSettings>
@@ -170,7 +176,7 @@ export default function InvoiceManagement(props: { token: string }) {
           container
           spacing={9}
           sx={{
-            mt: 10,
+            mt: 4,
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
