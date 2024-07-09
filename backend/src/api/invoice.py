@@ -1,12 +1,12 @@
-from flask import request, jsonify, make_response
+from flask import request, jsonify, make_response, send_file
 from flask_restx import Namespace, Resource, fields, reqparse
 from werkzeug.datastructures import FileStorage
-
+import io
 from models import db, Invoice
-from src.services.create_xml import create_xml
+from src.services.create_xml import create_xml, save_xml
 from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
-from src.services.upload import handle_xml_upload
+from src.services.upload import UploadService
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -29,7 +29,7 @@ invoice_item_fields = invoice_ns.model("InvoiceItem", {
     "item": fields.String(),
     "description": fields.String(),
     "unitPrice": fields.Float(default=0.1),
-    "GST": fields.String(),
+    "GST": fields.Integer(),
     "totalPrice": fields.Float(default=0.1)
 })
 create_ubl_fields = invoice_ns.model('CreateUBLFields', {
@@ -49,19 +49,47 @@ class Create(Resource):
         description="Creates a UBL",
         body=create_ubl_fields,
         responses={
-            201: 'Created successfully',
+            201: 'Invoice in XML',
             400: 'Bad request',
+            422: 'Failed validation'
         },
     )
     @token_required
     def post(self, user):
         data = request.json
         try:
-            res = create_xml(data)
+            res = create_xml(data, user)
             return make_response(jsonify(res), 201)
+        except ValueError as e:
+            return make_response(e, 422)
         except Exception as e:
-            print(e)
             return make_response(jsonify({"message": "UBL not created"}), 400)
+        
+@invoice_ns.route("/download")
+class SendUBL(Resource):
+    @invoice_ns.doc(
+    description="""Use this api to download xml
+        input:
+        article_id: int
+        output:
+            nothing (file should start downloading in browser)c
+        """,
+    responses={
+        201: 'Created successfully',
+        400: 'Bad request',
+    })
+    @token_required
+    def post(self, user, article_id):
+        invoice = Invoice.query.where(Invoice.id==article_id).where(Invoice.user_id==user.id).where(Invoice.is_ready==True).first()
+        if invoice:
+            file = io.BytesIO()
+            file.write(invoice.fields.encode('utf-8'))
+            file.seek(0)
+            return send_file(file, mimetype='application/xml', as_attachment=True, download_name=invoice.name)
+        else:
+            return make_response(jsonify({"message": "Article not found"}), 400)
+        
+        # Create a BytesIO object
 
 save_ubl_fields = invoice_ns.model("SaveUBLFields", {
     "name": fields.String(default="Invoice 1", required=True),
@@ -176,31 +204,38 @@ class History(Resource):
 upload_parser = invoice_ns.parser()
 upload_parser.add_argument('files', location='files',
                            type=FileStorage, required=True)
+upload_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
 @invoice_ns.route("/validate")
 class ValidationAPI(Resource):
     @invoice_ns.doc(
     description="Upload endpoint for validation of UBL2.1 XML",
     responses={
         200: 'Files received successfully',
+        203: 'Files received but failed to validate',
         400: 'Bad request',
     })
     @invoice_ns.expect(upload_parser)
     @token_required
     def post(self, user):
-        res = handle_xml_upload(request)
-        if not res[1] == 200:
-            return res
+        ups = UploadService()
         
+        res = ups.handle_xml_upload(request)
+        args = upload_parser.parse_args()
         # takes one file then encodes it to feed to validation service
-        file = request.files['files']
+        file = args['files']
         content = file.read()  
+        rules = args['rules']
+        if not res:
+            return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
+        
+
         vs = ValidationService()
 
         try:
             retval = vs.validate_xml(
                 filename=file.filename,
                 content=base64_encode(content),
-                rules=["AUNZ_PEPPOL_1_0_10"]
+                rules=[rules]
             )
         except Exception as err:
             return make_response(jsonify({"message": str(err)}), 400)
@@ -209,4 +244,4 @@ class ValidationAPI(Resource):
             return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
         else:
             retmessage = retval["report"]
-            return make_response(jsonify({"message": retmessage}), 400)
+            return make_response(jsonify({"message": retmessage}), 203)
