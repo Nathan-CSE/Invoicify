@@ -16,7 +16,9 @@ class Invoice(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    completed_ubl = db.Column(db.String, nullable=True)
     fields = db.Column(db.JSON, nullable=False)
+    rule = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     is_ready = db.Column(db.Boolean, nullable=False)
 
