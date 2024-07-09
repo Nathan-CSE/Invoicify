@@ -355,6 +355,25 @@ class Edit(Resource):
         db.session.commit()
         return make_response(jsonify(invoice.to_dict()), 204)
 
+@invoice_ns.route("/delete/<int:id>")
+class Delete(Resource):
+    @invoice_ns.doc(
+        description="Ability to delete UBLs",
+        responses={
+            200: 'Deleted successfully',
+            400: 'Bad request',
+        },
+    )
+    @token_required
+    def delete(self, id, user):
+        if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
+            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+
+        db.session.delete(invoice)
+        db.session.commit()
+        return make_response(jsonify({"message": "Invoice was deleted successfully"}), 200)
+
+
 history_fields = reqparse.RequestParser()
 history_fields.add_argument('is_ready', type=bool, choices=['true', 'false'], help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
 @invoice_ns.route("/history")
