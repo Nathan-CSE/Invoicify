@@ -1,35 +1,61 @@
 import json
 import re
-from xml.etree.ElementTree import ElementTree, Element, SubElement, tostring, fromstring
+from xml.etree.ElementTree import ElementTree, Element, SubElement, tostring, fromstring, ParseError
 
 class ConversionService():
     """
     Conversion service for converting data into an XML format
 
+    Attributes:
+        _rules_map: Dict[Dict[String, String]]
+            - Contains the customizationID and profileID values for each ruleset
+
     Methods:
-        json_to_xml(self, json_str)
-            - Converts a JSON string into an XML string
+        xml_to_json(self, xml_str)
+            - Converts an XML string into a JSON string
+        json_to_xml(self, json_str, rule_chosen)
+            - Converts a JSON string into an XML string for a specific rule provided
+        _extract_tag_from_xml(self, element)
+            - Extracts only the tag from an XML element
+        _build_json_from_xml
+            - Recursively builds a JSON 
         _build_xml_tree_from_json
             - Recursively builds an XML by performing a DFS
         _build_xml_from_json
             - Loops through all key-value pairs within a JSON
-
     """
-    def json_to_xml(self, json_str):
+
+    _rules_map = {
+        "AUNZ_PEPPOL_1_0_10": {
+            "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0",
+            "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
+        },
+        "AUNZ_PEPPOL_SB_1_0_10": {
+            "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:selfbilling:international:aunz:3.0",
+            "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:selfbilling:01:1.0"
+        }
+    }
+
+    def json_to_xml(self, json_str, rule_chosen):
         '''
         Converts a JSON string into an XML string
 
         Arguments:
             json_str: string
                 - A string containing a JSON object.
-
                 Format requirements:
                     - { "ID": "Hello" } => <ID>Hello</ID>
                     - { "ID": { "attribute1": "Hello", value="There" } } => <ID attribute1="Hello">There</ID>
                     - { "ID": { "Profile": "Hello" } } => <ID><Profile>Hello</Profile></ID>
+            rule_chosen: string
+                - The specific UBL rule to create the XML against
+                - Available values: 
+                    - AUNZ_PEPPOL_1_0_10, 
+                    - AUNZ_PEPPOL_SB_1_0_10, 
 
         Raises:
             - ValueError: If the json_str cannot be converted to a Python dictionary
+            - NotImplementedError: If the provided rule_chosen does not exist in the _rules_map
 
         Return Value:
             Returns a string containing the converted XML
@@ -45,11 +71,15 @@ class ConversionService():
             "xmlns":"urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
         })
         
+        rule = self._rules_map.get(rule_chosen)
+        if not rule:
+            raise NotImplementedError("Rule has not been added to conversion service")
+        
         # Set essential sub-elements for a UBL
-        customisationIdElement = SubElement(root, "cbc:CustomizationID")
-        customisationIdElement.text = "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0"
-        profileIdElement = SubElement(root, "cbc:ProfileID")
-        profileIdElement.text = "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
+        for tag in rule:
+            element = SubElement(root, tag)
+            element.text = rule[tag]
+
 
         self._build_xml_from_json(root, data)
 
@@ -60,52 +90,80 @@ class ConversionService():
         return xml_str
     
     def xml_to_json(self, xml_str):
-        json = {}
+        '''
+        Converts a XML string into an JSON string
 
-        element_tree = ElementTree(fromstring(xml_str))
-        self._build_json_from_xml(element_tree.getroot(), json)
+        Arguments:
+            xml_str: string
+                - A string containing the XML. 
+
+        Raises:
+            - ValueError: If the XML element does not contain a tag
+            - ParseError: If the XML is formatted invalidly
+
+        Return Value:
+            Returns a string containing the converted JSON
+        '''
+        fields = {}
+
+        try:
+            element_tree = ElementTree(fromstring(xml_str))
+            self._build_json_from_xml(element_tree.getroot(), fields)
+        except (ParseError, ValueError) as err:
+            raise err
         
-        json = json["Invoice"]
-        json.pop("CustomizationID")
-        json.pop("ProfileID")
+        fields = fields["Invoice"]
+        fields.pop("CustomizationID")
+        fields.pop("ProfileID")
 
-        return json
+        return json.dumps(fields)
 
     def _extract_tag_from_xml(self, element):
+        # Format: {namespace}:tag
         match = re.search(r"\{.+\}(.+)", element.tag)
         if not match:
             raise ValueError("Invalid XML")
         
         return match.group(1) 
 
-    def _build_json_from_xml(self, element, json):
+    def _build_json_from_xml(self, element, fields):
         element_tag = self._extract_tag_from_xml(element)
+        # Contains children elements
         if len(element) > 0:
-            if element_tag in json:
-                if not isinstance(json[element_tag], list):
-                    json[element_tag] = [json[element_tag]]
-                json[element_tag].append({})
+            # Duplicate element_tag
+            if element_tag in fields:
+                # First time visiting duplicate
+                if not isinstance(fields[element_tag], list):
+                    fields[element_tag] = [fields[element_tag]]
+                # Append otherwise
+                fields[element_tag].append({})
             else:
-                json[element_tag] = {}
+                # No duplicate
+                fields[element_tag] = {}
 
             for subelement in element:
                 subelement_tag = self._extract_tag_from_xml(subelement)
 
-                json_element = json[element_tag]
-                if isinstance(json[element_tag], list):
-                    json_element = json_element[len(json[element_tag]) - 1]
+                field_element = fields[element_tag]
+                if isinstance(field_element, list):
+                    # Move to the most recent element in the list
+                    field_element = field_element[len(field_element) - 1]
 
+                # Contains attributes, add them
                 if subelement.attrib:
-                    json_element[subelement_tag] = subelement.attrib
+                    field_element[subelement_tag] = subelement.attrib
+                # No children elements or attributes
                 elif len(subelement) == 0:
-                    json_element[subelement_tag] = subelement.text 
+                    field_element[subelement_tag] = subelement.text 
 
-                self._build_json_from_xml(subelement, json_element)
+                self._build_json_from_xml(subelement, field_element)
         else:
-            if isinstance(json[element_tag], dict):
-                json[element_tag]["value"] = element.text
+            # Has attributes and a value 
+            if isinstance(fields[element_tag], dict):
+                fields[element_tag]["value"] = element.text
+            # Has only a value
             else:
-                json[element_tag] = element.text
+                fields[element_tag] = element.text
 
 
     def _build_xml_tree_from_json(self, element, key, value):
@@ -169,8 +227,3 @@ class ConversionService():
                     self._build_xml_tree_from_json(element, key, item)
             else:
                 self._build_xml_tree_from_json(element, key, value)
-
-xml_from_json_str_1 = '<?xml version="1.0" encoding="UTF-8"?><Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"><cbc:CustomizationID>urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0</cbc:CustomizationID><cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID><cbc:ID>Invoice03</cbc:ID><cbc:IssueDate>2022-07-31</cbc:IssueDate><cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode><cbc:Note>Adjustment note to reverse prior bill Invoice01. Free text field can bring attention to reason for credit etc.</cbc:Note><cbc:DocumentCurrencyCode>AUD</cbc:DocumentCurrencyCode><cbc:BuyerReference>Simple solar plan</cbc:BuyerReference><cac:InvoicePeriod><cbc:StartDate>2022-06-15</cbc:StartDate><cbc:EndDate>2022-07-15</cbc:EndDate></cac:InvoicePeriod><cac:BillingReference><cac:InvoiceDocumentReference><cbc:ID>Invoice01</cbc:ID><cbc:IssueDate>2022-07-29</cbc:IssueDate></cac:InvoiceDocumentReference></cac:BillingReference><cac:AdditionalDocumentReference><cbc:ID>Invoice03.pdf</cbc:ID><cac:Attachment><cbc:EmbeddedDocumentBinaryObject mimeCode="application/pdf" filename="Invoice03.pdf">UGxhaW4gdGV4dCBpbiBwbGFjZSBvZiBwZGYgYXR0YWNobWVudCBmb3Igc2FtcGxlIGludm9pY2Vz</cbc:EmbeddedDocumentBinaryObject></cac:Attachment></cac:AdditionalDocumentReference><cac:AccountingSupplierParty><cac:Party><cbc:EndpointID schemeID="0151">47555222000</cbc:EndpointID><cac:PostalAddress><cbc:CityName>Harrison</cbc:CityName><cbc:PostalZone>2912</cbc:PostalZone><cbc:CountrySubentity>NSW</cbc:CountrySubentity><cac:Country><cbc:IdentificationCode>AU</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyLegalEntity><cbc:RegistrationName>Grey Roo Energy</cbc:RegistrationName><cbc:CompanyID schemeID="0151">47555222000</cbc:CompanyID></cac:PartyLegalEntity></cac:Party></cac:AccountingSupplierParty><cac:AccountingCustomerParty><cac:Party><cbc:EndpointID schemeID="0151">47555222000</cbc:EndpointID><cac:PartyIdentification><cbc:ID>AccountNumber123</cbc:ID></cac:PartyIdentification><cac:PostalAddress><cbc:StreetName>100 Queen Street</cbc:StreetName><cbc:CityName>Sydney</cbc:CityName><cbc:PostalZone>2000</cbc:PostalZone><cbc:CountrySubentity>NSW</cbc:CountrySubentity><cac:Country><cbc:IdentificationCode>AU</cbc:IdentificationCode></cac:Country></cac:PostalAddress><cac:PartyLegalEntity><cbc:RegistrationName>Trotters Incorporated</cbc:RegistrationName><cbc:CompanyID schemeID="0151">91888222000</cbc:CompanyID></cac:PartyLegalEntity><cac:Contact><cbc:Name>Lisa Johnson</cbc:Name></cac:Contact></cac:Party></cac:AccountingCustomerParty><cac:TaxTotal><cbc:TaxAmount currencyID="AUD">-15.94</cbc:TaxAmount><cac:TaxSubtotal><cbc:TaxableAmount currencyID="AUD">-159.43</cbc:TaxableAmount><cbc:TaxAmount currencyID="AUD">-15.94</cbc:TaxAmount><cac:TaxCategory><cbc:ID>S</cbc:ID><cbc:Percent>10</cbc:Percent><cac:TaxScheme><cbc:ID>GST</cbc:ID></cac:TaxScheme></cac:TaxCategory></cac:TaxSubtotal></cac:TaxTotal><cac:LegalMonetaryTotal><cbc:LineExtensionAmount currencyID="AUD">-159.43</cbc:LineExtensionAmount><cbc:TaxExclusiveAmount currencyID="AUD">-159.43</cbc:TaxExclusiveAmount><cbc:TaxInclusiveAmount currencyID="AUD">-175.37</cbc:TaxInclusiveAmount><cbc:PayableAmount currencyID="AUD">-175.37</cbc:PayableAmount></cac:LegalMonetaryTotal><cac:InvoiceLine><cbc:ID>1</cbc:ID><cbc:InvoicedQuantity unitCode="KWH">-325.2</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="AUD">-129.04</cbc:LineExtensionAmount><cac:Item><cbc:Name>Adjustment - reverse prior Electricity charges - all day rate NMI 9000074677</cbc:Name><cac:ClassifiedTaxCategory><cbc:ID>S</cbc:ID><cbc:Percent>10</cbc:Percent><cac:TaxScheme><cbc:ID>GST</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="AUD">0.3968</cbc:PriceAmount></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>2</cbc:ID><cbc:InvoicedQuantity unitCode="DAY">-31</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="AUD">-30.39</cbc:LineExtensionAmount><cac:Item><cbc:Name>Adjustment - reverse prior Supply charge</cbc:Name><cac:ClassifiedTaxCategory><cbc:ID>S</cbc:ID><cbc:Percent>10</cbc:Percent><cac:TaxScheme><cbc:ID>GST</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="AUD">0.9803</cbc:PriceAmount></cac:Price></cac:InvoiceLine><cac:InvoiceLine><cbc:ID>3</cbc:ID><cbc:InvoicedQuantity unitCode="DAY">-31</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="AUD">-30.39</cbc:LineExtensionAmount><cac:Item><cbc:Name>Adjustment - reverse prior Supply charge</cbc:Name><cac:ClassifiedTaxCategory><cbc:ID>S</cbc:ID><cbc:Percent>10</cbc:Percent><cac:TaxScheme><cbc:ID>GST</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="AUD">0.9803</cbc:PriceAmount></cac:Price></cac:InvoiceLine></Invoice>'
-
-cs = ConversionService()
-cs.xml_to_json(xml_from_json_str_1)
