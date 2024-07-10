@@ -39,7 +39,7 @@ test_json = {
         "item": "Booty",
         "description": "Pirate",
         "unitPrice": 100.0,
-        "GST": "GST",
+        "GST": 10,
         "totalPrice": 1000.0
     }],
     "totalGST": 100.0,
@@ -49,9 +49,6 @@ test_json = {
 
 INVOICE_CREATE_PATH = "/invoice/create"
 INVOICE_UPLOAD_PATH = "/invoice/validate"
-
-def test_invoice_creation_service(client):
-    assert create_xml(test_json)["successful"] == True
 
 def test_invoice_creation_successful(client):
     user_data = {

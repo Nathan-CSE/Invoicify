@@ -6,7 +6,7 @@ from xml.etree.ElementTree import ParseError
 from jwt.exceptions import InvalidSignatureError
 from flask import request
 
-from models import db, User
+from models import db, User, Invoice
 
 def salt_and_hash(data):
     return hashlib.sha512((data + os.getenv("SALT")).encode('UTF-8')).hexdigest()
