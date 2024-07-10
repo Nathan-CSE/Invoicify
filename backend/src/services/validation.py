@@ -56,18 +56,20 @@ class ValidationService():
             Returns {}
         '''
         try:
-            self._check_for_invalid_xml(base64_decode(content))
+            # self._check_for_invalid_xml(base64_decode(content))
 
             # generate a new access token if missing or has expired
-            access_token = ValidationAccessToken.query.first()
-            if not access_token or datetime.now() - access_token.updated_at >= timedelta(hours=1):
-                access_token = self._generate_token(access_token)
-
+            # access_token = ValidationAccessToken.query.first()
+            # if not access_token or datetime.now() - access_token.updated_at >= timedelta(hours=1):
+            #     access_token = self._generate_token(access_token)
+                
+            access_token = "eyJraWQiOiJqUWhhc1B3MXlhODluWVV5VDFIWHNab2dJWEJmRXlZWEZPeCtxV01WZHVJPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiI3ZDMwYmk4N2lwdGVnYnJmMmJwMzdwNDJnZyIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiZWF0XC9yZWFkIiwiYXV0aF90aW1lIjoxNzIwNjAxMDQ4LCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAuZXUtY2VudHJhbC0xLmFtYXpvbmF3cy5jb21cL2V1LWNlbnRyYWwtMV9xdkNTNFdSdnoiLCJleHAiOjE3MjA2MDQ2NDgsImlhdCI6MTcyMDYwMTA0OCwidmVyc2lvbiI6MiwianRpIjoiMWU3YjgxZDktYWM0Ny00NmNiLTg1N2EtYmEzY2FiOGI3ZjIwIiwiY2xpZW50X2lkIjoiN2QzMGJpODdpcHRlZ2JyZjJicDM3cDQyZ2cifQ.hjK7H4SeIKHPj3BrpV6LzycS5j-gepUwfTfFowKgYai7VzYyCIoZpcW4KivcNZLN4EGjULwPDUY-uIyhtje95xwPh0BYz_2P9ChY3acx6P9weUKYx7qfKWhAPOv9Baxz3FamPvkXQgT7ayDs-XfNC9R378YdiVahIjZJcIO9118geHqMQygS3twRr_jZIashEp5KbL1SXUrQfDyqFYAKUrACbSVKai1ygFpVDrzk8kP83bRXoQCYaZZGnDAcBpncmLZl0HC8i-TXjjmreis0Mw1eV72i2mLaFtuODpsopBE5njQeA6UkdqBRE1YI7Rwd9f5DMPSTiWEaowV9aezsuw"
+                
             res = requests.post(
                 url=self._VALIDATION_URL,
                 headers={
                     "Accept-Language": "en",
-                    "Authorization": f"Bearer {access_token.token}"
+                    "Authorization": f"Bearer {access_token}"
                 },
                 params={
                     "rules": ",".join(rules)
