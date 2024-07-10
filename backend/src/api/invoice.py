@@ -470,32 +470,35 @@ class CreateAPI(Resource):
         if not res:
             return make_response(jsonify({"message": f"the file uploaded is not a pdf/json, please upload a valid file"}), 400)
         
-        vs = ValidationService()
+        # vs = ValidationService()
         cs = ConversionService()
         
         ublretval = []
         for f in request.files.getlist('files'):
             if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
                 pass
-            json_str = f.read()
+            json_str = f.read().decode('utf-8')
+        
             
             try:
-                ubl = cs.json_to_xml(json_str.decode('utf-8'), "AUNZ_PEPPOL_1_0_10")
+                ubl = cs.json_to_xml(json_str, "AUNZ_PEPPOL_1_0_10")
             except Exception as err:
                 return make_response(jsonify({"message": str(err)}), 400)
             
-            retval = vs.validate_xml(
-                filename=f.filename,
-                content=base64_encode(ubl.encode()),
-                rules=["AUNZ_PEPPOL_1_0_10"]
-            )
+            
+            # retval = vs.validate_xml(
+            #     filename=f.filename,
+            #     content=base64_encode(ubl.encode()),
+            #     rules=["AUNZ_PEPPOL_1_0_10"]
+            # )
             temp_xml_filename = f.filename.replace('.json', '.xml')
-            with open(temp_xml_filename, 'wb') as xml_file:
-                xml_file.write(ubl.encode('utf-8'))
+            db_insert(Invoice(name=temp_xml_filename, completed_ubl=base64_encode(ubl.encode())), fields=json.dumps(json_str), rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
+            # with open(temp_xml_filename, 'wb') as xml_file:
+            #     xml_file.write(ubl.encode('utf-8'))
 
-            if retval["successful"] is not True:
-                retmessage = retval["report"]
-                return make_response(jsonify({"message": retmessage}), 400)
+            # if retval["successful"] is not True:
+            #     retmessage = retval["report"]
+            #     return make_response(jsonify({"message": retmessage}), 400)
 
             ublretval.append((temp_xml_filename, ubl)) 
         
