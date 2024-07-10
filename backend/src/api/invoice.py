@@ -469,8 +469,9 @@ class CreateAPI(Resource):
         res = ups.handle_file_upload(request)
         if not res:
             return make_response(jsonify({"message": f"the file uploaded is not a pdf/json, please upload a valid file"}), 400)
+        args = upload_parser.parse_args()
+        rules = args['rules']
         
-        # vs = ValidationService()
         cs = ConversionService()
         
         ublretval = []
@@ -479,28 +480,17 @@ class CreateAPI(Resource):
                 pass
             json_str = f.read().decode('utf-8')
         
-            
             try:
-                ubl = cs.json_to_xml(json_str, "AUNZ_PEPPOL_1_0_10")
+                ubl = cs.json_to_xml(json_str, rules)
             except Exception as err:
                 return make_response(jsonify({"message": str(err)}), 400)
             
-            
-            # retval = vs.validate_xml(
-            #     filename=f.filename,
-            #     content=base64_encode(ubl.encode()),
-            #     rules=["AUNZ_PEPPOL_1_0_10"]
-            # )
             temp_xml_filename = f.filename.replace('.json', '.xml')
-            db_insert(Invoice(name=temp_xml_filename, completed_ubl=base64_encode(ubl.encode())), fields=json.dumps(json_str), rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
-            # with open(temp_xml_filename, 'wb') as xml_file:
-            #     xml_file.write(ubl.encode('utf-8'))
-
-            # if retval["successful"] is not True:
-            #     retmessage = retval["report"]
-            #     return make_response(jsonify({"message": retmessage}), 400)
-
-            ublretval.append((temp_xml_filename, ubl)) 
+            invoice = Invoice(name=temp_xml_filename, completed_ubl=base64_encode(ubl.encode()), fields=json.dumps(json_str), rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
+            db_insert(invoice)
+            
+            # db_insert(Invoice(name=temp_xml_filename, completed_ubl=base64_encode(ubl.encode()), fields=json.dumps(json_str), rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
+            ublretval.append((temp_xml_filename, invoice.id, json.loads(json_str))) 
         
         return make_response(jsonify({"message": "Invoice(s) created successfully", "data": ublretval}), 200)
         
