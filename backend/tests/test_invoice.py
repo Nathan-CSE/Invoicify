@@ -517,6 +517,8 @@ def test_uploadcreate_json(client, user):
     print(response_body['message'] )
     assert res.status_code == 200
     assert response_body['message'] == "Invoice(s) created successfully"
+    assert not (len(response_body['data']) == 0 )
+    
 
 def test_uploadcreate_invalidfile(client, user):
     data = {}
@@ -535,13 +537,12 @@ def test_uploadcreate_invalidfile(client, user):
     response_body = res.get_json()
 
     assert res.status_code == 400
-    # assert response_body['message'] == "test.txt is not a PDF or JSON, please remove that file and try again"
+    assert response_body['message'] == "the file uploaded is not a pdf/json, please upload a valid file"
     
 def test_uploadcreate_invalidjson(client, user):
     data = {}
     data['files'] = [(io.BytesIO(json_str_fail.encode("utf-8")), 'test.json')]
     
-
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
         headers={
