@@ -490,7 +490,8 @@ class CreateAPI(Resource):
             db_insert(invoice)
             
             # db_insert(Invoice(name=temp_xml_filename, completed_ubl=base64_encode(ubl.encode()), fields=json.dumps(json_str), rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
-            ublretval.append((temp_xml_filename, invoice.id, json.loads(json_str))) 
+            ublretval.append({
+                "filename": temp_xml_filename, "invoiceId": invoice.id, "retJson": json.loads(json_str)}) 
         
         return make_response(jsonify({"message": "Invoice(s) created successfully", "data": ublretval}), 200)
         

@@ -514,8 +514,6 @@ def test_uploadcreate_json(client, user):
         follow_redirects=True
     )
     response_body = res.get_json()
-
-    print(response_body['message'] )
     
     assert res.status_code == 200
     assert response_body['message'] == "Invoice(s) created successfully"
@@ -556,6 +554,8 @@ def test_uploadcreate_invalidjson(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
-
+    response_body = res.get_json()
     assert res.status_code == 200
+    assert response_body['message'] == "Invoice(s) created successfully"
+    
 
