@@ -457,7 +457,7 @@ class ValidationAPI(Resource):
 @invoice_ns.route("/uploadCreate")
 class CreateAPI(Resource):
     @invoice_ns.doc(
-    description="Upload endpoint for PDFs and Jsons to create UBLs",
+    description="Upload endpoint for PDFs and Jsons to create UBLs, returns a list with each item containing the xml name, id of the xml, and json contents",
     responses={
         200: 'Invoice(s) created successfully',
         400: 'Bad request',
@@ -489,7 +489,6 @@ class CreateAPI(Resource):
             invoice = Invoice(name=temp_xml_filename, completed_ubl=base64_encode(ubl.encode()), fields=json.dumps(json_str), rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
             db_insert(invoice)
             
-            # db_insert(Invoice(name=temp_xml_filename, completed_ubl=base64_encode(ubl.encode()), fields=json.dumps(json_str), rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
             ublretval.append({
                 "filename": temp_xml_filename, "invoiceId": invoice.id, "retJson": json.loads(json_str)}) 
         
