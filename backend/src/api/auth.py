@@ -1,45 +1,20 @@
 import secrets
 
 from flask import request, jsonify, make_response
-from flask_restx import Namespace, Resource, fields
+from flask_restx import Resource
 
 from models import db, User
 from src.services.utils import salt_and_hash, create_jwt_token, db_insert
 from src.services.send_mail import auth_request
+from src.namespaces.auth import AuthNamespace
 
-auth_ns = Namespace('auth', description='Operations related to authentication')
-
-email_field = fields.String(default="jane.smith@example.com", format="email", required=True)
-password_field = fields.String(default="password123", format="password", required=True)
-updated_password_field = fields.String(default="newpassword123", required=True)
-
-user_authentication_fields = auth_ns.model('UserAuthentication', {
-    "email": email_field,
-    "password": password_field
-})
-
-user_send_code_fields = auth_ns.model("UserSendCode", {
-    "email": email_field
-})
-
-user_reset_pw_fields = auth_ns.model("UserResetPassword", {
-    "email": email_field,
-    "reset_code": fields.String(default="XXXXXXXX", required=True),
-    "updated_password": updated_password_field
-})
-
-user_change_pw_fields = auth_ns.model("UserChangePassword", {
-    "email": email_field,
-    "password": password_field,
-    "updated_password": updated_password_field
-})
-
+auth_ns = AuthNamespace(name='auth', description='Operations related to authentication')
 
 @auth_ns.route("/register")
 class RegisterAPI(Resource):
     @auth_ns.doc(
     description="Registers a new user and returns their JWT token",
-    body=user_authentication_fields,
+    body=auth_ns.get_auth_fields(),
     responses={
         201: 'Created successfully',
         400: 'Bad request',
@@ -65,7 +40,7 @@ class RegisterAPI(Resource):
 class LoginAPI(Resource):
     @auth_ns.doc(
     description="Login an existing user and returns their JWT token",
-    body=user_authentication_fields,
+    body=auth_ns.get_auth_fields(),
     responses={
         200: 'Success',
         400: 'Bad request',
@@ -88,7 +63,7 @@ class LoginAPI(Resource):
 class ChangePWAPI(Resource):
     @auth_ns.doc(
     description="Changes a user's password",
-    body=user_change_pw_fields,
+    body=auth_ns.get_change_pw_fields(),
     responses={
         200: 'Success',
         400: 'Bad request',
@@ -118,7 +93,7 @@ class ChangePWAPI(Resource):
 class SendCode(Resource):
     @auth_ns.doc(
     description="Sends an email to the user with a reset code",
-    body=user_send_code_fields,
+    body=auth_ns.get_send_code_fields(),
     responses={
         200: 'Sent successfully',
         400: 'Bad request',
@@ -143,7 +118,7 @@ class SendCode(Resource):
 class ResetPass(Resource):
     @auth_ns.doc(
     description="Resets the users password if the provided reset-code is correct",
-    body=user_reset_pw_fields,
+    body=auth_ns.get_reset_pw_fields(),
     responses={
         204: 'Reset successfully',
         400: 'Bad request',
@@ -166,12 +141,4 @@ class ResetPass(Resource):
             print(user.reset_code)
             print(data["reset_code"])
             return make_response(jsonify({"message": "Your code does not match"}), 400)
-
-
-        
-
-
-            
-        
-      
         

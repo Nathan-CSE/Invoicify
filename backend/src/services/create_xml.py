@@ -1,11 +1,8 @@
-from flask import Flask, request, jsonify, make_response
-from flask_restx import Namespace, Resource, fields
-
-from models import db, Invoice
-from src.services.utils import db_insert
-from src.services.validation import ValidationService
 import base64
 
+from models import Invoice
+from src.services.utils import db_insert
+from src.services.validation import ValidationService
 
 template = """<Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
     <cbc:CustomizationID>urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0</cbc:CustomizationID>

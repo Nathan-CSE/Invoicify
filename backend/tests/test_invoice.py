@@ -262,8 +262,8 @@ def test_validate_upload_success(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
-
     response_body = res.get_json()
+    print(response_body)
     
     assert res.status_code == 200
     assert response_body['message'] == "Invoice validated sucessfully"
