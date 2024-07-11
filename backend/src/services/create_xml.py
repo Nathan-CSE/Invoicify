@@ -154,14 +154,14 @@ def create_xml(file, user):
             total_after_tax=file["totalAmount"]
         )
     except Exception as e:
-        raise Exception("Couldn't make UBL")
+        raise Exception(f"Couldn't make UBL: {str(e)}")
     
 
     content_encode = base64.b64encode(content.encode('utf-8')).decode('utf-8')
     va = ValidationService()
     result = va.validate_xml("test.xml", content_encode, ["AUNZ_PEPPOL_1_0_10"])
     if result["successful"] == True:
-        db_insert(Invoice(name=file["invoiceName"], fields=content,  user_id=user.id, is_ready=True))
+        db_insert(Invoice(name=file["invoiceName"], fields=content,  rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=True))
         return content
     else:
         raise ValueError(result)
