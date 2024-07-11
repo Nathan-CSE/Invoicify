@@ -47,7 +47,7 @@ create_ubl_fields = invoice_ns.model('CreateUBLFields', {
     "totalAmount": fields.Float(default=0.1)
 })
 @invoice_ns.route("/create")
-class Create(Resource):
+class CreateAPI(Resource):
     @invoice_ns.doc(
         description="Creates a UBL",
         body=create_ubl_fields,
@@ -69,7 +69,7 @@ class Create(Resource):
             return make_response(jsonify({"message": str(e)}), 400)
         
 @invoice_ns.route("/download")
-class SendUBL(Resource):
+class SendUBLAPI(Resource):
     @invoice_ns.doc(
     description="""Use this api to download xml
         input:
@@ -313,7 +313,7 @@ edit_fields = invoice_ns.model("EditUBLFields", {
     "rule": fields.String(default="AUNZ_PEPPOL_1_0_10")
 })
 @invoice_ns.route("/edit/<int:id>")
-class Edit(Resource):
+class EditAPI(Resource):
     @invoice_ns.doc(
         description="Ability to edit UBLs",
         body=edit_fields,
@@ -329,34 +329,19 @@ class Edit(Resource):
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 400)
 
-        try:
-            cs = ConversionService()
-            xml_str = base64_encode(cs.json_to_xml(json.dumps(data["fields"]), data["rule"]).encode())
-
-            vs = ValidationService()
-            res = vs.validate_xml(
-                filename=data["name"],
-                content=xml_str,
-                rules=[data["rule"]]
-            )
-        except Exception as err:
-            return make_response(jsonify({"message": str(err)}), 400)
-
-        invoice.name = data["name"]
-        invoice.fields = data["fields"] 
-        invoice.rule = data["rule"]
-        if res["successful"]:
-            invoice.completed_ubl = xml_str
-            invoice.is_ready = True
-        else:
+        if invoice.fields != data["fields"] or invoice.rule != data["rule"]:
             invoice.completed_ubl = None
             invoice.is_ready = False
+
+        invoice.name = data["name"]
+        invoice.rule = data["rule"]
+        invoice.fields = data["fields"] 
 
         db.session.commit()
         return make_response(jsonify(invoice.to_dict()), 204)
 
 @invoice_ns.route("/delete/<int:id>")
-class Delete(Resource):
+class DeleteAPI(Resource):
     @invoice_ns.doc(
         description="Ability to delete UBLs",
         responses={
@@ -377,7 +362,7 @@ class Delete(Resource):
 history_fields = reqparse.RequestParser()
 history_fields.add_argument('is_ready', type=bool, choices=['true', 'false'], help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
 @invoice_ns.route("/history")
-class History(Resource):
+class HistoryAPI(Resource):
     def check_is_ready_param(self, is_ready):
         is_ready = is_ready.lower().capitalize()
         if is_ready == "True":
@@ -413,7 +398,7 @@ upload_parser.add_argument('files', location='files',
                            type=FileStorage, required=True)
 upload_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
 @invoice_ns.route("/validate")
-class ValidationAPI(Resource):
+class UploadValidationAPI(Resource):
     @invoice_ns.doc(
     description="Upload endpoint for validation of UBL2.1 XML",
     responses={
@@ -434,7 +419,6 @@ class ValidationAPI(Resource):
         rules = args['rules']
         if not res:
             return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
-        
 
         vs = ValidationService()
 
@@ -452,3 +436,19 @@ class ValidationAPI(Resource):
         else:
             retmessage = retval["report"]
             return make_response(jsonify({"message": retmessage}), 203)
+
+@invoice_ns.route("/validate/<int:id>")
+class ValidationAPI(Resource):
+    @invoice_ns.doc(
+        description="Ability to validate created invoices",
+        responses={
+            200: "Validation Complete",
+            400: "Bad Request"
+        }
+    )
+    @token_required
+    def get(self, id, user):
+        if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
+            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+        
+        return make_response(jsonify({}), 200)
