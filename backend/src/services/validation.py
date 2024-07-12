@@ -62,7 +62,6 @@ class ValidationService():
             access_token = ValidationAccessToken.query.first()
             if not access_token or datetime.now() - access_token.updated_at >= timedelta(hours=1):
                 access_token = self._generate_token(access_token)
-                
             res = requests.post(
                 url=self._VALIDATION_URL,
                 headers={
