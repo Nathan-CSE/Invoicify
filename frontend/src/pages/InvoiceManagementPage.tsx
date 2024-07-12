@@ -1,6 +1,7 @@
 import {
   Box,
   Breadcrumbs,
+  Button,
   Card,
   CardActionArea,
   CardContent,
@@ -15,7 +16,6 @@ import { Link } from 'react-router-dom';
 import ErrorModal from '../components/ErrorModal';
 import { ReactComponent as InvoiceSvg } from '../assets/invoice.svg';
 import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
-import { TempleBuddhist } from '@mui/icons-material';
 
 export default function InvoiceManagement(props: { token: string }) {
   interface Fields {
@@ -23,11 +23,13 @@ export default function InvoiceManagement(props: { token: string }) {
   }
 
   interface Details {
-    fields: Fields;
     id: number;
-    is_ready: boolean;
     name: string;
+    completed_ubl: any;
+    fields: Fields;
+    rule: string;
     user_id: number;
+    is_ready: boolean;
   }
 
   const [details, setDetails] = React.useState<Details[]>([]);
@@ -120,13 +122,16 @@ export default function InvoiceManagement(props: { token: string }) {
               {items.is_ready ? (
                 <>
                   <Typography variant='subtitle1' gutterBottom>
-                    Status: Verified
+                    Status: Validated
+                  </Typography>
+                  <Typography variant='subtitle1' gutterBottom>
+                    Validated with {items.rule}
                   </Typography>
                 </>
               ) : (
                 <>
                   <Typography variant='subtitle1' gutterBottom>
-                    Status: Unverified
+                    Status: Unvalidated
                   </Typography>
                 </>
               )}
@@ -159,7 +164,18 @@ export default function InvoiceManagement(props: { token: string }) {
           width: '90%',
         }}
       >
-        <Typography variant='h4'>Invoice Management</Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            width: '100%',
+            mb: 2,
+          }}
+        >
+          <Typography variant='h4'>Invoice Management</Typography>
+          <Button variant='contained'>FILTER</Button>
+        </Box>
         <Divider sx={{ borderColor: 'black', width: '100%' }} />
         <Breadcrumbs
           aria-label='breadcrumb'
