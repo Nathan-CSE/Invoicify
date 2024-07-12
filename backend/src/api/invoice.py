@@ -412,7 +412,7 @@ upload_parser = invoice_ns.parser()
 upload_parser.add_argument('files', location='files',
                            type=FileStorage, required=True)
 upload_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
-@invoice_ns.route("/validate")
+@invoice_ns.route("/uploadValidate")
 class ValidationAPI(Resource):
     @invoice_ns.doc(
     description="Upload endpoint for validation of UBL2.1 XML",

@@ -49,7 +49,7 @@ test_json = {
 }
 
 INVOICE_CREATE_PATH = "/invoice/create"
-INVOICE_UPLOAD_PATH = "/invoice/validate"
+INVOICE_UPLOAD_PATH = "/invoice/uploadValidate"
 INVOICE_UPLOAD_CREATE_PATH = "/invoice/uploadCreate"
 
 def test_invoice_creation_successful(client):
