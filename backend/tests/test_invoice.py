@@ -6,6 +6,7 @@ from tests.fixtures import client
 from models import User
 from src.services.create_xml import create_xml
 from src.services.utils import db_insert, salt_and_hash
+from tests.const_data import json_str_1, json_str_fail
 
 test_json = {
     "invoiceName": "test",
@@ -48,7 +49,8 @@ test_json = {
 }
 
 INVOICE_CREATE_PATH = "/invoice/create"
-INVOICE_UPLOAD_PATH = "/invoice/validate"
+INVOICE_UPLOAD_PATH = "/invoice/uploadValidate"
+INVOICE_UPLOAD_CREATE_PATH = "/invoice/uploadCreate"
 
 def test_invoice_creation_successful(client):
     user_data = {
@@ -490,7 +492,95 @@ def test_validate_upload_unsucessful(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
+
     response_body = res.get_json()
 
+    print(response_body['message'])
     assert res.status_code == 203
     assert response_body['message']["successful"] is False
+
+def test_uploadcreate_json(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(json_str_1.encode("utf-8")), 'test.json')]
+    
+    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+
+    res = client.post(
+        INVOICE_UPLOAD_CREATE_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+    response_body = res.get_json()
+    
+    assert res.status_code == 200
+    assert response_body['message'] == "Invoice(s) created successfully"
+    assert (len(response_body['data']) == 1)
+    
+
+def test_uploadcreate_invalid_and_valid_json(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(json_str_1.encode("utf-8")), 'test.json'),(io.BytesIO(json_str_fail.encode("utf-8")), 'test.json')]
+    
+    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+
+    res = client.post(
+        INVOICE_UPLOAD_CREATE_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+    response_body = res.get_json()
+    
+    assert res.status_code == 200
+    assert response_body['message'] == "Invoice(s) created successfully"
+    assert (len(response_body['data']) == 2)
+    
+
+def test_uploadcreate_invalidfile(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(b'fail, not pdf/json'),
+        'test.txt')]
+    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+
+    res = client.post(
+        INVOICE_UPLOAD_CREATE_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+    response_body = res.get_json()
+
+    assert res.status_code == 400
+    assert response_body['message'] == "the file uploaded is not a pdf/json, please upload a valid file"
+    
+def test_uploadcreate_invalidjson(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(json_str_fail.encode("utf-8")), 'test.json')]
+    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+    
+    res = client.post(
+        INVOICE_UPLOAD_CREATE_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+    response_body = res.get_json()
+    assert res.status_code == 200
+    assert response_body['message'] == "Invoice(s) created successfully"
+    assert (len(response_body['data']) == 1)
+    
+    
+
