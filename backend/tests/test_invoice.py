@@ -1,11 +1,9 @@
 import io
-import pytest
 import json
 
-from tests.fixtures import client
-from models import User
-from src.services.create_xml import create_xml
+from models import User, Invoice
 from src.services.utils import db_insert, salt_and_hash
+from tests.fixtures import client, user, user_2, invoice, invoice_2
 
 test_json = {
     "invoiceName": "test",
@@ -49,6 +47,10 @@ test_json = {
 
 INVOICE_CREATE_PATH = "/invoice/create"
 INVOICE_UPLOAD_PATH = "/invoice/validate"
+INVOICE_SAVE_PATH = "/invoice/save"
+INVOICE_EDIT_PATH = "/invoice/edit"
+INVOICE_DELETE_PATH = "/invoice/delete"
+INVOICE_HISTORY_PATH = "/invoice/history"
 
 def test_invoice_creation_successful(client):
     user_data = {
@@ -81,13 +83,292 @@ def test_invoice_creation_unauthorised(client):
     )
 
     assert res.status_code == 403
-    
-@pytest.fixture
-def user(client):
-    user = User(email="abc@gmail.com", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM")
-    
-    db_insert(user)
-    return user
+
+def test_invoice_save_successful(client, user):
+    data = {
+        "name": "Testing123",
+        "fields": {
+            "field 1": "hi"
+        }
+    }
+
+    res = client.post(
+        INVOICE_SAVE_PATH,
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 201
+    assert len(Invoice.query.all()) > 0
+
+def test_invoice_save_invalid_fields_type(client, user):
+    data = {
+        "name": "Testing123",
+        # should be json
+        "fields": "test"
+    }
+
+    res = client.post(
+        INVOICE_SAVE_PATH,
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 400
+
+def test_invoice_save_invalid_name_type(client, user):
+    data = {
+        # should be str
+        "name": 5,
+        "fields": {
+            "field 1": "hi"
+        }
+    }
+
+    res = client.post(
+        INVOICE_SAVE_PATH,
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 400
+
+def test_invoice_edit_successful(client, user, invoice):
+    data = {
+        "name": "Testing123",
+        "fields": {
+            "field 1": "hi"
+        },
+        "rule": "AUNZ_PEPPOL_SB_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/{invoice.id}",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 204
+    assert invoice.name == "Testing123"
+    assert invoice.fields == {
+        "field 1": "hi"
+    }
+    assert invoice.rule == "AUNZ_PEPPOL_SB_1_0_10"
+    assert invoice.completed_ubl == None
+    assert invoice.is_ready == False
+
+def test_invoice_edit_invoice_does_not_exist(client, user):
+    data = {
+        "name": "Testing123",
+        "fields": {
+            "field 1": "hi"
+        },
+        "rule": "AUNZ_PEPPOL_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/1",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 404
+
+def test_invoice_edit_invoice_does_not_belong_to_user(client, user_2, invoice):
+    data = {
+        "name": "Testing123",
+        "fields": {
+            "field 1": "hi"
+        },
+        "rule": "AUNZ_PEPPOL_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/{invoice.id}",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user_2.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 404
+
+def test_invoice_edit_invoice_resets_is_ready_and_completed_ubl_if_fields_or_rule_changes(client, user, invoice_2):
+    data = {
+        "name": "test-invoice",
+        "fields": {
+            "field 1": "hi"
+        },
+        "rule": "AUNZ_PEPPOL_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/{invoice_2.id}",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 204
+    assert invoice_2.completed_ubl == None
+    assert invoice_2.is_ready == False
+
+    data = {
+        "name": "test-invoice",
+        "fields": {
+            "yo": "Yo"
+        },
+        "rule": "AUNZ_PEPPOL_SB_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/{invoice_2.id}",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 204
+    assert invoice_2.completed_ubl == None
+    assert invoice_2.is_ready == False
+
+def test_invoice_delete_successful(client, user, invoice):
+    res = client.delete(
+        f"{INVOICE_DELETE_PATH}/{invoice.id}",
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 200
+    assert Invoice.query.filter(Invoice.id==invoice.id).first() == None
+
+def test_invoice_delete_invoice_does_not_exist(client, user):
+    res = client.delete(
+        f"{INVOICE_DELETE_PATH}/1",
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 404
+
+def test_invoice_delete_invoice_does_not_belong_to_user(client, user_2, invoice):
+    res = client.delete(
+        f"{INVOICE_DELETE_PATH}/{invoice.id}",
+        headers={
+            "Authorisation": user_2.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 404
+
+def test_invoice_history_successful(client, user, invoice):
+    res = client.get(
+        INVOICE_HISTORY_PATH,
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+def test_invoice_history_successful_is_ready(client, user, invoice_2):
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=true",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=True",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+def test_invoice_history_successful_is_not_ready(client, user, invoice):
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=false",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=False",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+def test_invoice_history_only_returns_their_own_invoices(client, user, user_2, invoice, invoice_2):
+    res = client.get(
+        INVOICE_HISTORY_PATH,
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 2
+
+    res = client.get(
+        INVOICE_HISTORY_PATH,
+        headers={
+            "Authorisation": user_2.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 0
+
+def test_invoice_history_handles_invalid_query_param(client, user):
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=yo",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 400
 
 def test_validate_upload_success(client, user):
     data = {}
@@ -263,7 +544,6 @@ def test_validate_upload_success(client, user):
         follow_redirects=True
     )
     response_body = res.get_json()
-    print(response_body)
     
     assert res.status_code == 200
     assert response_body['message'] == "Invoice validated sucessfully"

@@ -1,6 +1,3 @@
-import os
-
-
 class UploadService():
     """
     Upload service for uploading files
@@ -59,8 +56,8 @@ class UploadService():
         '''
         if 'files' not in request.files:
             return False
-        
-        file = request.files["files"]
+
+        file = request.files['files']
         allowed_extensions = {'xml'}
 
         # Check if the file is XML

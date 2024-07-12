@@ -47,7 +47,7 @@ class InvoiceNamespace(Namespace):
 
     def get_history_fields(self):
         history_fields = reqparse.RequestParser()
-        history_fields.add_argument('is_ready', type=bool, choices=['true', 'false'], help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
+        history_fields.add_argument('is_ready', type=bool, choices=["true", "false"], required=False, help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
 
         return history_fields
     
@@ -253,5 +253,5 @@ class InvoiceNamespace(Namespace):
                     }
                 ]
             }, required=True),
-            "rule": fields.String(default="AUNZ_PEPPOL_1_0_10")
+            "rule": fields.String(required=True, default="AUNZ_PEPPOL_1_0_10")
         })

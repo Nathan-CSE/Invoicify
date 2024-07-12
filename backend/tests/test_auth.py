@@ -1,8 +1,7 @@
-import pytest
 import json
 
 from tests.fixtures import client
-from models import db, User
+from models import User
 from src.services.utils import salt_and_hash, create_jwt_token, db_insert
 
 REGISTER_PATH = "/auth/register"

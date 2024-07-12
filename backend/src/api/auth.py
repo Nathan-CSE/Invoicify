@@ -90,7 +90,7 @@ class ChangePWAPI(Resource):
         return make_response(jsonify({"message": "Your password has been changed successfully"}),200)
 
 @auth_ns.route("/reset-code")
-class SendCode(Resource):
+class SendCodeAPI(Resource):
     @auth_ns.doc(
     description="Sends an email to the user with a reset code",
     body=auth_ns.get_send_code_fields(),
@@ -115,7 +115,7 @@ class SendCode(Resource):
         return make_response(jsonify({"message": "Success"}), 200)
 
 @auth_ns.route("/reset-pw")
-class ResetPass(Resource):
+class ResetPassAPI(Resource):
     @auth_ns.doc(
     description="Resets the users password if the provided reset-code is correct",
     body=auth_ns.get_reset_pw_fields(),
