@@ -49,7 +49,7 @@ test_json = {
 }
 
 INVOICE_CREATE_PATH = "/invoice/create"
-INVOICE_UPLOAD_PATH = "/invoice/uploadValidate"
+INVOICE_UPLOAD_VALIDATION_PATH = "/invoice/uploadValidate"
 INVOICE_UPLOAD_CREATE_PATH = "/invoice/uploadCreate"
 
 def test_invoice_creation_successful(client):
@@ -256,7 +256,7 @@ def test_validate_upload_success(client, user):
         '''),
         'test.xml')]
     res = client.post(
-        INVOICE_UPLOAD_PATH,
+        INVOICE_UPLOAD_VALIDATION_PATH,
         headers={
             "Authorisation": user.token
         },
@@ -436,7 +436,7 @@ def test_validate_upload_fail_rules(client, user):
         '''),
         'test.xml')]
     res = client.post(
-        INVOICE_UPLOAD_PATH,
+        INVOICE_UPLOAD_VALIDATION_PATH,
         headers={
             "Authorisation": user.token
         },
@@ -456,7 +456,7 @@ def test_validate_upload_nonXML(client, user):
         'test.pdf')]
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'
     res = client.post(
-        INVOICE_UPLOAD_PATH,
+        INVOICE_UPLOAD_VALIDATION_PATH,
         headers={
             "Authorisation": user.token
         },
@@ -484,7 +484,7 @@ def test_validate_upload_unsucessful(client, user):
         'test.xml')]
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'
     res = client.post(
-        INVOICE_UPLOAD_PATH,
+        INVOICE_UPLOAD_VALIDATION_PATH,
         headers={
             "Authorisation": user.token
         },
