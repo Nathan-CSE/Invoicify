@@ -28,7 +28,7 @@ seller_fields = invoice_ns.model("Seller", {
 buyer_fields= invoice_ns.clone("Buyer", seller_fields)
 invoice_item_fields = invoice_ns.model("InvoiceItem", {
     "quantity": fields.Integer(),
-    "unitCode": fields.Integer(),
+    "unitCode": fields.String(),
     "item": fields.String(),
     "description": fields.String(),
     "unitPrice": fields.Float(default=0.1),
