@@ -21,7 +21,7 @@ import { DropzoneArea } from "mui-file-dropzone";
 export default function InvoiceCreation(props: { token: string; }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [file, setFile] = React.useState<File[]>([]);
+  const [file, setFile] = React.useState<File>();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -32,20 +32,32 @@ export default function InvoiceCreation(props: { token: string; }) {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
-    handleOpen();
+    // handleOpen();
 
-    console.log('file to be sent: ', file);
+
+    
+    const formData = new FormData();
+
+    if (file) {
+      formData.append("files", file);
+    }
+
+    // console.log('file to be sent: ', file);
 
     try {
-      // Placeholder until backend endpoint has been created
-      const response = await axios.post('http://localhost:5000/invoice/create', file, {
+      // need to delete aunz peppol
+      const response = await axios.post('http://localhost:5000/invoice/uploadCreate?rules=AUNZ_PEPPOL_1_0_10', formData, {
         headers: {
-          'Authorization': `${props.token}`
+          'Authorisation': `${props.token}`,
+          'Content-Type': 'multipart/form-data'
         }
       });
       
-      if (response.status === 201) {
-        navigate('/invoice-confirmation');
+      if (response.status === 200) {
+        console.log(response.data);
+        var str = JSON.stringify(response.data, null, 2);
+        console.log(str);
+        navigate('/invoice-confirmation-gui', { state: response.data });
 
       } else {
         console.log(response);
@@ -56,7 +68,7 @@ export default function InvoiceCreation(props: { token: string; }) {
     }
 
   };
-
+  
   return (
     <>
      
@@ -89,7 +101,7 @@ export default function InvoiceCreation(props: { token: string; }) {
             fileObjects={file}
             onChange={(loadedFile) => {
               console.log('Currently loaded:', loadedFile)
-              setFile(loadedFile);
+              setFile(loadedFile[0]);
             }}
             filesLimit={1}
           />

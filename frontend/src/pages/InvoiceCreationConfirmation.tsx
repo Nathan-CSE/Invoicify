@@ -8,6 +8,7 @@ import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Grid from '@mui/material/Grid';
+import axios from 'axios';
 
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const navigate = useNavigate();
@@ -17,6 +18,34 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
     console.log('this is the invoice data: ', invoiceData);
     navigate('/invoice-preview', { state: invoiceData });
   }
+
+  const handleDownload = async (event: any) => {
+    event.preventDefault();
+
+    // placeholder for invoice integer
+    const invoiceInteger = invoiceData.state.state;
+
+    try {
+      // Placeholder until backend endpoint has been created
+      const response = await axios.post('http://localhost:5000/invoice/download', invoiceInteger, {
+        headers: {
+          'Authorisation': `${props.token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      if (response.status === 200) {
+        navigate('/invoice-confirmation');
+
+      } else {
+        console.log(response);
+        alert("Unable to create invoice");
+      }
+    } catch (err) {
+      alert(err)
+    }
+
+  };
 
   return (
     <>
