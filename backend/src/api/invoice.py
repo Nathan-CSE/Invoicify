@@ -5,7 +5,7 @@ import io
 import json
 
 from models import db, Invoice
-from src.services.create_xml import create_xml, save_xml
+from src.services.create_xml import create_xml
 from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.conversion import ConversionService
@@ -52,7 +52,7 @@ class Create(Resource):
         description="Creates a UBL",
         body=create_ubl_fields,
         responses={
-            201: 'Invoice in XML',
+            201: 'Invoice ID',
             400: 'Bad request',
             422: 'Failed validation'
         },
