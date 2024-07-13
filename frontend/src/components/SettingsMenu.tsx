@@ -8,8 +8,15 @@ import axios, { AxiosError } from 'axios';
 import ErrorModal from './ErrorModal';
 
 export default function SettingsMenu(props: { id: number; token: string }) {
+  // Error checking
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
+
+  // Open state for the menu
   const [anchorEl, setAnchorEl] = React.useState<null | SVGElement>(null);
   const open = Boolean(anchorEl);
+
+  // Handle the mouse events of the menu
   const handleClick = (event: React.MouseEvent<SVGElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -17,9 +24,7 @@ export default function SettingsMenu(props: { id: number; token: string }) {
     setAnchorEl(null);
   };
 
-  const [openError, setOpenError] = React.useState(false);
-  const [error, setError] = React.useState('');
-
+  // Three functions to handle the settings option
   const handleEdit = () => {
     console.log('1');
   };
