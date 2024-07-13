@@ -472,21 +472,14 @@ class CreateAPI(Resource):
         if not res:
             return make_response(jsonify({"message": f"the file uploaded is not a pdf/json, please upload a valid file"}), 400)
         
-        cs = ConversionService()
-        
         ublretval = []
         for f in request.files.getlist('files'):
             if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
                 pass
             json_str = f.read().decode('utf-8')
-        
-            try:
-                ubl = cs.json_to_xml(json_str, 'AUNZ_PEPPOL_1_0_10')
-            except Exception as err:
-                return make_response(jsonify({"message": str(err)}), 400)
             
             temp_xml_filename = f.filename.replace('.json', '.xml')
-            invoice = Invoice(name=temp_xml_filename, completed_ubl=base64_encode(ubl.encode()), fields=json.dumps(json_str), rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
+            invoice = Invoice(name=temp_xml_filename, fields=json.dumps(json_str), user_id=user.id, is_ready=False)
             db_insert(invoice)
             
             ublretval.append({
