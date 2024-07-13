@@ -48,7 +48,7 @@ export default function InvoiceValidation(props: { token: string; }) {
 
     try {
       // Placeholder until backend endpoint has been created
-      const response = await axios.post(`http://localhost:5000/invoice/validate?rules=${ruleSet}`, formData, {
+      const response = await axios.post(`http://localhost:5000/invoice/uploadValidate?rules=${ruleSet}`, formData, {
         headers: {
           'Authorisation': `${props.token}`,
           'Content-Type': 'multipart/form-data'
