@@ -4,8 +4,10 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Box, Stack, Typography } from '@mui/material';
 import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
+import axios, { AxiosError } from 'axios';
+import ErrorModal from './ErrorModal';
 
-export default function SettingsMenu(props: { id: number }) {
+export default function SettingsMenu(props: { id: number; token: string }) {
   const [anchorEl, setAnchorEl] = React.useState<null | SVGElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<SVGElement>) => {
@@ -15,16 +17,45 @@ export default function SettingsMenu(props: { id: number }) {
     setAnchorEl(null);
   };
 
-  const handleEdit = () => {
-    console.log('1');
-  };
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
 
-  const handleDelete = () => {
+  const handleEdit = () => {
     console.log('1');
   };
 
   const handleSend = () => {
     console.log('1');
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:5000/invoice/delete/${props.id}`,
+        {
+          headers: {
+            Authorisation: `${props.token}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        alert('Delete confirmed');
+        window.location.reload();
+      } else {
+        setOpenError(true);
+        setError(response.data.message);
+      }
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      if (err.response) {
+        setOpenError(true);
+        setError(err.response.data.message);
+      } else if (error instanceof Error) {
+        setOpenError(true);
+        setError(error.message);
+      }
+    }
   };
 
   return (
@@ -86,6 +117,9 @@ export default function SettingsMenu(props: { id: number }) {
           </Box>
         </Stack>
       </Menu>
+      <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
+        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
+      </Box>
     </div>
   );
 }

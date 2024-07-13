@@ -108,7 +108,7 @@ export default function InvoiceManagement(props: { token: string }) {
           >
             <InvoiceSettings></InvoiceSettings>
           </Box> */}
-          <SettingsMenu id={items.id}></SettingsMenu>
+          <SettingsMenu id={items.id} token={props.token}></SettingsMenu>
           <CardActionArea>
             <CardContent
               sx={{
