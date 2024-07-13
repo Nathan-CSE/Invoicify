@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import ErrorModal from '../components/ErrorModal';
 import { ReactComponent as InvoiceSvg } from '../assets/invoice.svg';
 import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
+import SettingsMenu from '../components/SettingsMenu';
 
 export default function InvoiceManagement(props: { token: string }) {
   interface Fields {
@@ -95,7 +96,7 @@ export default function InvoiceManagement(props: { token: string }) {
             position: 'relative',
           }}
         >
-          <Box
+          {/* <Box
             sx={{
               position: 'absolute',
               zIndex: 1000,
@@ -106,7 +107,8 @@ export default function InvoiceManagement(props: { token: string }) {
             onClick={openSettings()}
           >
             <InvoiceSettings></InvoiceSettings>
-          </Box>
+          </Box> */}
+          <SettingsMenu></SettingsMenu>
           <CardActionArea>
             <CardContent
               sx={{
