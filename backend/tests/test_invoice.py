@@ -503,7 +503,7 @@ def test_uploadcreate_json(client, user):
     data = {}
     data['files'] = [(io.BytesIO(json_str_1.encode("utf-8")), 'test.json')]
     
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+    # data['rules'] = 'AUNZ_PEPPOL_1_0_10'
 
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
@@ -525,7 +525,7 @@ def test_uploadcreate_invalid_and_valid_json(client, user):
     data = {}
     data['files'] = [(io.BytesIO(json_str_1.encode("utf-8")), 'test.json'),(io.BytesIO(json_str_fail.encode("utf-8")), 'test.json')]
     
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+    # data['rules'] = 'AUNZ_PEPPOL_1_0_10'
 
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
@@ -547,7 +547,7 @@ def test_uploadcreate_invalidfile(client, user):
     data = {}
     data['files'] = [(io.BytesIO(b'fail, not pdf/json'),
         'test.txt')]
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+    # data['rules'] = 'AUNZ_PEPPOL_1_0_10'
 
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
@@ -566,7 +566,7 @@ def test_uploadcreate_invalidfile(client, user):
 def test_uploadcreate_invalidjson(client, user):
     data = {}
     data['files'] = [(io.BytesIO(json_str_fail.encode("utf-8")), 'test.json')]
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+    # data['rules'] = 'AUNZ_PEPPOL_1_0_10'
     
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
