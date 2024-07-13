@@ -291,14 +291,16 @@ export default function CreationGUI(props: { token: string; }) {
       
       // Currently this fails, most likely because there are bugs with the backend endpoint
       try {
-        const response = await axios.post('http://localhost:5000/invoice/create', filteredInvoiceData, {
+        const response = await axios.post('http://localhost:5000/invoice/create', dummyData, {
           headers: {
             'Authorisation': `${props.token}`
           }
         });
 
         if (response.status === 201) {
-          navigate('/invoice-confirmation', { state: invoiceData });
+          // This is the one that should be working, but the api backend does not work
+          // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
+          navigate('/invoice-confirmation', { state: { invoice: dummyData, type: 'GUI' } });
 
         } else {
           console.log(response);

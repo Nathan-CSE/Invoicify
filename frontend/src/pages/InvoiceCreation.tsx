@@ -57,7 +57,7 @@ export default function InvoiceCreation(props: { token: string; }) {
         console.log(response.data);
         var str = JSON.stringify(response.data, null, 2);
         console.log(str);
-        navigate('/invoice-confirmation-gui', { state: response.data });
+        navigate('/invoice-confirmation', { state: { invoice: response.data, type: 'upload' } });
 
       } else {
         console.log(response);
