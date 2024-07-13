@@ -5,7 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { Box, Stack, Typography } from '@mui/material';
 import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
 
-export default function SettingsMenu() {
+export default function SettingsMenu(props: { id: number }) {
   const [anchorEl, setAnchorEl] = React.useState<null | SVGElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<SVGElement>) => {
@@ -16,6 +16,14 @@ export default function SettingsMenu() {
   };
 
   const handleEdit = () => {
+    console.log('1');
+  };
+
+  const handleDelete = () => {
+    console.log('1');
+  };
+
+  const handleSend = () => {
     console.log('1');
   };
 
@@ -59,7 +67,7 @@ export default function SettingsMenu() {
           </Box>
           <Box onClick={handleClose}>
             <Button
-              onClick={handleEdit}
+              onClick={handleSend}
               variant='contained'
               sx={{ minWidth: '6rem' }}
             >
@@ -68,7 +76,7 @@ export default function SettingsMenu() {
           </Box>
           <Box onClick={handleClose}>
             <Button
-              onClick={handleEdit}
+              onClick={handleDelete}
               variant='contained'
               color='error'
               sx={{ minWidth: '6rem' }}
