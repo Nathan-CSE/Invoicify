@@ -7,6 +7,7 @@ from src.services.create_xml import create_xml, save_xml
 from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.upload import UploadService
+import re;
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -243,5 +244,24 @@ class ValidationAPI(Resource):
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
         else:
-            retmessage = retval["report"]
-            return make_response(jsonify({"message": retmessage}), 203)
+            errors = [
+                {
+                    "id": error["id"],
+                    "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
+                    "text": error["text"]
+                }
+                for report in retval["report"].get("reports", {}).values()
+                for error in report.get("firedAssertionErrors", [])
+            ]
+            
+            response = {
+                "filename": file.filename,
+                "reports": {
+                    "firedAssertionErrors": errors,
+                    "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
+                    "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
+                    "successful": retval["report"].get("successful", False),
+                    "summary": retval["report"].get("summary", "No summary available")
+                }
+            }
+            return make_response(jsonify(response), 203)
