@@ -13,7 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { DropzoneArea } from "mui-file-dropzone";
 import axios from 'axios';
-import { TextField } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 
 export default function InvoiceSending(props: { token: string; }) {
   console.log('user token: ', props.token);
@@ -112,71 +112,68 @@ export default function InvoiceSending(props: { token: string; }) {
             Dashboard
           </Typography>
 
-          <Typography color='text.primary'>
+          <Typography
+            component={Link}
+            to='/invoice-sending'
+          >
             Invoice Sending
+          </Typography>
+
+          <Typography color='text.primary'>
+            Invoice Sending Confirmation
           </Typography>
         </Breadcrumbs>
 
-        <Box sx={{ my: 5 }}>
-          <DropzoneArea
-            acceptedFiles={['.json', '.pdf']}
-            fileObjects={file}
-            onChange={handleFileChange}
-            dropzoneText={'Upload an Invoice: JSON, PDF'}
-            filesLimit={1}
-          />
+        <Box
+          sx={{
+            my: 10,
+            padding: 5,
+            height: '25vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: 'solid 0.5px',
+            borderRadius: 4
+          }}
+        >
+          <Box sx={{ mt: 1 }}>
+            <Typography textAlign='center'>
+              File sent successfully!
+            </Typography>
+          </Box>
+        
         </Box>
 
-        <Typography variant='h5' textAlign='center' sx={{ my: 2 }}>
-          OR
-        </Typography>
-
-        <Box sx={{ minWidth: 120 }}>
-          <FormControl variant="standard" fullWidth>
-            <InputLabel id="select-invoice-label">Select Invoice</InputLabel>
-            <Select
-              labelId="select-invoice-label"
-              id="select-invoice"
-              name='select-invoice'
-              value={invoice}
-              label="Select Invoice"
-              onChange={handleChange}
-              disabled={Boolean(file)}
+        <Grid container justifyContent="center" spacing={6}>
+          <Grid item>
+            <Button
+              component={Link}
+              to='/dashboard'
+              variant='contained'
+              sx={{
+                height: '50px',
+                padding: '25px',
+              }}
             >
-              <MenuItem value={10}>Invoice 1</MenuItem>
-              <MenuItem value={11}>Invoice 2</MenuItem>
-              <MenuItem value={12}>Invoice 3</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
+              Back to Dashboard
+            </Button>
+          </Grid>
 
-        <Box sx={{ minWidth: 120, mb: 5 }}>
-          <FormControl variant="standard" fullWidth>
-            <TextField
-              margin="normal"
-              required
-              id="recipientEmail"
-              label="Recipient Email"
-              name="recipientEmail"
-              variant="standard"
-              sx={{ width: '100%' }}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </FormControl>
-        </Box>
-
-        <Box textAlign='center'>
-          <Button
-            onClick={handleSubmit}
-            variant='contained'
-            sx={{
-              height: '50px',
-              padding: '25px',
-            }}
-          >
-            Continue
-          </Button>
-        </Box>
+          <Grid item>
+            <Button
+              component={Link}
+              to='/invoice-sending'
+              variant='contained'
+              sx={{
+                height: '50px',
+                padding: '25px',
+              }}
+            >
+              Send another Invoice
+            </Button>
+          </Grid>
+        </Grid>
       </Container>
       
     </>

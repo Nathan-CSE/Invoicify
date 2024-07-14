@@ -11,7 +11,8 @@ import Navbar from './components/Navbar';
 import SettingsPage from './pages/SettingsPage';
 import PreviewInvoice from './pages/PreviewInvoice';
 import ResetPassword from './pages/ResetPasswordPage';
-import InvoiceSending from './pages/InvoiceSending';
+import InvoiceSending from './pages/InvoiceSending/InvoiceSending';
+import InvoiceSendingConfirmation from './pages/InvoiceSending/InvoiceSendingConfirmation';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -89,7 +90,7 @@ function PageList() {
           }
         />
         <Route
-          path='/invoice-confirmation'
+          path='/invoice-creation-confirmation'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
@@ -112,6 +113,15 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <InvoiceSending token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/invoice-sending-confirmation'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvoiceSendingConfirmation token={token} />
             </>
           }
         />

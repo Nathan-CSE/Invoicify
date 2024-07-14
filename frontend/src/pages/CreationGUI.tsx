@@ -249,7 +249,7 @@ export default function CreationGUI() {
       try {
         const response = await axios.post('http://localhost:5000/invoice/create', invoiceData);
         if (response.status === 201) {
-          navigate('/invoice-confirmation', { state: invoiceData });
+          navigate('/invoice-creation-confirmation', { state: invoiceData });
 
         } else {
           console.log(response);
