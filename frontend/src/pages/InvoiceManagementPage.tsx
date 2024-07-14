@@ -52,10 +52,16 @@ export default function InvoiceManagement(props: { token: string }) {
   };
 
   const handleCloseFilter = (value: string) => {
-    setFilterOpen(false);
     setFilterValue(value);
+    setFilterOpen(false);
+    // getDetails();
+    console.log('Here');
+    console.log(filterValue);
   };
 
+  const handleCancelFilter = () => {
+    setFilterOpen(false);
+  };
   // Just to fetch data on load
   const getDetails = async () => {
     try {
@@ -68,11 +74,29 @@ export default function InvoiceManagement(props: { token: string }) {
           },
         }
       );
+
       if (response.status === 200) {
         const data: Record<string, Details> = response.data;
         let temp: Details[] = [];
-        for (let d of Object.values(data)) {
-          temp.push(d);
+        // Checks for the filter options
+        // If the filter is not chosen it will default to id
+        if (filterValue == 'status') {
+          for (let d of Object.values(data)) {
+            console.log('here');
+            if (d.is_ready) {
+              temp.push(d);
+            }
+          }
+        } else {
+          for (let d of Object.values(data)) {
+            temp.push(d);
+          }
+        }
+
+        // Lexiographically sort
+        if (filterValue == 'name') {
+          console.log('yep');
+          temp = [...temp].sort((a, b) => a.name.localeCompare(b.name));
         }
         setDetails(temp);
       } else {
@@ -152,6 +176,7 @@ export default function InvoiceManagement(props: { token: string }) {
   }
 
   React.useEffect(() => {
+    // setFilterValue('id');
     getDetails();
   }, []);
 
@@ -161,6 +186,10 @@ export default function InvoiceManagement(props: { token: string }) {
   React.useEffect(() => {
     getDetails();
   }, [props.token]);
+
+  React.useEffect(() => {
+    getDetails();
+  }, [filterValue]);
 
   return (
     <>
@@ -188,9 +217,9 @@ export default function InvoiceManagement(props: { token: string }) {
             FILTER
           </Button>
           <FilterModal
-            selectedValue={filterValue}
             open={filterOpen}
             onClose={handleCloseFilter}
+            onCancel={handleCancelFilter}
           />
         </Box>
         <Divider sx={{ borderColor: 'black', width: '100%' }} />

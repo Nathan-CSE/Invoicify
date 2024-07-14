@@ -1,17 +1,8 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
-import PersonIcon from '@mui/icons-material/Person';
-import AddIcon from '@mui/icons-material/Add';
-import Typography from '@mui/material/Typography';
-import { blue } from '@mui/material/colors';
+
 import {
   FormControl,
   FormLabel,
@@ -19,55 +10,55 @@ import {
   FormControlLabel,
   Radio,
   Box,
-  Grid,
 } from '@mui/material';
-
-const emails = ['username@gmail.com', 'user02@gmail.com'];
 
 export interface SimpleDialogProps {
   open: boolean;
-  selectedValue: string;
   onClose: (value: string) => void;
+  onCancel: () => void;
 }
 
 export default function FilterModal(props: SimpleDialogProps) {
-  const { onClose, selectedValue, open } = props;
+  const { onClose, onCancel, open } = props;
 
+  const [filterOption, setFilterOption] = React.useState('id');
   const handleClose = () => {
-    onClose(selectedValue);
-  };
-
-  const handleListItemClick = (value: string) => {
-    onClose(value);
+    onClose(filterOption);
   };
 
   return (
-    <Dialog onClose={handleClose} open={open}>
+    <Dialog onClose={onCancel} open={open}>
       <Box sx={{ width: '24rem', height: '17rem' }}>
         <DialogTitle>Filter Invoices</DialogTitle>
-        <FormControl sx={{ pl: '2rem' }}>
-          <FormLabel id='demo-radio-buttons-group-label'>
-            Filter Options
-          </FormLabel>
+        <FormControl sx={{ pl: '2.5rem' }}>
+          <FormLabel id='filter-radial-options'>Filter Options</FormLabel>
           <RadioGroup
-            aria-labelledby='demo-radio-buttons-group-label'
-            defaultValue='name'
+            aria-labelledby='filter-radial-options'
             name='radio-buttons-group'
           >
             <FormControlLabel
+              value='id'
+              control={<Radio />}
+              onClick={() => {
+                setFilterOption('id');
+              }}
+              label='Invoice ID'
+            />
+            <FormControlLabel
               value='name'
               control={<Radio />}
+              onClick={() => {
+                setFilterOption('name');
+              }}
               label='Invoice Name'
             />
             <FormControlLabel
               value='status'
               control={<Radio />}
+              onClick={() => {
+                setFilterOption('status');
+              }}
               label='Invoice Status'
-            />
-            <FormControlLabel
-              value='date'
-              control={<Radio />}
-              label='Creation Date'
             />
           </RadioGroup>
         </FormControl>
@@ -81,8 +72,10 @@ export default function FilterModal(props: SimpleDialogProps) {
             justifyContent: 'flex-end',
           }}
         >
-          <Button variant='contained'>CONFIRM</Button>
-          <Button variant='contained' color='error' onClick={handleClose}>
+          <Button variant='contained' onClick={handleClose}>
+            CONFIRM
+          </Button>
+          <Button variant='contained' color='error' onClick={onCancel}>
             CANCEL
           </Button>
         </Box>
