@@ -102,7 +102,6 @@ def test_invoice_creation_successful(client, user):
             "Content-Type": "application/json",
         }
     )
-    print(res.json)
     assert res.status_code == 201
 
 def test_invoice_creation_invalid(client, user):
