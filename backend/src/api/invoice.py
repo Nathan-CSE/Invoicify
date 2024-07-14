@@ -17,7 +17,7 @@ address_fields = invoice_ns.model("Address", {
     "streetName": fields.String(),
     "additionalStreetName": fields.String(),
     "cityName": fields.String(),
-    "postalCode": fields.Integer(),
+    "postalCode": fields.String(),
     "country": fields.String()
 })
 seller_fields = invoice_ns.model("Seller", {
@@ -37,7 +37,7 @@ invoice_item_fields = invoice_ns.model("InvoiceItem", {
 })
 create_ubl_fields = invoice_ns.model('CreateUBLFields', {
     "invoiceName": fields.String(),
-    "invoiceNumber": fields.String(),
+    "invoiceNumber": fields.Integer(),
     "invoiceIssueDate": fields.String(),
     "seller": fields.Nested(seller_fields),
     "buyer": fields.Nested(buyer_fields),

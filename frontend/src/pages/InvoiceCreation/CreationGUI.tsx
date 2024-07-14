@@ -31,8 +31,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import vatRates from '../VATRates.json';
-import ErrorModal from '../components/ErrorModal';
+import vatRates from '../../VATRates.json';
+import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
 
 interface FileObject {
@@ -175,10 +175,10 @@ export default function CreationGUI(props: { token: string; }) {
     const formData = new FormData(event.currentTarget);
     const invoiceData: any = {
       invoiceName: formData.get('invoiceName'),
-      invoiceNumber: formData.get('invoiceNumber'),
+      invoiceNumber: Number(formData.get('invoiceNumber')),
       invoiceIssueDate: formData.get('invoiceIssueDate'),
       seller: {
-        ABN: formData.get('sellerABN'),
+        ABN: Number(formData.get('sellerABN')),
         companyName: formData.get('sellerCompanyName'),
         companyAddress: formData.get('sellerAddress'),
         address: {
@@ -190,7 +190,7 @@ export default function CreationGUI(props: { token: string; }) {
         },
       },
       buyer: {
-        ABN: formData.get('buyerABN'),
+        ABN: Number(formData.get('buyerABN')),
         companyName: formData.get('buyerCompanyName'),
         companyAddress: formData.get('buyerAddress'),
         address: {
@@ -283,7 +283,8 @@ export default function CreationGUI(props: { token: string; }) {
     }
 
     const { buyerVatRate, additionalDocuments, extraComments, ...filteredInvoiceData } = invoiceData;
-    console.log('filtered: ', filteredInvoiceData);
+    var str = JSON.stringify(filteredInvoiceData, null, 2);
+    console.log('filtered: ', str);
 
     if (errorCheck) {
       return;
@@ -291,7 +292,7 @@ export default function CreationGUI(props: { token: string; }) {
       
       // Currently this fails, most likely because there are bugs with the backend endpoint
       try {
-        const response = await axios.post('http://localhost:5000/invoice/create', dummyData, {
+        const response = await axios.post('http://localhost:5000/invoice/create', filteredInvoiceData, {
           headers: {
             'Authorisation': `${props.token}`
           }
@@ -300,7 +301,7 @@ export default function CreationGUI(props: { token: string; }) {
         if (response.status === 201) {
           // This is the one that should be working, but the api backend does not work
           // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
-          navigate('/invoice-confirmation', { state: { invoice: dummyData, type: 'GUI' } });
+          navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI', invoiceId: response.data } });
 
         } else {
           console.log(response);
@@ -378,6 +379,7 @@ export default function CreationGUI(props: { token: string; }) {
                 name="invoiceNumber"
                 autoFocus
                 sx={{ width: '100%' }}
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
             </Grid>
 
@@ -407,9 +409,10 @@ export default function CreationGUI(props: { token: string; }) {
                 margin="normal"
                 required
                 id="sellerABN"
-                label="ABN"
+                label="Seller ABN"
                 name="sellerABN"
                 sx={{ width: '100%' }}
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
 
               <TextField
@@ -506,9 +509,10 @@ export default function CreationGUI(props: { token: string; }) {
                 margin="normal"
                 required
                 id="buyerABN"
-                label="ABN"
+                label="Buyer ABN"
                 name="buyerABN"
                 sx={{ width: '100%' }}
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
 
               <TextField

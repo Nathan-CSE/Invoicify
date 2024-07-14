@@ -24,8 +24,8 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
     
     
     event.preventDefault();
-    
-    const invoiceInt = invoiceData.invoice.data[0].invoiceId;
+  
+    const invoiceInt = invoiceData.invoiceInt;
     console.log('this is invoice int ', invoiceInt);
     const data = {
       "article_id": invoiceInt
@@ -58,7 +58,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
       
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
-          Invoice Creation
+          Invoice Creation Result
         </Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
@@ -74,8 +74,15 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
             Dashboard
           </Typography>
 
-          <Typography color='text.primary'>
+          <Typography
+            component={Link}
+            to='/invoice-creation'
+          >
             Invoice Creation
+          </Typography>
+
+          <Typography color='text.primary'>
+            Invoice Creation Result
           </Typography>
         </Breadcrumbs>
 
