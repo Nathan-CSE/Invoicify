@@ -17,6 +17,7 @@ import ErrorModal from '../components/ErrorModal';
 import { ReactComponent as InvoiceSvg } from '../assets/invoice.svg';
 import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
 import SettingsMenu from '../components/SettingsMenu';
+import FilterModal from '../components/FilterModal';
 
 export default function InvoiceManagement(props: { token: string }) {
   interface Fields {
@@ -41,6 +42,20 @@ export default function InvoiceManagement(props: { token: string }) {
   // Error Handling
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
+
+  // All these related to the filter modal
+  const [filterOpen, setFilterOpen] = React.useState(false);
+  const [filterValue, setFilterValue] = React.useState('');
+
+  const handleClickFilter = () => {
+    setFilterOpen(true);
+  };
+
+  const handleCloseFilter = (value: string) => {
+    setFilterOpen(false);
+    setFilterValue(value);
+  };
+
   // Just to fetch data on load
   const getDetails = async () => {
     try {
@@ -96,18 +111,6 @@ export default function InvoiceManagement(props: { token: string }) {
             position: 'relative',
           }}
         >
-          {/* <Box
-            sx={{
-              position: 'absolute',
-              zIndex: 1000,
-              cursor: 'pointer',
-              pl: 1,
-              pt: 1,
-            }}
-            onClick={openSettings()}
-          >
-            <InvoiceSettings></InvoiceSettings>
-          </Box> */}
           <SettingsMenu id={items.id} token={props.token}></SettingsMenu>
           <CardActionArea>
             <CardContent
@@ -126,9 +129,13 @@ export default function InvoiceManagement(props: { token: string }) {
                   <Typography variant='subtitle1' gutterBottom>
                     Status: Validated
                   </Typography>
-                  <Typography variant='subtitle1' gutterBottom>
+
+                  {
+                    // Vaulted till a later sprint
+                    /* <Typography variant='subtitle1' gutterBottom>
                     Validated with {items.rule}
-                  </Typography>
+                  </Typography> */
+                  }
                 </>
               ) : (
                 <>
@@ -143,6 +150,7 @@ export default function InvoiceManagement(props: { token: string }) {
       </Grid>
     ));
   }
+
   React.useEffect(() => {
     getDetails();
   }, []);
@@ -176,7 +184,14 @@ export default function InvoiceManagement(props: { token: string }) {
           }}
         >
           <Typography variant='h4'>Invoice Management</Typography>
-          <Button variant='contained'>FILTER</Button>
+          <Button variant='contained' onClick={handleClickFilter}>
+            FILTER
+          </Button>
+          <FilterModal
+            selectedValue={filterValue}
+            open={filterOpen}
+            onClose={handleCloseFilter}
+          />
         </Box>
         <Divider sx={{ borderColor: 'black', width: '100%' }} />
         <Breadcrumbs

@@ -12,6 +12,15 @@ import PersonIcon from '@mui/icons-material/Person';
 import AddIcon from '@mui/icons-material/Add';
 import Typography from '@mui/material/Typography';
 import { blue } from '@mui/material/colors';
+import {
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Box,
+  Grid,
+} from '@mui/material';
 
 const emails = ['username@gmail.com', 'user02@gmail.com'];
 
@@ -34,65 +43,50 @@ export default function FilterModal(props: SimpleDialogProps) {
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>Filter Invoices</DialogTitle>
-      <List sx={{ pt: 0 }}>
-        {emails.map((email) => (
-          <ListItem disableGutters key={email}>
-            <ListItemButton onClick={() => handleListItemClick(email)}>
-              <ListItemAvatar>
-                <Avatar sx={{ bgcolor: blue[100], color: blue[600] }}>
-                  <PersonIcon />
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText primary={email} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-        <ListItem disableGutters>
-          <ListItemButton
-            autoFocus
-            onClick={() => handleListItemClick('addAccount')}
+      <Box sx={{ width: '24rem', height: '17rem' }}>
+        <DialogTitle>Filter Invoices</DialogTitle>
+        <FormControl sx={{ pl: '2rem' }}>
+          <FormLabel id='demo-radio-buttons-group-label'>
+            Filter Options
+          </FormLabel>
+          <RadioGroup
+            aria-labelledby='demo-radio-buttons-group-label'
+            defaultValue='name'
+            name='radio-buttons-group'
           >
-            <ListItemAvatar>
-              <Avatar>
-                <AddIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary='Add account' />
-          </ListItemButton>
-        </ListItem>
-      </List>
+            <FormControlLabel
+              value='name'
+              control={<Radio />}
+              label='Invoice Name'
+            />
+            <FormControlLabel
+              value='status'
+              control={<Radio />}
+              label='Invoice Status'
+            />
+            <FormControlLabel
+              value='date'
+              control={<Radio />}
+              label='Creation Date'
+            />
+          </RadioGroup>
+        </FormControl>
+        <Box
+          sx={{
+            flexDirection: 'row',
+            display: 'flex',
+            gap: '0.5rem',
+            pr: '0.5rem',
+            mt: '0.5rem',
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Button variant='contained'>CONFIRM</Button>
+          <Button variant='contained' color='error' onClick={handleClose}>
+            CANCEL
+          </Button>
+        </Box>
+      </Box>
     </Dialog>
   );
 }
-
-// export default function SimpleDialogDemo() {
-//   const [open, setOpen] = React.useState(false);
-//   const [selectedValue, setSelectedValue] = React.useState(emails[1]);
-
-//   const handleClickOpen = () => {
-//     setOpen(true);
-//   };
-
-//   const handleClose = (value: string) => {
-//     setOpen(false);
-//     setSelectedValue(value);
-//   };
-
-//   return (
-//     <div>
-//       <Typography variant='subtitle1' component='div'>
-//         Selected: {selectedValue}
-//       </Typography>
-//       <br />
-//       <Button variant='outlined' onClick={handleClickOpen}>
-//         Open simple dialog
-//       </Button>
-//       <SimpleDialog
-//         selectedValue={selectedValue}
-//         open={open}
-//         onClose={handleClose}
-//       />
-//     </div>
-//   );
-// }
