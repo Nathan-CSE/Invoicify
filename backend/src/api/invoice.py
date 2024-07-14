@@ -2,14 +2,12 @@ from flask import request, jsonify, make_response, send_file
 from flask_restx import Namespace, Resource, fields, reqparse
 from werkzeug.datastructures import FileStorage
 import io
-import json
-
 from models import db, Invoice
-from src.services.conversion import ConversionService
 from src.services.create_xml import create_xml, save_xml
 from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.upload import UploadService
+import re;
 
 invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
 
@@ -47,7 +45,7 @@ create_ubl_fields = invoice_ns.model('CreateUBLFields', {
     "totalAmount": fields.Float(default=0.1)
 })
 @invoice_ns.route("/create")
-class CreateAPI(Resource):
+class Create(Resource):
     @invoice_ns.doc(
         description="Creates a UBL",
         body=create_ubl_fields,
@@ -64,12 +62,12 @@ class CreateAPI(Resource):
             res = create_xml(data, user)
             return make_response(jsonify(res), 201)
         except ValueError as e:
-            return make_response(str(e), 422)
+            return make_response(e, 422)
         except Exception as e:
-            return make_response(jsonify({"message": str(e)}), 400)
+            return make_response(jsonify({"message": "UBL not created"}), 400)
         
 @invoice_ns.route("/download")
-class SendUBLAPI(Resource):
+class SendUBL(Resource):
     @invoice_ns.doc(
     description="""Use this api to download xml
         input:
@@ -131,189 +129,25 @@ class Save(Resource):
         return make_response(jsonify({"message": "UBL saved successfully"}), 201)
 
 edit_fields = invoice_ns.model("EditUBLFields", {
-    "name": fields.String(default="Invoice 1"),
     "fields": fields.Raw(default={
-        "ID": "Invoice03",
-        "IssueDate": "2022-07-31",
-        "InvoiceTypeCode": "380",
-        "Note": "Adjustment note to reverse prior bill Invoice01. Free text field can bring attention to reason for credit etc.",
-        "DocumentCurrencyCode": "AUD",
-        "BuyerReference": "Simple solar plan",
-        "InvoicePeriod": {
-            "StartDate": "2022-06-15",
-            "EndDate":"2022-07-15"
-        },
-        "BillingReference": {
-            "InvoiceDocumentReference": {
-            "ID": "Invoice01",
-            "IssueDate": "2022-07-29"
+        "invoiceName": "test",
+        "invoiceNumber": "1",
+        "invoiceIssueDate": "2024-06-25",
+        "seller": {
+            "ABN": 47555222000,
+            "companyName": "Windows to Fit Pty Ltd",
+            "address": {
+                "streetName": "Test",
+                "additionalStreetName": "test",
+                "cityName": "test",
+                "postalCode": 2912,
+                "country": "AU"
             }
-        },
-        "AdditionalDocumentReference": {
-            "ID": "Invoice03.pdf",
-            "Attachment": {
-                "EmbeddedDocumentBinaryObject": {
-                    "mimeCode": "application/pdf",
-                    "filename": "Invoice03.pdf",
-                    "value": "UGxhaW4gdGV4dCBpbiBwbGFjZSBvZiBwZGYgYXR0YWNobWVudCBmb3Igc2FtcGxlIGludm9pY2Vz"
-                }
-            }
-        },
-        "AccountingSupplierParty": {
-            "Party": {
-                "EndpointID": {
-                        "schemeID": "0151",
-                        "value": "47555222000"
-                    },
-                "PostalAddress": {
-                    "CityName": "Harrison",
-                    "PostalZone": "2912",
-                    "CountrySubentity": "NSW",
-                    "Country": {
-                    "IdentificationCode": "AU"
-                    }
-                },
-                "PartyLegalEntity": {
-                    "RegistrationName": "Grey Roo Energy",
-                    "CompanyID": {
-                    "schemeID": "0151",
-                    "value": "47555222000"
-                    }
-                }
-            }
-        },
-        "AccountingCustomerParty": {
-            "Party": {
-                "EndpointID": {
-                    "schemeID": "0151",
-                    "value": "47555222000"
-                },
-                "PartyIdentification": {
-                    "ID": "AccountNumber123"
-                },
-                "PostalAddress": {
-                    "StreetName": "100 Queen Street",
-                    "CityName": "Sydney",
-                    "PostalZone": "2000",
-                    "CountrySubentity": "NSW",
-                    "Country": {
-                    "IdentificationCode": "AU"
-                    }
-                },
-                "PartyLegalEntity": {
-                    "RegistrationName": "Trotters Incorporated",
-                    "CompanyID": {
-                    "schemeID": "0151",
-                    "value": "91888222000"
-                    }
-                },
-                "Contact": {
-                    "Name": "Lisa Johnson"
-                }
-            }
-        },
-        "TaxTotal": {
-            "TaxAmount": {
-                "currencyID": "AUD",
-                "value": "-15.94"
-            },
-            "TaxSubtotal": {
-                "TaxableAmount": {
-                    "currencyID": "AUD",
-                    "value": "-159.43"
-                },
-                "TaxAmount": {
-                    "currencyID": "AUD",
-                    "value": "-15.94"
-                },
-                "TaxCategory": {
-                    "ID": "S",
-                    "Percent": "10",
-                    "TaxScheme": {
-                        "ID": "GST"
-                    }
-                }
-            }
-        },
-        "LegalMonetaryTotal": {
-            "LineExtensionAmount": {
-                "currencyID": "AUD",
-                "value": "-159.43"
-            },
-            "TaxExclusiveAmount": {
-                "currencyID": "AUD",
-                "value": "-159.43"
-            },
-            "TaxInclusiveAmount": {
-                "currencyID": "AUD",
-                "value": "-175.37"
-            },
-            "PayableAmount": {
-                "currencyID": "AUD",
-                "value": "-175.37"
-            }
-        },
-        "InvoiceLine": [
-            {
-                "ID": "1",
-                "InvoicedQuantity": {
-                    "unitCode": "KWH",
-                    "value": "-325.2"
-                },
-                "LineExtensionAmount": {
-                    "currencyID": "AUD",
-                    "value": "-129.04"
-                },
-                "Item": {
-                    "Name": "Adjustment - reverse prior Electricity charges - all day rate NMI 9000074677",
-                    "ClassifiedTaxCategory": {
-                        "ID": "S",
-                        "Percent": "10",
-                        "TaxScheme": {
-                            "ID": "GST"
-                        }
-                    }
-                },
-                "Price": {
-                    "PriceAmount": {
-                    "currencyID": "AUD",
-                    "value": "0.3968"
-                    }
-                }
-            },
-            {
-                "ID": "2",
-                "InvoicedQuantity": {
-                    "unitCode": "DAY",
-                    "value": "-31"
-                },
-                "LineExtensionAmount": {
-                    "currencyID": "AUD",
-                    "value": "-30.39"
-                },
-                "Item": {
-                    "Name": "Adjustment - reverse prior Supply charge",
-                        "ClassifiedTaxCategory": {
-                        "ID": "S",
-                        "Percent": "10",
-                        "TaxScheme": {
-                            "ID": "GST"
-                        }
-                    }
-                },
-                "Price": {
-                    "PriceAmount": {
-                    "currencyID": "AUD",
-                    "value": "0.9803"
-                    }
-                }
-            }
-        ]
-    }, required=True),
-    "rule": fields.String(default="AUNZ_PEPPOL_1_0_10")
+        }
+    }, required=True)
 })
 @invoice_ns.route("/edit/<int:id>")
-class EditAPI(Resource):
+class Edit(Resource):
     @invoice_ns.doc(
         description="Ability to edit UBLs",
         body=edit_fields,
@@ -329,40 +163,15 @@ class EditAPI(Resource):
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 400)
 
-        if invoice.fields != data["fields"] or invoice.rule != data["rule"]:
-            invoice.completed_ubl = None
-            invoice.is_ready = False
-
-        invoice.name = data["name"]
-        invoice.rule = data["rule"]
-        invoice.fields = data["fields"] 
-
+        invoice.fields = data["fields"]
         db.session.commit()
+
         return make_response(jsonify(invoice.to_dict()), 204)
-
-@invoice_ns.route("/delete/<int:id>")
-class DeleteAPI(Resource):
-    @invoice_ns.doc(
-        description="Ability to delete UBLs",
-        responses={
-            200: 'Deleted successfully',
-            400: 'Bad request',
-        },
-    )
-    @token_required
-    def delete(self, id, user):
-        if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
-            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
-
-        db.session.delete(invoice)
-        db.session.commit()
-        return make_response(jsonify({"message": "Invoice was deleted successfully"}), 200)
-
 
 history_fields = reqparse.RequestParser()
 history_fields.add_argument('is_ready', type=bool, choices=['true', 'false'], help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
 @invoice_ns.route("/history")
-class HistoryAPI(Resource):
+class History(Resource):
     def check_is_ready_param(self, is_ready):
         is_ready = is_ready.lower().capitalize()
         if is_ready == "True":
@@ -392,7 +201,7 @@ class HistoryAPI(Resource):
 
         return make_response(jsonify([invoice.to_dict() for invoice in sql.all()]), 200)
     
-    
+
 upload_parser = invoice_ns.parser()
 upload_parser.add_argument('files', location='files',
                            type=FileStorage, required=True)
@@ -413,7 +222,7 @@ class UploadValidationAPI(Resource):
         
         res = ups.handle_xml_upload(request)
         args = upload_parser.parse_args()
-        # takes one file then encodes it to feed to validation service
+
         file = args['files']
         content = file.read()  
         rules = args['rules']
@@ -434,21 +243,97 @@ class UploadValidationAPI(Resource):
         if retval["successful"] is True:
             return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
         else:
-            retmessage = retval["report"]
-            return make_response(jsonify({"message": retmessage}), 203)
+            errors = [
+                {
+                    "id": error["id"],
+                    "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
+                    "text": error["text"]
+                }
+                for report in retval["report"].get("reports", {}).values()
+                for error in report.get("firedAssertionErrors", [])
+            ]
+            
+            response = {
+                "filename": file.filename,
+                "reports": {
+                    "firedAssertionErrors": errors,
+                    "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
+                    "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
+                    "successful": retval["report"].get("successful", False),
+                    "summary": retval["report"].get("summary", "No summary available")
+                }
+            }
+            return make_response(jsonify(response), 203)
 
+validate_parser = invoice_ns.parser()
+validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
 @invoice_ns.route("/validate/<int:id>")
 class ValidationAPI(Resource):
     @invoice_ns.doc(
         description="Ability to validate created invoices",
         responses={
             200: "Validation Complete",
+            203: 'Files received but failed to validate',
             400: "Bad Request"
         }
     )
+    @invoice_ns.expect(validate_parser)
     @token_required
     def get(self, id, user):
+
+        args = upload_parser.parse_args()
+        rules = args['rules']
+
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+
+        converter = ConverterService()
+
+        try:
+            xml_content = converter.json_to_xml(invoice.fields)
+        except Exception as err:
+            return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
         
-        return make_response(jsonify({}), 200)
+        encoded_xml_content = base64.b64encode(xml_content.encode()).decode()
+
+        vs = ValidationService()
+        
+        try:
+            retval = vs.validate_xml(
+                filename=f"invoice_{id}.xml",
+                content=encoded_xml_content,
+                rules=[rules]  
+            )
+        except Exception as err:
+            return make_response(jsonify({"message": str(err)}), 400)
+
+        if retval["successful"] is True:
+            invoice.is_ready = True
+            invoice.completed_ubl = encoded_xml_content
+            db.session.commit()
+            return make_response(jsonify({"message": "Invoice validated successfully"}), 200)
+        else:
+            invoice.is_ready = False
+            invoice.completed_ubl = None
+            db.session.commit()
+            errors = [
+                {
+                    "id": error["id"],
+                    "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
+                    "text": error["text"]
+                }
+                for report in retval["report"].get("reports", {}).values()
+                for error in report.get("firedAssertionErrors", [])
+            ]
+            
+            response = {
+                "invoice_id": id,
+                "reports": {
+                    "firedAssertionErrors": errors,
+                    "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
+                    "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
+                    "successful": retval["report"].get("successful", False),
+                    "summary": retval["report"].get("summary", "No summary available")
+                }
+            }
+            return make_response(jsonify(response), 203)
