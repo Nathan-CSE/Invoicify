@@ -20,7 +20,8 @@ export default function InvoiceValidation(props: { token: string; }) {
   const [open, setOpen] = React.useState(false);
   const [invoice, setInvoice] = React.useState('');
   const [ruleSet, setRuleSet] = React.useState('');
-  const [file, setFile] = React.useState<File>();
+  const [file, setFile] = React.useState<File | null>(null);
+  const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
 
   const handleChange = (event: SelectChangeEvent) => {
     console.log('this is event.target: ', event.target);
@@ -31,7 +32,6 @@ export default function InvoiceValidation(props: { token: string; }) {
       setInvoice(event.target.value);
     }
 
-    setInvoice(event.target.value);
   };
 
   const handleSubmit = async (event: any) => {
@@ -71,9 +71,55 @@ export default function InvoiceValidation(props: { token: string; }) {
 
   };
 
+  const handleFileChange = (loadedFiles: File[]) => {
+    console.log('Currently loaded:', loadedFiles);
+    if (loadedFiles.length > 0) {
+      setFile(loadedFiles[0]);
+      setInvoice(''); // Clear invoice selection if a file is uploaded
+    } else {
+      setFile(null);
+    }
+  };
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+
+        const response = await axios.get('http://localhost:5000/invoice/history?is_ready=false', {
+          headers: {
+            'Authorisation': `${props.token}`,
+          }
+        });
+        
+        var allInvoices = [];
+        
+        if (response.status === 200) {
+          for (let i = 0; i < response.data.length; i++) {
+            var invoiceInfo = {
+              name: response.data[i].name,
+              invoiceId: response.data[i].id
+            }
+           
+            allInvoices.push(invoiceInfo);
+          } 
+          console.log(response.data);
+          setAvailableInvoices(allInvoices);
+
+        } else {
+          console.log(response);
+          alert("Unable to retrieve valid invoices");
+        }
+      } catch (err) {
+        alert(err);
+      }
+    };
+  
+    fetchData();
+  }, []);
+
+
   return (
     <>
-     
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
           Invoice Validation
@@ -97,76 +143,77 @@ export default function InvoiceValidation(props: { token: string; }) {
           </Typography>
         </Breadcrumbs>
 
-        <Box sx={{ my: 5 }}>
-          <DropzoneArea
-            acceptedFiles={['.xml']}
-            fileObjects={file}
-            onChange={(loadedFile) => {
-              console.log('Currently loaded:', loadedFile)
-              setFile(loadedFile[0]);
-            }}
-            dropzoneText={'Upload a UBL2.1 XML Invoice File'}
-            filesLimit={1}
-          />
-        </Box>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ my: 5 }}>
+            <DropzoneArea
+              acceptedFiles={['.xml']}
+              fileObjects={file}
+              onChange={handleFileChange}
+              dropzoneText={'Upload a UBL2.1 XML Invoice File'}
+              filesLimit={1}
+            />
+          </Box>
 
-        <Typography variant='h5' textAlign='center' sx={{ my: 2 }}>
-          OR
-        </Typography>
+          <Typography variant='h5' textAlign='center' sx={{ my: 2 }}>
+            OR
+          </Typography>
 
-        <Box sx={{ minWidth: 120 }}>
-          <FormControl variant="standard" fullWidth>
-            <InputLabel id="select-invoice-label">Select Invoice</InputLabel>
-            <Select
-              labelId="select-invoice-label"
-              id="select-invoice"
-              name='select-invoice'
-              value={invoice}
-              label="Select Invoice"
-              onChange={handleChange}
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl variant="standard" fullWidth>
+              <InputLabel id="select-invoice-label">Select Invoice</InputLabel>
+              <Select
+                labelId="select-invoice-label"
+                id="select-invoice"
+                name='select-invoice'
+                value={invoice}
+                label="Select Invoice"
+                onChange={handleChange}
+                disabled={Boolean(file)}
+              >
+                {availableInvoices.map((invoice) => (
+                  <MenuItem value={invoice.invoiceId}>{invoice.name}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box sx={{ minWidth: 120, my: 3 }}>
+            <FormControl variant="standard" fullWidth>
+              <InputLabel id="select-rule-set">Rule Set</InputLabel>
+              <Select
+                labelId="select-rule-set"
+                id="rule-set"
+                name='rule-set'
+                value={ruleSet}
+                label="Rule Set"
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value={'AUNZ_PEPPOL_1_0_10'}>AU-NZ PEPPOL-1.0.10</MenuItem>
+                <MenuItem value={'AUNZ_PEPPOL_SB_1_0_10'}>AU-NZ PEPPOL-SB-1.0.10</MenuItem>
+                <MenuItem value={'AUNZ_UBL_1_0_10'}>AU-NZ UBL-1.0.10</MenuItem>
+                <MenuItem value={'FR_EN16931_CII_1_3_11'}>FR-EN16931-CII-1.3.11</MenuItem>
+                <MenuItem value={'FR_EN16931_UBL_1_3_11'}>FR-EN16931-UBL-1.3.11</MenuItem>
+                <MenuItem value={'FR_EN16931_UBL_1_3_11'}>FR-EN16931-UBL-1.3.11</MenuItem>
+                <MenuItem value={'RO_RO16931_UBL_1_0_8_EN16931'}>RO-RO16931-UBL-1.0.8-EN16931</MenuItem>
+                <MenuItem value={'RO_RO16931_UBL_1_0_8_CIUS_RO'}>RO-RO16931-UBL-1.0.8-CIUS-RO</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
+          <Box textAlign='center'>
+            <Button
+              type='submit'
+              variant='contained'
+              sx={{
+                height: '50px',
+                padding: '25px',
+              }}
             >
-              <MenuItem value={10}>Invoice 1</MenuItem>
-              <MenuItem value={11}>Invoice 2</MenuItem>
-              <MenuItem value={12}>Invoice 3</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-        <Box sx={{ minWidth: 120, my: 3 }}>
-          <FormControl variant="standard" fullWidth>
-            <InputLabel id="select-rule-set">Rule Set</InputLabel>
-            <Select
-              labelId="select-rule-set"
-              id="rule-set"
-              name='rule-set'
-              value={ruleSet}
-              label="Rule Set"
-              onChange={handleChange}
-            >
-              <MenuItem value={'AUNZ_PEPPOL_1_0_10'}>AU-NZ PEPPOL-1.0.10</MenuItem>
-              <MenuItem value={'AUNZ_PEPPOL_SB_1_0_10'}>AU-NZ PEPPOL-SB-1.0.10</MenuItem>
-              <MenuItem value={'AUNZ_UBL_1_0_10'}>AU-NZ UBL-1.0.10</MenuItem>
-              <MenuItem value={'FR_EN16931_CII_1_3_11'}>FR-EN16931-CII-1.3.11</MenuItem>
-              <MenuItem value={'FR_EN16931_UBL_1_3_11'}>FR-EN16931-UBL-1.3.11</MenuItem>
-              <MenuItem value={'FR_EN16931_UBL_1_3_11'}>FR-EN16931-UBL-1.3.11</MenuItem>
-              <MenuItem value={'RO_RO16931_UBL_1_0_8_EN16931'}>RO-RO16931-UBL-1.0.8-EN16931</MenuItem>
-              <MenuItem value={'RO_RO16931_UBL_1_0_8_CIUS_RO'}>RO-RO16931-UBL-1.0.8-CIUS-RO</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-        <Box textAlign='center'>
-          <Button
-            onClick={handleSubmit}
-            variant='contained'
-            sx={{
-              height: '50px',
-              padding: '25px',
-            }}
-          >
-            Continue
-          </Button>
-        </Box>
+              Continue
+            </Button>
+          </Box>
+        </form>
       </Container>
       
     </>
