@@ -11,6 +11,7 @@ import Navbar from './components/Navbar';
 import SettingsPage from './pages/SettingsPage';
 import PreviewInvoice from './pages/PreviewInvoice';
 import ResetPassword from './pages/ResetPasswordPage';
+import InvoiceSending from './pages/InvoiceSending';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -102,6 +103,15 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <PreviewInvoice />
+            </>
+          }
+        />
+        <Route
+          path='/invoice-sending'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvoiceSending token={token} />
             </>
           }
         />
