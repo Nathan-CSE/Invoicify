@@ -18,7 +18,7 @@ class InvoiceNamespace(Namespace):
         buyer_fields= self.clone("Buyer", seller_fields)
         invoice_item_fields = self.model("InvoiceItem", {
             "quantity": fields.Integer(),
-            "unitCode": fields.Integer(),
+            "unitCode": fields.String(),
             "item": fields.String(),
             "description": fields.String(),
             "unitPrice": fields.Float(default=0.1),
@@ -39,11 +39,17 @@ class InvoiceNamespace(Namespace):
         })
         
     def get_upload_validation_fields(self):
-        upload_parser = reqparse.RequestParser()
-        upload_parser.add_argument('files', location='files', type=FileStorage, required=True)
-        upload_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
+        upload_validate_parser = reqparse.RequestParser()
+        upload_validate_parser.add_argument('files', location='files', type=FileStorage, required=True)
+        upload_validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
 
-        return upload_parser
+        return upload_validate_parser
+
+    def get_upload_create_fields(self):
+        upload_create_parser = reqparse.RequestParser()
+        upload_create_parser.add_argument('files', location='files', type=FileStorage, required=True)
+
+        return upload_create_parser
 
     def get_history_fields(self):
         history_fields = reqparse.RequestParser()

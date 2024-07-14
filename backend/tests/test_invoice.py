@@ -34,7 +34,46 @@ test_json = {
     },
     "invoiceItems": [{
         "quantity": 10,
-        "unitCode": 1,
+        "unitCode": "X01",
+        "item": "Booty",
+        "description": "Pirate",
+        "unitPrice": 100.0,
+        "GST": 10,
+        "totalPrice": 1000.0
+    }],
+    "totalGST": 100.0,
+    "totalTaxable": 900.0,
+    "totalAmount": 1000.0
+}
+
+test_invalid_json = {
+    "invoiceName": "test",
+    "invoiceNumber": "1",
+    "invoiceIssueDate": "2024-06-25",
+    "seller": {
+        "companyName": "Windows to Fit Pty Ltd",
+        "address": {
+            "streetName": "Test",
+            "additionalStreetName": "test",
+            "cityName": "test",
+            "postalCode": 2912,
+            "country": "AU"
+        }
+    },
+    "buyer": {
+        "ABN": 47555222000,
+        "companyName": "Henry Averies",
+        "address": {
+            "streetName": "Jam",
+            "additionalStreetName": "a man",
+            "cityName": "of fortune",
+            "postalCode": 1994,
+            "country": "AU"
+        }
+    },
+    "invoiceItems": [{
+        "quantity": 10,
+        "unitCode": "X01",
         "item": "Booty",
         "description": "Pirate",
         "unitPrice": 100.0,
@@ -54,20 +93,24 @@ INVOICE_EDIT_PATH = "/invoice/edit"
 INVOICE_DELETE_PATH = "/invoice/delete"
 INVOICE_HISTORY_PATH = "/invoice/history"
 
-def test_invoice_creation_successful(client):
-    user_data = {
-        "email": "abc@gmail.com", 
-        "password": salt_and_hash("abc"), 
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM"
-    }
-    
-    db_insert(User(**user_data))
-
+def test_invoice_creation_successful(client, user):
     res = client.post(
         INVOICE_CREATE_PATH,
         data=json.dumps(test_json),
         headers={
-            "Authorisation": user_data['token'],
+            "Authorisation": user.token,
+            "Content-Type": "application/json",
+        }
+    )
+    print(res.json)
+    assert res.status_code == 201
+
+def test_invoice_creation_invalid(client, user):
+    res = client.post(
+        INVOICE_CREATE_PATH,
+        data=json.dumps(test_json),
+        headers={
+            "Authorisation": user.token,
             "Content-Type": "application/json",
         }
     )
@@ -371,6 +414,7 @@ def test_invoice_history_handles_invalid_query_param(client, user):
     )
 
     assert res.status_code == 400
+    
 
 def test_validate_upload_success(client, user):
     data = {}
@@ -783,7 +827,7 @@ def test_uploadcreate_json(client, user):
     data = {}
     data['files'] = [(io.BytesIO(TEST_DATA["JSON_STR_1"].encode("utf-8")), 'test.json')]
     
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+    # data['rules'] = 'AUNZ_PEPPOL_1_0_10'
 
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
@@ -804,8 +848,6 @@ def test_uploadcreate_json(client, user):
 def test_uploadcreate_invalid_and_valid_json(client, user):
     data = {}
     data['files'] = [(io.BytesIO(TEST_DATA["JSON_STR_1"].encode("utf-8")), 'test.json'),(io.BytesIO(TEST_DATA["FAILED_JSON_STR_1"].encode("utf-8")), 'test.json')]
-    
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
 
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
@@ -828,7 +870,6 @@ def test_uploadcreate_invalidfile(client, user):
     data = {}
     data['files'] = [(io.BytesIO(b'fail, not pdf/json'),
         'test.txt')]
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
 
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
@@ -847,7 +888,6 @@ def test_uploadcreate_invalidfile(client, user):
 def test_uploadcreate_invalidjson(client, user):
     data = {}
     data['files'] = [(io.BytesIO(TEST_DATA["FAILED_JSON_STR_1"].encode("utf-8")), 'test.json')]
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
     
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
