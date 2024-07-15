@@ -8,22 +8,57 @@ import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Grid from '@mui/material/Grid';
+import axios from 'axios';
 
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const navigate = useNavigate();
-  const invoiceData = useLocation();
+  const invoiceData = useLocation().state;
+  const invoiceType = invoiceData.type;
+  console.log('this is the invoice data: ', invoiceData);
 
   const handlePreview = () => {
-    console.log('this is the invoice data: ', invoiceData);
-    navigate('/invoice-preview', { state: invoiceData });
+    navigate('/invoice-preview', { state: invoiceData.invoice });
   }
+
+  const handleDownload = async (event: any) => {
+    
+    
+    event.preventDefault();
+  
+    const invoiceInt = invoiceData.invoiceInt;
+    console.log('this is invoice int ', invoiceInt);
+    const data = {
+      "article_id": invoiceInt
+    }
+
+    try {
+      // Placeholder until backend endpoint has been created
+      const response = await axios.post(`http://localhost:5000/invoice/download`, data, {
+        headers: {
+          'Authorisation': `${props.token}`,
+        }
+      });
+      
+      if (response.status === 200) {
+        // navigate('/invoice-confirmation');
+        console.log(response);
+
+      } else {
+        console.log(response);
+        alert("Unable to create invoice");
+      }
+    } catch (err) {
+      alert(err)
+    }
+
+  };
 
   return (
     <>
       
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
-          Invoice Creation
+          Invoice Creation Result
         </Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
@@ -39,8 +74,15 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
             Dashboard
           </Typography>
 
-          <Typography color='text.primary'>
+          <Typography
+            component={Link}
+            to='/invoice-creation'
+          >
             Invoice Creation
+          </Typography>
+
+          <Typography color='text.primary'>
+            Invoice Creation Result
           </Typography>
         </Breadcrumbs>
 
@@ -74,8 +116,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
         <Grid container justifyContent="center" spacing={6}>
           <Grid item>
             <Button
-              component={Link}
-              to='/sign-in'
+              onClick={handleDownload}
               variant='contained'
               sx={{
                 height: '50px',
@@ -86,18 +127,22 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
             </Button>
           </Grid>
 
-          <Grid item>
-            <Button
-              onClick={handlePreview}
-              variant='contained'
-              sx={{
-                height: '50px',
-                padding: '25px',
-              }}
-            >
-              Preview Invoice
-            </Button>
-          </Grid>
+          {/* Conditionally show preview only if invoice created via gui */}
+          {
+            invoiceType !== 'upload' &&
+            <Grid item>
+              <Button
+                onClick={handlePreview}
+                variant='contained'
+                sx={{
+                  height: '50px',
+                  padding: '25px',
+                }}
+              >
+                Preview Invoice
+              </Button>
+            </Grid>
+          }
 
           <Grid item>
             <Button

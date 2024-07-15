@@ -3,12 +3,12 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Navbar from '../components/Navbar';
+import Navbar from '../../components/Navbar';
 import Divider from '@mui/material/Divider';
 import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FileUpload from '../components/FileUpload';
+import FileUpload from '../../components/FileUpload';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -21,7 +21,7 @@ import { DropzoneArea } from "mui-file-dropzone";
 export default function InvoiceCreation(props: { token: string; }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [file, setFile] = React.useState<File[]>([]);
+  const [file, setFile] = React.useState<File>();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -31,21 +31,28 @@ export default function InvoiceCreation(props: { token: string; }) {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
+    
+    const formData = new FormData();
 
-    handleOpen();
+    if (file) {
+      formData.append("files", file);
+    }
 
-    console.log('file to be sent: ', file);
+    // console.log('file to be sent: ', file);
 
     try {
-      // Placeholder until backend endpoint has been created
-      const response = await axios.post('http://localhost:5000/invoice/create', file, {
+      const response = await axios.post('http://localhost:5000/invoice/uploadCreate', formData, {
         headers: {
-          'Authorization': `${props.token}`
+          'Authorisation': `${props.token}`,
+          'Content-Type': 'multipart/form-data'
         }
       });
       
-      if (response.status === 201) {
-        navigate('/invoice-confirmation');
+      if (response.status === 200) {
+        console.log(response.data);
+        var str = JSON.stringify(response.data, null, 2);
+        console.log(str);
+        navigate('/invoice-confirmation', { state: { invoice: response.data, type: 'upload', invoiceId: response.data.data[0].invoiceId } });
 
       } else {
         console.log(response);
@@ -56,7 +63,7 @@ export default function InvoiceCreation(props: { token: string; }) {
     }
 
   };
-
+  
   return (
     <>
      
@@ -89,7 +96,7 @@ export default function InvoiceCreation(props: { token: string; }) {
             fileObjects={file}
             onChange={(loadedFile) => {
               console.log('Currently loaded:', loadedFile)
-              setFile(loadedFile);
+              setFile(loadedFile[0]);
             }}
             filesLimit={1}
           />
