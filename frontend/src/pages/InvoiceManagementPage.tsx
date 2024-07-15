@@ -34,7 +34,9 @@ export default function InvoiceManagement(props: { token: string }) {
     is_ready: boolean;
   }
 
-  const [details, setDetails] = React.useState<Details[]>([]);
+  // const [details, setDetails] = React.useState<Details[]>([]);
+  const [details, setDetails] = React.useState<Map<number, Details>>(new Map());
+
   const openSettings = () => () => {
     alert(1);
   };
@@ -59,6 +61,10 @@ export default function InvoiceManagement(props: { token: string }) {
   const handleCancelFilter = () => {
     setFilterOpen(false);
   };
+
+  const handleCardClick = () => {
+    alert(1);
+  };
   // Just to fetch data on load
   const getDetails = async () => {
     try {
@@ -75,6 +81,7 @@ export default function InvoiceManagement(props: { token: string }) {
       if (response.status === 200) {
         const data: Record<string, Details> = response.data;
         let temp: Details[] = [];
+
         // Checks for the filter options
         // If the filter is not chosen it will default to id
         if (filterValue == 'status') {
@@ -93,7 +100,12 @@ export default function InvoiceManagement(props: { token: string }) {
         if (filterValue == 'name') {
           temp = [...temp].sort((a, b) => a.name.localeCompare(b.name));
         }
-        setDetails(temp);
+
+        const initialMap = new Map<number, Details>();
+        temp.forEach((detail) => {
+          initialMap.set(detail.id, detail);
+        });
+        setDetails(initialMap);
       } else {
         setOpenError(true);
         setError(response.data.message);
@@ -114,7 +126,8 @@ export default function InvoiceManagement(props: { token: string }) {
   };
 
   function generateInvoiceCards(): JSX.Element[] {
-    return Object.values(details).map((items) => (
+    // Object.values(details).map((items
+    return Array.from(details.values()).map((items) => (
       <Grid key={items.id} item>
         <Card
           sx={{
@@ -131,7 +144,7 @@ export default function InvoiceManagement(props: { token: string }) {
           }}
         >
           <SettingsMenu id={items.id} token={props.token}></SettingsMenu>
-          <CardActionArea>
+          <CardActionArea onClick={handleCardClick}>
             <CardContent
               sx={{
                 mt: 2,
