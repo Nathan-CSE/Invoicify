@@ -2,11 +2,11 @@ import base64
 import os
 import hashlib
 import jwt
-from xml.etree.ElementTree import ParseError
+
 from jwt.exceptions import InvalidSignatureError
 from flask import request
 
-from models import db, User, Invoice
+from models import db, User
 
 def salt_and_hash(data):
     return hashlib.sha512((data + os.getenv("SALT")).encode('UTF-8')).hexdigest()
@@ -59,12 +59,26 @@ def token_required(func):
     return wrapper
 
 def base64_encode(data):
+    '''
+    Helper utility to base64 encode data
+
+    Data passed in must be encoded to a bytes-like object prior to passing it in
+    E.g.
+        base64_encode(data.encode())
+    '''
     try:
         return base64.b64encode(data).decode()
     except UnicodeEncodeError as err:
         raise err
 
 def base64_decode(data):
+    '''
+    Helper utility to base64 decode data
+
+    Data passed in must be encoded to a bytes-like object prior to passing it in
+    E.g.
+        base64_decode(data.encode())
+    '''
     try:
         return base64.b64decode(data).decode()
     except UnicodeDecodeError as err:
