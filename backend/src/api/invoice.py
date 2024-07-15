@@ -310,6 +310,7 @@ class ValidationAPI(Resource):
         if retval["successful"] is True:
             invoice.is_ready = True
             invoice.completed_ubl = encoded_xml_content
+            invoice.rule = rules
             db.session.commit()
             return make_response(jsonify({"message": "Invoice validated successfully"}), 200)
         else:
