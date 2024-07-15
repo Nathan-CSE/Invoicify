@@ -200,6 +200,7 @@ class UploadValidationAPI(Resource):
             db_insert(invoice)
             return make_response(jsonify({"message": "Invoice validated sucessfully", "data": invoice.id}), 200)
         else:
+<<<<<<< HEAD
             errors = [
                 {
                     "id": error["id"],
@@ -292,6 +293,8 @@ class ValidationAPI(Resource):
                 }
             }
             return make_response(jsonify(response), 203)
+=======
+>>>>>>> b075111a24a39f820b46ab0b8aac08ed34501b6d
             retmessage = retval["report"]
             return make_response(jsonify({"message": retmessage}), 203)
 
