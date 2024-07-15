@@ -181,6 +181,8 @@ class UploadValidationAPI(Resource):
             return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
         
         vs = ValidationService()
+        cs = ConversionService()
+        json_str = cs.xml_to_json(content)
 
         try:
             retval = vs.validate_xml(
