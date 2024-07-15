@@ -7,7 +7,7 @@ class InvoiceNamespace(Namespace):
             "streetName": fields.String(),
             "additionalStreetName": fields.String(),
             "cityName": fields.String(),
-            "postalCode": fields.Integer(),
+            "postalCode": fields.String(),
             "country": fields.String()
         })
         seller_fields = self.model("Seller", {
@@ -28,7 +28,7 @@ class InvoiceNamespace(Namespace):
         
         return self.model('CreateUBLFields', {
             "invoiceName": fields.String(),
-            "invoiceNumber": fields.String(),
+            "invoiceNumber": fields.Integer(),
             "invoiceIssueDate": fields.String(),
             "seller": fields.Nested(seller_fields),
             "buyer": fields.Nested(buyer_fields),
@@ -63,6 +63,13 @@ class InvoiceNamespace(Namespace):
         return send_mail_fields
 
     
+
+    def get_id_validation_fields(self):
+        validate_parser = invoice_ns.parser()
+        validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
+
+        return validate_parser
+
     def get_save_ubl_fields(self):
         return self.model("SaveUBLFields", {
             "name": fields.String(default="Invoice 1", required=True),
