@@ -57,6 +57,12 @@ class InvoiceNamespace(Namespace):
 
         return history_fields
     
+    def get_send_mail_fields(self):
+        send_mail_fields = reqparse.RequestParser()
+        send_mail_fields.add_argument('target_email', type=str, required=True)
+        return send_mail_fields
+
+    
     def get_save_ubl_fields(self):
         return self.model("SaveUBLFields", {
             "name": fields.String(default="Invoice 1", required=True),
