@@ -8,7 +8,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
-import ErrorModal from '../components/ErrorModal';
+import ErrorModal from '../../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
 
 export default function SignIn(props: {
