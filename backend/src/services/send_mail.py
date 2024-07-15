@@ -1,13 +1,14 @@
-
-from dotenv import load_dotenv
+import os
 import ssl, smtplib
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
+from dotenv import load_dotenv
 from os.path import basename
 from email.mime.application import MIMEApplication
 from email.utils import COMMASPACE, formatdate
-import os
+
+load_dotenv()
 
 def auth_request(email, code):
     '''
@@ -25,7 +26,6 @@ def auth_request(email, code):
         # users[user_index]["token"] = []
         # Sending the email
         # Create a secure SSL context
-    load_dotenv()
 
     context = ssl.create_default_context()
     sender_email = os.getenv("EMAIL_USER")
@@ -82,5 +82,4 @@ def send_attachment(send_to:list, text, files=None):
 {}
 
 if __name__ == "__main__":
-    # auth_request_v1("")
     send_attachment([""], "Hey Loser", ["../test.txt"])
