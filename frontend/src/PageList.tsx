@@ -2,15 +2,18 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
+import SignIn from './pages/UserAuth/SignIn';
+import SignUp from './pages/UserAuth/SignUp';
+import SettingsPage from './pages/UserAuth/SettingsPage';
 import InvoiceCreation from './pages/InvoiceCreation/InvoiceCreation';
 import InvoiceCreationConfirmation from './pages/InvoiceCreation/InvoiceCreationConfirmation';
 import CreationGUI from './pages/InvoiceCreation/CreationGUI';
 import Navbar from './components/Navbar';
-import SettingsPage from './pages/SettingsPage';
 import PreviewInvoice from './pages/PreviewInvoice';
-import ResetPassword from './pages/ResetPasswordPage';
+import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
+import InvalidReport from './pages/InvoiceValidation/InvalidReport';
+import ValidReport from './pages/InvoiceValidation/ValidReport';
+import ResetPassword from './pages/UserAuth/ResetPasswordPage';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -104,6 +107,33 @@ function PageList() {
               <PreviewInvoice token={token} />
             </>
           }
+        />
+        <Route 
+          path='/invoice-validation'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvoiceValidation token={token} />
+            </>
+          } 
+        />
+        <Route 
+          path='/invoice-validation-report-valid'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <ValidReport />
+            </>
+          } 
+        />
+        <Route 
+          path='/invoice-validation-report-invalid'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvalidReport />
+            </>
+          } 
         />
         <Route
           path='/settings'

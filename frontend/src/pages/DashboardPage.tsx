@@ -38,7 +38,7 @@ function DashboardPage(props: {
   // REPLACE your route to the page when implemented
   const options = {
     'Create/Upload an Invoice': { svg: PenSvg, route: '/invoice-creation' },
-    'Validate an Invoice': { svg: TickSvg, route: '/' },
+    'Validate an Invoice': { svg: TickSvg, route: '/invoice-validation' },
     'Send an Invoice': { svg: SendSvg, route: '/' },
     'Manage Invoices': { svg: ManageSvg, route: '/' },
     'Account Settings': { svg: CogSvg, route: '/settings' },
