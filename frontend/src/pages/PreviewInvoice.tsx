@@ -22,7 +22,7 @@ export default function PreviewInvoice(props: { token: string; }) {
 
   const location = useLocation();
 
-  const invoiceInfo = location.state.state;
+  const invoiceInfo = location.state;
   const sellerInfo = invoiceInfo.seller;
   const buyerInfo = invoiceInfo.buyer;
   const invoiceItems = invoiceInfo.invoiceItems;
