@@ -273,7 +273,7 @@ class ValidationAPI(Resource):
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 400)
 
-        converter = ConverterService()
+        converter = ConversionService()
 
         try:
             xml_content = converter.json_to_xml(invoice.fields)
