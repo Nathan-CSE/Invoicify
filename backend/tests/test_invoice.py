@@ -1,16 +1,14 @@
 import io
-import pytest
 import json
 
-from tests.fixtures import client
-from models import User
-from src.services.create_xml import create_xml
+from models import User, Invoice
 from src.services.utils import db_insert, salt_and_hash
-from tests.const_data import json_str_1, json_str_fail
+from tests.fixtures import client, user, user_2, invoice, invoice_2
+from tests.data import TEST_DATA
 
 test_json = {
     "invoiceName": "test",
-    "invoiceNumber": "1",
+    "invoiceNumber": 1,
     "invoiceIssueDate": "2024-06-25",
     "seller": {
         "ABN": 47555222000,
@@ -19,7 +17,7 @@ test_json = {
             "streetName": "Test",
             "additionalStreetName": "test",
             "cityName": "test",
-            "postalCode": 2912,
+            "postalCode": "2912",
             "country": "AU"
         }
     },
@@ -30,7 +28,7 @@ test_json = {
             "streetName": "Jam",
             "additionalStreetName": "a man",
             "cityName": "of fortune",
-            "postalCode": 1994,
+            "postalCode": "1994",
             "country": "AU"
         }
     },
@@ -88,16 +86,12 @@ test_invalid_json = {
 }
 
 INVOICE_CREATE_PATH = "/invoice/create"
-INVOICE_UPLOAD_PATH = "/invoice/uploadValidate"
+INVOICE_UPLOAD_VALIDATE_PATH = "/invoice/uploadValidate"
 INVOICE_UPLOAD_CREATE_PATH = "/invoice/uploadCreate"
-
-@pytest.fixture
-def user(client):
-    user = User(email="abc@gmail.com", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM")
-    
-    db_insert(user)
-    return user
-
+INVOICE_SAVE_PATH = "/invoice/save"
+INVOICE_EDIT_PATH = "/invoice/edit"
+INVOICE_DELETE_PATH = "/invoice/delete"
+INVOICE_HISTORY_PATH = "/invoice/history"
 
 def test_invoice_creation_successful(client, user):
     res = client.post(
@@ -108,7 +102,6 @@ def test_invoice_creation_successful(client, user):
             "Content-Type": "application/json",
         }
     )
-
     assert res.status_code == 201
 
 def test_invoice_creation_invalid(client, user):
@@ -134,6 +127,292 @@ def test_invoice_creation_unauthorised(client):
     )
 
     assert res.status_code == 403
+
+def test_invoice_save_successful(client, user):
+    data = {
+        "name": "Testing123",
+        "fields": {
+            "field 1": "hi"
+        }
+    }
+
+    res = client.post(
+        INVOICE_SAVE_PATH,
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 201
+    assert len(Invoice.query.all()) > 0
+
+def test_invoice_save_invalid_fields_type(client, user):
+    data = {
+        "name": "Testing123",
+        # should be json
+        "fields": "test"
+    }
+
+    res = client.post(
+        INVOICE_SAVE_PATH,
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 400
+
+def test_invoice_save_invalid_name_type(client, user):
+    data = {
+        # should be str
+        "name": 5,
+        "fields": {
+            "field 1": "hi"
+        }
+    }
+
+    res = client.post(
+        INVOICE_SAVE_PATH,
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 400
+
+def test_invoice_edit_successful(client, user, invoice):
+    data = {
+        "name": "Testing123",
+        "fields": {
+            "field 1": "hi"
+        },
+        "rule": "AUNZ_PEPPOL_SB_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/{invoice.id}",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 204
+    assert invoice.name == "Testing123"
+    assert invoice.fields == {
+        "field 1": "hi"
+    }
+    assert invoice.rule == "AUNZ_PEPPOL_SB_1_0_10"
+    assert invoice.completed_ubl == None
+    assert invoice.is_ready == False
+
+def test_invoice_edit_invoice_does_not_exist(client, user):
+    data = {
+        "name": "Testing123",
+        "fields": {
+            "field 1": "hi"
+        },
+        "rule": "AUNZ_PEPPOL_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/1",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 404
+
+def test_invoice_edit_invoice_does_not_belong_to_user(client, user_2, invoice):
+    data = {
+        "name": "Testing123",
+        "fields": {
+            "field 1": "hi"
+        },
+        "rule": "AUNZ_PEPPOL_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/{invoice.id}",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user_2.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 404
+
+def test_invoice_edit_invoice_resets_is_ready_and_completed_ubl_if_fields_or_rule_changes(client, user, invoice_2):
+    data = {
+        "name": "test-invoice",
+        "fields": {
+            "field 1": "hi"
+        },
+        "rule": "AUNZ_PEPPOL_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/{invoice_2.id}",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 204
+    assert invoice_2.completed_ubl == None
+    assert invoice_2.is_ready == False
+
+    data = {
+        "name": "test-invoice",
+        "fields": {
+            "yo": "Yo"
+        },
+        "rule": "AUNZ_PEPPOL_SB_1_0_10"
+    }
+
+    res = client.put(
+        f"{INVOICE_EDIT_PATH}/{invoice_2.id}",
+        data=json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 204
+    assert invoice_2.completed_ubl == None
+    assert invoice_2.is_ready == False
+
+def test_invoice_delete_successful(client, user, invoice):
+    res = client.delete(
+        f"{INVOICE_DELETE_PATH}/{invoice.id}",
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 200
+    assert Invoice.query.filter(Invoice.id==invoice.id).first() == None
+
+def test_invoice_delete_invoice_does_not_exist(client, user):
+    res = client.delete(
+        f"{INVOICE_DELETE_PATH}/1",
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 404
+
+def test_invoice_delete_invoice_does_not_belong_to_user(client, user_2, invoice):
+    res = client.delete(
+        f"{INVOICE_DELETE_PATH}/{invoice.id}",
+        headers={
+            "Authorisation": user_2.token,
+            "Content-Type": "application/json"
+        }
+    )
+
+    assert res.status_code == 404
+
+def test_invoice_history_successful(client, user, invoice):
+    res = client.get(
+        INVOICE_HISTORY_PATH,
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+def test_invoice_history_successful_is_ready(client, user, invoice_2):
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=true",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=True",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+def test_invoice_history_successful_is_not_ready(client, user, invoice):
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=false",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=False",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 1
+
+def test_invoice_history_only_returns_their_own_invoices(client, user, user_2, invoice, invoice_2):
+    res = client.get(
+        INVOICE_HISTORY_PATH,
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 2
+
+    res = client.get(
+        INVOICE_HISTORY_PATH,
+        headers={
+            "Authorisation": user_2.token,
+        }
+    )
+
+    assert res.status_code == 200
+    assert len(res.json) == 0
+
+def test_invoice_history_handles_invalid_query_param(client, user):
+    res = client.get(
+        f"{INVOICE_HISTORY_PATH}?is_ready=yo",
+        headers={
+            "Authorisation": user.token,
+        }
+    )
+
+    assert res.status_code == 400
     
 
 def test_validate_upload_success(client, user):
@@ -301,7 +580,7 @@ def test_validate_upload_success(client, user):
         '''),
         'test.xml')]
     res = client.post(
-        INVOICE_UPLOAD_PATH,
+        INVOICE_UPLOAD_VALIDATE_PATH,
         headers={
             "Authorisation": user.token
         },
@@ -309,7 +588,6 @@ def test_validate_upload_success(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
-
     response_body = res.get_json()
     
     assert res.status_code == 200
@@ -481,7 +759,7 @@ def test_validate_upload_fail_rules(client, user):
         '''),
         'test.xml')]
     res = client.post(
-        INVOICE_UPLOAD_PATH,
+        INVOICE_UPLOAD_VALIDATE_PATH,
         headers={
             "Authorisation": user.token
         },
@@ -501,7 +779,7 @@ def test_validate_upload_nonXML(client, user):
         'test.pdf')]
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'
     res = client.post(
-        INVOICE_UPLOAD_PATH,
+        INVOICE_UPLOAD_VALIDATE_PATH,
         headers={
             "Authorisation": user.token
         },
@@ -529,7 +807,7 @@ def test_validate_upload_unsucessful(client, user):
         'test.xml')]
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'
     res = client.post(
-        INVOICE_UPLOAD_PATH,
+        INVOICE_UPLOAD_VALIDATE_PATH,
         headers={
             "Authorisation": user.token
         },
@@ -546,7 +824,7 @@ def test_validate_upload_unsucessful(client, user):
 
 def test_uploadcreate_json(client, user):
     data = {}
-    data['files'] = [(io.BytesIO(json_str_1.encode("utf-8")), 'test.json')]
+    data['files'] = [(io.BytesIO(TEST_DATA["JSON_STR_1"].encode("utf-8")), 'test.json')]
     
     # data['rules'] = 'AUNZ_PEPPOL_1_0_10'
 
@@ -568,7 +846,7 @@ def test_uploadcreate_json(client, user):
 
 def test_uploadcreate_invalid_and_valid_json(client, user):
     data = {}
-    data['files'] = [(io.BytesIO(json_str_1.encode("utf-8")), 'test.json'),(io.BytesIO(json_str_fail.encode("utf-8")), 'test.json')]
+    data['files'] = [(io.BytesIO(TEST_DATA["JSON_STR_1"].encode("utf-8")), 'test.json'),(io.BytesIO(TEST_DATA["FAILED_JSON_STR_1"].encode("utf-8")), 'test.json')]
 
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
@@ -580,6 +858,7 @@ def test_uploadcreate_invalid_and_valid_json(client, user):
         follow_redirects=True
     )
     response_body = res.get_json()
+    print(response_body)
     
     assert res.status_code == 200
     assert response_body['message'] == "Invoice(s) created successfully"
@@ -607,7 +886,7 @@ def test_uploadcreate_invalidfile(client, user):
     
 def test_uploadcreate_invalidjson(client, user):
     data = {}
-    data['files'] = [(io.BytesIO(json_str_fail.encode("utf-8")), 'test.json')]
+    data['files'] = [(io.BytesIO(TEST_DATA["FAILED_JSON_STR_1"].encode("utf-8")), 'test.json')]
     
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,

@@ -1,36 +1,87 @@
-import pytest
+from flask_restx import Namespace, fields, reqparse
+from werkzeug.datastructures import FileStorage
 
-from app import create_app
-from models import Invoice, User
-from src.services.utils import salt_and_hash, db_insert
+class InvoiceNamespace(Namespace):
+    def get_create_ubl_fields(self):
+        address_fields = self.model("Address", {
+            "streetName": fields.String(),
+            "additionalStreetName": fields.String(),
+            "cityName": fields.String(),
+            "postalCode": fields.String(),
+            "country": fields.String()
+        })
+        seller_fields = self.model("Seller", {
+            "ABN": fields.Integer(),
+            "companyName": fields.String(),
+            "address": fields.Nested(address_fields)
+        })
+        buyer_fields= self.clone("Buyer", seller_fields)
+        invoice_item_fields = self.model("InvoiceItem", {
+            "quantity": fields.Integer(),
+            "unitCode": fields.String(),
+            "item": fields.String(),
+            "description": fields.String(),
+            "unitPrice": fields.Float(default=0.1),
+            "GST": fields.Integer(),
+            "totalPrice": fields.Float(default=0.1)
+        })
+        
+        return self.model('CreateUBLFields', {
+            "invoiceName": fields.String(),
+            "invoiceNumber": fields.Integer(),
+            "invoiceIssueDate": fields.String(),
+            "seller": fields.Nested(seller_fields),
+            "buyer": fields.Nested(buyer_fields),
+            "invoiceItems": fields.List(fields.Nested(invoice_item_fields)),
+            "totalGST": fields.Float(default=0.1),
+            "totalTaxable": fields.Float(default=0.1),
+            "totalAmount": fields.Float(default=0.1)
+        })
+        
+    def get_upload_validation_fields(self):
+        upload_validate_parser = reqparse.RequestParser()
+        upload_validate_parser.add_argument('files', location='files', type=FileStorage, required=True)
+        upload_validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
 
-@pytest.fixture
-def client():
-    app = create_app(":memory:")
-    with app.app_context():
-        yield app.test_client()
+        return upload_validate_parser
 
-@pytest.fixture
-def user(client):
-    user = User(email="abc@gmail.com", password=salt_and_hash("abc"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiY0BnbWFpbC5jb20ifQ.t5iNUNMkVVEVGNcPx8UdmwWgIMJ22j36xn4kXB-e-qM")
+    def get_upload_create_fields(self):
+        upload_create_parser = reqparse.RequestParser()
+        upload_create_parser.add_argument('files', location='files', type=FileStorage, required=True)
+
+        return upload_create_parser
+
+    def get_history_fields(self):
+        history_fields = reqparse.RequestParser()
+        history_fields.add_argument('is_ready', type=bool, choices=["true", "false"], required=False, help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
+
+        return history_fields
     
-    db_insert(user)
-    return user
+    def get_save_ubl_fields(self):
+        return self.model("SaveUBLFields", {
+            "name": fields.String(default="Invoice 1", required=True),
+            "fields": fields.Raw(default={
+                "invoiceName": "test",
+                "invoiceNumber": "1",
+                "invoiceIssueDate": "2024-06-25",
+                "seller": {
+                    "ABN": 47555222000,
+                    "companyName": "Windows to Fit Pty Ltd",
+                    "address": {
+                        "streetName": "Test",
+                        "additionalStreetName": "test",
+                        "cityName": "test",
+                        "postalCode": 2912,
+                        "country": "AU"
+                    }
+                }
+            }, required=True)
+        })
 
-@pytest.fixture
-def user_2(client):
-    user = User(email="abc2@gmail.com", password=salt_and_hash("abc2"), token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFiYzJAZ21haWwuY29tIn0.Sz2dvn-pLfOtbpDEoFO7Mooc9xLL4fTYhMCoyeHBnKY")
-    
-    db_insert(user)
-    return user
-
-@pytest.fixture
-def invoice(user):
-    invoice = Invoice(
-        name="test-invoice", 
-        fields={
-            "name": "Invoice 1",
-            "fields": {
+    def get_edit_fields(self):
+        return self.model("EditUBLFields", {
+            "name": fields.String(default="Invoice 1"),
+            "fields": fields.Raw(default={
                 "ID": "Invoice03",
                 "IssueDate": "2022-07-31",
                 "InvoiceTypeCode": "380",
@@ -207,32 +258,6 @@ def invoice(user):
                         }
                     }
                 ]
-            }
-        },
-        rule="AUNZ_PEPPOL_1_0_10",
-        user_id=user.id,
-        is_ready=False
-    )
-    
-    db_insert(invoice)
-    return invoice
-
-@pytest.fixture
-def invoice_2(user):
-    invoice = Invoice(
-        name="test-invoice", 
-        fields={
-            "name": "Invoice 1",
-            "fields": {
-                "yo": "Yo"
-            },
-        },
-        rule="AUNZ_PEPPOL_1_0_10",
-        user_id=user.id,
-        completed_ubl="blahblahlba",
-        is_ready=True
-    )
-    
-    db_insert(invoice)
-    return invoice
-    
+            }, required=True),
+            "rule": fields.String(required=True, default="AUNZ_PEPPOL_1_0_10")
+        })

@@ -15,37 +15,58 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import axios from 'axios';
+import { DropzoneArea } from "mui-file-dropzone";
 
-export default function InvoiceCreation() {
+export default function InvoiceCreation(props: { token: string; }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const [file, setFile] = React.useState<File>();
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     navigate('/invoice-confirmation');
     setOpen(false);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-    const username = data.get('username') as string;
-    const password = data.get('password') as string;
     
-    if (username.length === 0 || password.length === 0) {
-      alert('Fill out all required fields');
+    const formData = new FormData();
+
+    if (file) {
+      formData.append("files", file);
     } else {
-      try {
-        // send to backend
-      } catch (err) {
-        if (err instanceof Error) {
-          alert(err.message);
+      alert("You must upload a valid file to create an invoice.");
+      return;
+    }
+
+    // console.log('file to be sent: ', file);
+
+    try {
+      const response = await axios.post('http://localhost:5000/invoice/uploadCreate', formData, {
+        headers: {
+          'Authorisation': `${props.token}`,
+          'Content-Type': 'multipart/form-data'
         }
+      });
+      
+      if (response.status === 200) {
+        console.log(response.data);
+        var str = JSON.stringify(response.data, null, 2);
+        console.log(str);
+        navigate('/invoice-confirmation', { state: { invoice: response.data, type: 'upload', invoiceId: response.data.data[0].invoiceId } });
+
+      } else {
+        console.log(response);
+        alert("Unable to create invoice");
       }
+    } catch (err) {
+      alert(err)
     }
 
   };
-
+  
   return (
     <>
      
@@ -73,12 +94,20 @@ export default function InvoiceCreation() {
         </Breadcrumbs>
 
         <Box sx={{ my: 5 }}>
-          <FileUpload />
+          <DropzoneArea
+            acceptedFiles={['.pdf', '.json']}
+            fileObjects={file}
+            onChange={(loadedFile) => {
+              console.log('Currently loaded:', loadedFile)
+              setFile(loadedFile[0]);
+            }}
+            filesLimit={1}
+          />
         </Box>
 
         <Box textAlign='center'>
           <Button
-            onClick={handleOpen}
+            onClick={handleSubmit}
             variant='contained'
             sx={{
               height: '50px',
