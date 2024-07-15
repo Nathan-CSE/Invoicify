@@ -192,7 +192,11 @@ class UploadValidationAPI(Resource):
             return make_response(jsonify({"message": str(err)}), 400)
 
         if retval["successful"] is True:
-            return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
+            cs = ConversionService()
+            json_str = cs.xml_to_json(content)
+            invoice = Invoice(name=file.filename, fields=json.dumps(json_str), user_id=user.id, is_ready=True)
+            db_insert(invoice)
+            return make_response(jsonify({"message": "Invoice validated sucessfully", "data": invoice.id}), 200)
         else:
             retmessage = retval["report"]
             return make_response(jsonify({"message": retmessage}), 203)
