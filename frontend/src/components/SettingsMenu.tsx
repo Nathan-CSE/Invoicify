@@ -33,7 +33,6 @@ export default function SettingsMenu(props: { id: number; token: string }) {
     console.log('1');
   };
 
-  const openConfirm = () => {};
   const handleDelete = async () => {
     try {
       const response = await axios.delete(

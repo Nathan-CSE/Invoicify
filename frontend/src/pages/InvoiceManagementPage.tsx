@@ -54,9 +54,6 @@ export default function InvoiceManagement(props: { token: string }) {
   const handleCloseFilter = (value: string) => {
     setFilterValue(value);
     setFilterOpen(false);
-    // getDetails();
-    console.log('Here');
-    console.log(filterValue);
   };
 
   const handleCancelFilter = () => {
@@ -82,7 +79,6 @@ export default function InvoiceManagement(props: { token: string }) {
         // If the filter is not chosen it will default to id
         if (filterValue == 'status') {
           for (let d of Object.values(data)) {
-            console.log('here');
             if (d.is_ready) {
               temp.push(d);
             }
@@ -93,9 +89,8 @@ export default function InvoiceManagement(props: { token: string }) {
           }
         }
 
-        // Lexiographically sort
+        // Lexiographically sort if the filter option is enabled
         if (filterValue == 'name') {
-          console.log('yep');
           temp = [...temp].sort((a, b) => a.name.localeCompare(b.name));
         }
         setDetails(temp);
@@ -176,7 +171,7 @@ export default function InvoiceManagement(props: { token: string }) {
   }
 
   React.useEffect(() => {
-    // setFilterValue('id');
+    setFilterValue('id');
     getDetails();
   }, []);
 
