@@ -7,7 +7,7 @@ class InvoiceNamespace(Namespace):
             "streetName": fields.String(),
             "additionalStreetName": fields.String(),
             "cityName": fields.String(),
-            "postalCode": fields.Integer(),
+            "postalCode": fields.String(),
             "country": fields.String()
         })
         seller_fields = self.model("Seller", {
@@ -28,7 +28,7 @@ class InvoiceNamespace(Namespace):
         
         return self.model('CreateUBLFields', {
             "invoiceName": fields.String(),
-            "invoiceNumber": fields.String(),
+            "invoiceNumber": fields.Integer(),
             "invoiceIssueDate": fields.String(),
             "seller": fields.Nested(seller_fields),
             "buyer": fields.Nested(buyer_fields),

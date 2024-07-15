@@ -294,7 +294,7 @@ export const PrintableInvoice = (
           <Table aria-label="simple table">
             <TableBody>
               <TableRow>
-                <TableCell>Total GST ({invoiceInfo.vatRate}%): </TableCell>
+                <TableCell>Total GST ({invoiceInfo.buyerVatRate}%): </TableCell>
                 <TableCell align="right">${invoiceInfo.totalGST.toLocaleString()}</TableCell>
               </TableRow>
 
