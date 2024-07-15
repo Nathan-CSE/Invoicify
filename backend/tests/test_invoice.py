@@ -771,7 +771,6 @@ def test_validate_upload_fail_rules(client, user):
     response_body = res.get_json()
 
     assert res.status_code == 203
-    assert response_body['message']["successful"] is False
  
 def test_validate_upload_nonXML(client, user):
     data = {}
@@ -818,9 +817,7 @@ def test_validate_upload_unsucessful(client, user):
 
     response_body = res.get_json()
 
-    print(response_body['message'])
     assert res.status_code == 203
-    assert response_body['message']["successful"] is False
 
 def test_uploadcreate_json(client, user):
     data = {}

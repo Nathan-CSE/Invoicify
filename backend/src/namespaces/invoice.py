@@ -57,6 +57,13 @@ class InvoiceNamespace(Namespace):
 
         return history_fields
     
+
+    def get_id_validation_fields(self):
+        validate_parser = invoice_ns.parser()
+        validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
+
+        return validate_parser
+
     def get_save_ubl_fields(self):
         return self.model("SaveUBLFields", {
             "name": fields.String(default="Invoice 1", required=True),
