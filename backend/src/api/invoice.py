@@ -11,6 +11,7 @@ from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.conversion import ConversionService
 from src.services.upload import UploadService
+import re;
 
 invoice_ns = InvoiceNamespace(name='invoice', description='Operations related to creating invoices')
 
@@ -32,9 +33,9 @@ class CreateUBLAPI(Resource):
             res = create_xml(data, user)
             return make_response(jsonify(res), 201)
         except ValueError as e:
-            return make_response(str(e), 422)
+            return make_response(e, 422)
         except Exception as e:
-            return make_response(jsonify({"message": str(e)}), 400)
+            return make_response(jsonify({"message": "UBL not created"}), 400)
         
 @invoice_ns.route("/download")
 class SendUBLAPI(Resource):
@@ -105,6 +106,7 @@ class EditAPI(Resource):
         invoice.fields = data["fields"] 
 
         db.session.commit()
+
         return make_response(jsonify(invoice.to_dict()), 204)
 
 @invoice_ns.route("/delete/<int:id>")
@@ -198,6 +200,98 @@ class UploadValidationAPI(Resource):
             db_insert(invoice)
             return make_response(jsonify({"message": "Invoice validated sucessfully", "data": invoice.id}), 200)
         else:
+            errors = [
+                {
+                    "id": error["id"],
+                    "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
+                    "text": error["text"]
+                }
+                for report in retval["report"].get("reports", {}).values()
+                for error in report.get("firedAssertionErrors", [])
+            ]
+            
+            response = {
+                "filename": file.filename,
+                "reports": {
+                    "firedAssertionErrors": errors,
+                    "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
+                    "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
+                    "successful": retval["report"].get("successful", False),
+                    "summary": retval["report"].get("summary", "No summary available")
+                }
+            }
+            return make_response(jsonify(response), 203)
+
+@invoice_ns.route("/validate/<int:id>")
+class ValidationAPI(Resource):
+    @invoice_ns.doc(
+        description="Ability to validate created invoices",
+        responses={
+            200: "Validation Complete",
+            203: 'Files received but failed to validate',
+            400: "Bad Request"
+        }
+    )
+    @token_required
+    def get(self, id, user):
+
+        args = invoice_ns.get_id_validation_fields().parse_args()
+        rules = args['rules']
+
+        if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
+            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+
+        converter = ConverterService()
+
+        try:
+            xml_content = converter.json_to_xml(invoice.fields)
+        except Exception as err:
+            return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
+        
+        encoded_xml_content = base64.b64encode(xml_content.encode()).decode()
+
+        vs = ValidationService()
+        
+        try:
+            retval = vs.validate_xml(
+                filename=f"invoice_{id}.xml",
+                content=encoded_xml_content,
+                rules=[rules]  
+            )
+        except Exception as err:
+            return make_response(jsonify({"message": str(err)}), 400)
+
+        if retval["successful"] is True:
+            invoice.is_ready = True
+            invoice.completed_ubl = encoded_xml_content
+            invoice.rule = rules
+            db.session.commit()
+            return make_response(jsonify({"message": "Invoice validated successfully"}), 200)
+        else:
+            invoice.is_ready = False
+            invoice.completed_ubl = None
+            db.session.commit()
+            errors = [
+                {
+                    "id": error["id"],
+                    "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
+                    "text": error["text"]
+                }
+                for report in retval["report"].get("reports", {}).values()
+                for error in report.get("firedAssertionErrors", [])
+            ]
+            
+            response = {
+                "invoice_id": id,
+                "reports": {
+                    "firedAssertionErrors": errors,
+                    "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
+                    "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
+                    "successful": retval["report"].get("successful", False),
+                    "summary": retval["report"].get("summary", "No summary available")
+                }
+            }
+            return make_response(jsonify(response), 203)
             retmessage = retval["report"]
             return make_response(jsonify({"message": retmessage}), 203)
 
