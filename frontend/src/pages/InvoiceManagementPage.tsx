@@ -12,23 +12,22 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import axios, { AxiosError } from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ErrorModal from '../components/ErrorModal';
 import { ReactComponent as InvoiceSvg } from '../assets/invoice.svg';
 import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
 import SettingsMenu from '../components/SettingsMenu';
 import FilterModal from '../components/FilterModal';
+import PrintableInvoice from '../components/PrintableInvoice';
 
 export default function InvoiceManagement(props: { token: string }) {
-  interface Fields {
-    key: string;
-  }
+  const navigate = useNavigate();
 
   interface Details {
     id: number;
     name: string;
     completed_ubl: any;
-    fields: Fields;
+    fields: any;
     rule: string;
     user_id: number;
     is_ready: boolean;
@@ -62,9 +61,17 @@ export default function InvoiceManagement(props: { token: string }) {
     setFilterOpen(false);
   };
 
-  const handleCardClick = () => {
-    alert(1);
-  };
+  const handleCardClick =
+    (id: number) => (event: React.MouseEvent<HTMLButtonElement>) => {
+      // alert(1);
+      console.log(id);
+      let cardDetails = details.get(id);
+      console.log(cardDetails);
+      let cardFields = cardDetails?.fields;
+      navigate('/invoice-preview-history', {
+        state: { fields: cardFields, name: cardDetails?.name },
+      });
+    };
   // Just to fetch data on load
   const getDetails = async () => {
     try {
@@ -84,7 +91,7 @@ export default function InvoiceManagement(props: { token: string }) {
 
         // Checks for the filter options
         // If the filter is not chosen it will default to id
-        if (filterValue == 'status') {
+        if (filterValue === 'status') {
           for (let d of Object.values(data)) {
             if (d.is_ready) {
               temp.push(d);
@@ -97,7 +104,7 @@ export default function InvoiceManagement(props: { token: string }) {
         }
 
         // Lexiographically sort if the filter option is enabled
-        if (filterValue == 'name') {
+        if (filterValue === 'name') {
           temp = [...temp].sort((a, b) => a.name.localeCompare(b.name));
         }
 
@@ -144,7 +151,7 @@ export default function InvoiceManagement(props: { token: string }) {
           }}
         >
           <SettingsMenu id={items.id} token={props.token}></SettingsMenu>
-          <CardActionArea onClick={handleCardClick}>
+          <CardActionArea onClick={handleCardClick(items.id)}>
             <CardContent
               sx={{
                 mt: 2,

@@ -12,6 +12,7 @@ import SettingsPage from './pages/SettingsPage';
 import PreviewInvoice from './pages/PreviewInvoice';
 import ResetPassword from './pages/ResetPasswordPage';
 import InvoiceManagement from './pages/InvoiceManagementPage';
+import HistoryPreviewInvoice from './pages/HistoryPreviewInvoice';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -112,6 +113,15 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <InvoiceManagement token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/invoice-preview-history'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <HistoryPreviewInvoice token={token} />
             </>
           }
         />
