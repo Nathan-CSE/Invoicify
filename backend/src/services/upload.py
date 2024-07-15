@@ -1,6 +1,3 @@
-import os
-
-
 class UploadService():
     """
     Upload service for uploading files

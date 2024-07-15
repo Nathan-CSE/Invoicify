@@ -36,6 +36,9 @@ export default function InvoiceCreation(props: { token: string; }) {
 
     if (file) {
       formData.append("files", file);
+    } else {
+      alert("You must upload a valid file to create an invoice.");
+      return;
     }
 
     // console.log('file to be sent: ', file);
