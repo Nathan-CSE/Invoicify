@@ -13,7 +13,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import PrintableInvoice from '../components/PrintableInvoice';
 import { useReactToPrint } from 'react-to-print';
 
-export default function PreviewInvoice() {
+export default function PreviewInvoice(props: { token: string; }) {
 
   const componentRef = React.useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({
@@ -22,7 +22,7 @@ export default function PreviewInvoice() {
 
   const location = useLocation();
 
-  const invoiceInfo = location.state.state;
+  const invoiceInfo = location.state;
   const sellerInfo = invoiceInfo.seller;
   const buyerInfo = invoiceInfo.buyer;
   const invoiceItems = invoiceInfo.invoiceItems;

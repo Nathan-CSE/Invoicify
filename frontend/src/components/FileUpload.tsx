@@ -10,6 +10,7 @@ interface FileUploadState {
 class FileUpload extends Component<{}, FileUploadState> {
   constructor(props: {}) {
     super(props);
+
     this.state = {
       files: [],
     };
@@ -30,6 +31,7 @@ class FileUpload extends Component<{}, FileUploadState> {
         dropzoneClass="FileUploadClass"
         dropzoneParagraphClass="FileUploadTextClass"
         fileObjects={this.state.files}
+        filesLimit={1}
       />
     );
   }

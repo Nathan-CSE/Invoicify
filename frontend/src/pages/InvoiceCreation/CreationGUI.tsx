@@ -31,15 +31,15 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import vatRates from '../VATRates.json';
-import ErrorModal from '../components/ErrorModal';
+import vatRates from '../../VATRates.json';
+import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
 
 interface FileObject {
   file: File;
 }
 
-export default function CreationGUI() {
+export default function CreationGUI(props: { token: string; }) {
   const navigate = useNavigate();
   const countries = Object.keys(vatRates);
 
@@ -48,7 +48,7 @@ export default function CreationGUI() {
   const [selectedRowIds, setSelectedRowIds] = React.useState<number[]>([]);
   const [sellerCountry, setSellerCountry] = React.useState('');
   const [buyerCountry, setBuyerCountry] = React.useState('');
-  const [vatRate, setVatRate] = React.useState(0);
+  const [vatRate, setVatRate] = React.useState<number>(0);
   const [rows, setRows] = React.useState([
     { 
       id: 1,
@@ -173,12 +173,12 @@ export default function CreationGUI() {
     let errorCheck = false;
 
     const formData = new FormData(event.currentTarget);
-    const invoiceData = {
+    const invoiceData: any = {
       invoiceName: formData.get('invoiceName'),
-      invoiceNumber: formData.get('invoiceNumber'),
+      invoiceNumber: Number(formData.get('invoiceNumber')),
       invoiceIssueDate: formData.get('invoiceIssueDate'),
       seller: {
-        ABN: formData.get('sellerABN'),
+        ABN: Number(formData.get('sellerABN')),
         companyName: formData.get('sellerCompanyName'),
         companyAddress: formData.get('sellerAddress'),
         address: {
@@ -190,7 +190,7 @@ export default function CreationGUI() {
         },
       },
       buyer: {
-        ABN: formData.get('buyerABN'),
+        ABN: Number(formData.get('buyerABN')),
         companyName: formData.get('buyerCompanyName'),
         companyAddress: formData.get('buyerAddress'),
         address: {
@@ -213,7 +213,7 @@ export default function CreationGUI() {
       totalGST: totalGST,
       totalTaxable: totalTaxable,
       totalAmount: totalAmount,
-      vatRate: vatRate,
+      buyerVatRate: vatRate,
       additionalDocuments: fileList.map(file => ({
         fileName: file.file.name,
         fileSize: file.file.size,
@@ -221,6 +221,48 @@ export default function CreationGUI() {
       })),
       extraComments: formData.get('extraComments'),
     };
+
+    const dummyData = {
+      "invoiceName": "string",
+      "invoiceNumber": "string",
+      "invoiceIssueDate": "string",
+      "seller": {
+        "ABN": 0,
+        "companyName": "string",
+        "address": {
+          "streetName": "string",
+          "additionalStreetName": "string",
+          "cityName": "string",
+          "postalCode": 0,
+          "country": "string"
+        }
+      },
+      "buyer": {
+        "ABN": 0,
+        "companyName": "string",
+        "address": {
+          "streetName": "string",
+          "additionalStreetName": "string",
+          "cityName": "string",
+          "postalCode": 0,
+          "country": "string"
+        }
+      },
+      "invoiceItems": [
+        {
+          "quantity": 0,
+          "unitCode": 0,
+          "item": "string",
+          "description": "string",
+          "unitPrice": 0.1,
+          "GST": "string",
+          "totalPrice": 0.1
+        }
+      ],
+      "totalGST": 0.1,
+      "totalTaxable": 0.1,
+      "totalAmount": 0.1
+    }
 
     if (invoiceData.invoiceIssueDate === "") {
       setOpenError(true);
@@ -240,22 +282,33 @@ export default function CreationGUI() {
       }
     }
 
-    console.log('Formatted Invoice Data:', invoiceData);
+    const { buyerVatRate, additionalDocuments, extraComments, ...filteredInvoiceData } = invoiceData;
+    var str = JSON.stringify(filteredInvoiceData, null, 2);
+    console.log('filtered: ', str);
 
     if (errorCheck) {
       return;
     } else {
       
+      // Currently this fails, most likely because there are bugs with the backend endpoint
       try {
-        const response = await axios.post('http://localhost:5000/invoice/create', invoiceData);
+        const response = await axios.post('http://localhost:5000/invoice/create', filteredInvoiceData, {
+          headers: {
+            'Authorisation': `${props.token}`
+          }
+        });
+
         if (response.status === 201) {
-          navigate('/invoice-confirmation', { state: invoiceData });
+          // This is the one that should be working, but the api backend does not work
+          // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
+          navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI', invoiceId: response.data } });
 
         } else {
           console.log(response);
           alert("Unable to create invoice");
         }
       } catch (err) {
+        console.error(err);
         alert(err)
       }
       // SEND TO BACKEND HERE -> if successful, go to confirmation page
@@ -326,6 +379,7 @@ export default function CreationGUI() {
                 name="invoiceNumber"
                 autoFocus
                 sx={{ width: '100%' }}
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
             </Grid>
 
@@ -355,9 +409,10 @@ export default function CreationGUI() {
                 margin="normal"
                 required
                 id="sellerABN"
-                label="ABN"
+                label="Seller ABN"
                 name="sellerABN"
                 sx={{ width: '100%' }}
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
 
               <TextField
@@ -454,9 +509,10 @@ export default function CreationGUI() {
                 margin="normal"
                 required
                 id="buyerABN"
-                label="ABN"
+                label="Buyer ABN"
                 name="buyerABN"
                 sx={{ width: '100%' }}
+                inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
 
               <TextField
