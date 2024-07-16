@@ -14,6 +14,7 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { DropzoneArea } from "mui-file-dropzone";
 import axios from 'axios';
 import { TextField } from '@mui/material';
+import { request } from 'http';
 
 export default function InvoiceSending(props: { token: string; }) {
   // console.log('user token: ', props.token);
@@ -49,23 +50,57 @@ export default function InvoiceSending(props: { token: string; }) {
   const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
     event.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
-
-    if (file) {
-      formData.append("files", file);
+    if (file === null && invoice === '') {
+      alert("You must either upload a JSON/PDF file or select a UBL invoice to send.");
+      return;
     }
 
-    console.log('this is formData: ', formData);
+    const formData = new FormData(event.currentTarget);
+    const recipientEmail = formData.get("recipientEmail") || '';
+    const invoiceId = formData.get("select-invoice") || '';
+
+    console.log("recipient email: ", recipientEmail);
+    console.log("invoice id: ", invoiceId);
+
+    const requestData = new FormData();
+
+    if (file) {
+      requestData.append("files", file);
+    } else {
+      requestData.append("target_email", recipientEmail);
+      // requestData.append("id", invoiceId);
+    }
+
+    console.log('this is requestData: ', requestData);
     navigate('/invoice-sending-confirmation');
 
     try {
       // Placeholder until sending endpoint has been created
-      const response = await axios.post(`http://localhost:5000/invoice/uploadValidate`, formData, {
-        headers: {
-          'Authorisation': `${props.token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      var response;
+
+      if (file) {
+        // Placeholder until json/pdf send endpoint has been created
+        response = await axios.post(`http://localhost:5000/invoice/uploadValidate`, requestData, {
+          headers: {
+            'Authorisation': `${props.token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else {
+        // console.log(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`);
+        // response = await axios.post(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`, {
+        //   headers: {
+        //     'Authorisation': `${props.token}`,
+        //   }
+        // });
+
+        response = await axios.post(`http://localhost:5000/invoice/send_ubl/${invoiceId}`, requestData, {
+          headers: {
+            'Authorisation': `${props.token}`,
+          }
+        });
+
+      }
       
       if (response.status === 200) {
         console.log(response.data);
