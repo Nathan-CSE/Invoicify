@@ -25,7 +25,7 @@ export default function InvoiceCreation(props: { token: string }) {
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
-    navigate('/invoice-confirmation');
+    navigate('/invoice-creation-confirmation');
     setOpen(false);
   };
 
@@ -59,7 +59,7 @@ export default function InvoiceCreation(props: { token: string }) {
         console.log(response.data);
         var str = JSON.stringify(response.data, null, 2);
         console.log(str);
-        navigate('/invoice-confirmation', {
+        navigate('/invoice-creation-confirmation', {
           state: {
             invoice: response.data,
             type: 'upload',

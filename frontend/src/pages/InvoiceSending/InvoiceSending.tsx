@@ -13,77 +13,26 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { DropzoneArea } from "mui-file-dropzone";
 import axios from 'axios';
+import { TextField } from '@mui/material';
+import { request } from 'http';
 
-export default function InvoiceValidation(props: { token: string; }) {
-  console.log('user token: ', props.token);
+export default function InvoiceSending(props: { token: string; }) {
+  // console.log('user token: ', props.token);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [invoice, setInvoice] = React.useState('');
-  const [ruleSet, setRuleSet] = React.useState('');
   const [file, setFile] = React.useState<File | null>(null);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
+
 
   const handleChange = (event: SelectChangeEvent) => {
     console.log('this is event.target: ', event.target);
 
-    if (event.target.name === 'rule-set') {
-      setRuleSet(event.target.value);
-    } else {
-      setInvoice(event.target.value);
-    }
+    setInvoice(event.target.value);
 
-  };
+    if (event.target.value) {
+      setFile(null); // Clear file selection if an invoice is selected
 
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
-
-    if (file === null && invoice === '') {
-      alert("You must either upload or select an xml file to create an invoice.");
-      return;
-    }
-
-    const formData = new FormData();
-
-    if (file) {
-      formData.append("files", file);
-    }
-
-    console.log('this is formData: ', formData);
-    console.log('this is the rule set: ', ruleSet);
-    console.log('this is invoiceId: ', invoice);
-
-    try {
-      // Placeholder until backend endpoint has been created
-      var response;
-
-      if (file) {
-        response = await axios.post(`http://localhost:5000/invoice/uploadValidate?rules=${ruleSet}`, formData, {
-          headers: {
-            'Authorisation': `${props.token}`,
-            'Content-Type': 'multipart/form-data'
-          }
-        });
-      } else {
-        response = await axios.get(`http://localhost:5000/invoice/validate/${invoice}?rules=${ruleSet}`, {
-          headers: {
-            'Authorisation': `${props.token}`,
-          }
-        });
-
-      }
-
-      
-      if (response.status === 200) {
-        console.log(response.data);
-        navigate('/invoice-validation-report-valid', { state: { fileName: file?.name, ruleSet: ruleSet } });
-        
-      } else {
-        console.log(response.data);
-        navigate('/invoice-validation-report-invalid', { state: { response: response.data, ruleSet: ruleSet } });
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Unable to validate invoice. Make sure the XML file itself is complete and has no syntactic errors.");
     }
 
   };
@@ -98,11 +47,87 @@ export default function InvoiceValidation(props: { token: string; }) {
     }
   };
 
+  const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
+    event.preventDefault();
+
+    if (file === null && invoice === '') {
+      alert("You must either upload a JSON/PDF file or select a UBL invoice to send.");
+      return;
+    }
+
+    const formData = new FormData(event.currentTarget);
+    const recipientEmail = formData.get("recipientEmail") || '';
+    const invoiceId = formData.get("select-invoice") || '';
+
+    console.log("recipient email: ", recipientEmail);
+    console.log("invoice id: ", invoiceId);
+
+    const requestData = new FormData();
+
+    if (file) {
+      requestData.append("files", file);
+    } else {
+      requestData.append("target_email", recipientEmail);
+      // requestData.append("id", invoiceId);
+    }
+
+    console.log('this is requestData: ', requestData);
+    navigate('/invoice-sending-confirmation');
+
+    try {
+      // Placeholder until sending endpoint has been created
+      var response;
+
+      if (file) {
+        // Placeholder until json/pdf send endpoint has been created
+        response = await axios.post(`http://localhost:5000/invoice/uploadValidate`, requestData, {
+          headers: {
+            'Authorisation': `${props.token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else {
+        // console.log(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`);
+        // response = await axios.post(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`, {
+        //   headers: {
+        //     'Authorisation': `${props.token}`,
+        //   }
+        // });
+
+        response = await axios.post(`http://localhost:5000/invoice/send_ubl/${invoiceId}`, requestData, {
+          headers: {
+            'Authorisation': `${props.token}`,
+          }
+        });
+
+      }
+      
+      if (response.status === 200) {
+        console.log(response.data);
+        navigate('/invoice-sending-confirmation');
+        
+      } else {
+        console.log(response.data);
+        navigate('/invoice-sending-confirmation');
+        // alert("Unable to send invoice");
+      }
+    } catch (err) {
+      // console.log(err);
+      alert(err);
+    }
+
+  };
+
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-
-        const response = await axios.get('http://localhost:5000/invoice/history?is_ready=false', {
+        // placeholder until everything else is merged
+        // const response = await axios.get('http://localhost:5000/invoice/history?is_ready=true', {
+        //   headers: {
+        //     'Authorisation': `${props.token}`,
+        //   }
+        // });
+        const response = await axios.get('http://localhost:5000/invoice/history?is_ready=true', {
           headers: {
             'Authorisation': `${props.token}`,
           }
@@ -121,7 +146,8 @@ export default function InvoiceValidation(props: { token: string; }) {
           } 
           console.log(response.data);
           setAvailableInvoices(allInvoices);
-
+          // console.log("all invoices: ", allInvoices);
+          // navigate('/invoice-creation-confirmation', { state: invoiceData });
         } else {
           console.log(response);
           alert("Unable to retrieve valid invoices");
@@ -137,9 +163,10 @@ export default function InvoiceValidation(props: { token: string; }) {
 
   return (
     <>
+     
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
-          Invoice Validation
+          Invoice Sending
         </Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
@@ -156,17 +183,18 @@ export default function InvoiceValidation(props: { token: string; }) {
           </Typography>
 
           <Typography color='text.primary'>
-            Invoice Validation
+            Invoice Sending
           </Typography>
         </Breadcrumbs>
 
         <form onSubmit={handleSubmit}>
+
           <Box sx={{ my: 5 }}>
             <DropzoneArea
-              acceptedFiles={['.xml']}
+              acceptedFiles={['.json', '.pdf']}
               fileObjects={file}
               onChange={handleFileChange}
-              dropzoneText={'Upload a UBL2.1 XML Invoice File'}
+              dropzoneText={'Upload an Invoice: JSON, PDF'}
               filesLimit={1}
             />
           </Box>
@@ -194,33 +222,23 @@ export default function InvoiceValidation(props: { token: string; }) {
             </FormControl>
           </Box>
 
-          <Box sx={{ minWidth: 120, my: 3 }}>
+          <Box sx={{ minWidth: 120, mb: 5 }}>
             <FormControl variant="standard" fullWidth>
-              <InputLabel id="select-rule-set">Rule Set</InputLabel>
-              <Select
-                labelId="select-rule-set"
-                id="rule-set"
-                name='rule-set'
-                value={ruleSet}
-                label="Rule Set"
-                onChange={handleChange}
+              <TextField
+                margin="normal"
                 required
-              >
-                <MenuItem value={'AUNZ_PEPPOL_1_0_10'}>AU-NZ PEPPOL-1.0.10</MenuItem>
-                <MenuItem value={'AUNZ_PEPPOL_SB_1_0_10'}>AU-NZ PEPPOL-SB-1.0.10</MenuItem>
-                <MenuItem value={'AUNZ_UBL_1_0_10'}>AU-NZ UBL-1.0.10</MenuItem>
-                <MenuItem value={'FR_EN16931_CII_1_3_11'}>FR-EN16931-CII-1.3.11</MenuItem>
-                <MenuItem value={'FR_EN16931_UBL_1_3_11'}>FR-EN16931-UBL-1.3.11</MenuItem>
-                <MenuItem value={'FR_EN16931_UBL_1_3_11'}>FR-EN16931-UBL-1.3.11</MenuItem>
-                <MenuItem value={'RO_RO16931_UBL_1_0_8_EN16931'}>RO-RO16931-UBL-1.0.8-EN16931</MenuItem>
-                <MenuItem value={'RO_RO16931_UBL_1_0_8_CIUS_RO'}>RO-RO16931-UBL-1.0.8-CIUS-RO</MenuItem>
-              </Select>
+                id="recipientEmail"
+                label="Recipient Email"
+                name="recipientEmail"
+                variant="standard"
+                sx={{ width: '100%' }}
+              />
             </FormControl>
           </Box>
 
           <Box textAlign='center'>
             <Button
-              type='submit'
+              type="submit"
               variant='contained'
               sx={{
                 height: '50px',

@@ -57,9 +57,15 @@ class InvoiceNamespace(Namespace):
 
         return history_fields
     
+    def get_send_mail_fields(self):
+        send_mail_fields = reqparse.RequestParser()
+        send_mail_fields.add_argument('target_email', type=str, required=True)
+        return send_mail_fields
+
+    
 
     def get_id_validation_fields(self):
-        validate_parser = invoice_ns.parser()
+        validate_parser = reqparse.RequestParser()
         validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
 
         return validate_parser

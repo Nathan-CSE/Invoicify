@@ -10,6 +10,8 @@ import InvoiceCreationConfirmation from './pages/InvoiceCreation/InvoiceCreation
 import CreationGUI from './pages/InvoiceCreation/CreationGUI';
 import Navbar from './components/Navbar';
 import PreviewInvoice from './pages/PreviewInvoice';
+import InvoiceSending from './pages/InvoiceSending/InvoiceSending';
+import InvoiceSendingConfirmation from './pages/InvoiceSending/InvoiceSendingConfirmation';
 import InvoiceManagement from './pages/InvoiceManagementPage';
 import HistoryPreviewInvoice from './pages/HistoryPreviewInvoice';
 import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
@@ -93,7 +95,7 @@ function PageList() {
           }
         />
         <Route
-          path='/invoice-confirmation'
+          path='/invoice-creation-confirmation'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
@@ -152,6 +154,24 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <HistoryPreviewInvoice token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/invoice-sending'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvoiceSending token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/invoice-sending-confirmation'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvoiceSendingConfirmation token={token} />
             </>
           }
         />

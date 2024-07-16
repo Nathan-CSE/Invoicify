@@ -354,7 +354,7 @@ export default function CreationGUI(props: { token: string }) {
         if (response.status === 201) {
           // This is the one that should be working, but the api backend does not work
           // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
-          navigate('/invoice-confirmation', {
+          navigate('/invoice-creation-confirmation', {
             state: {
               invoice: invoiceData,
               type: 'GUI',

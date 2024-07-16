@@ -21,9 +21,9 @@ export default function InvoiceValidationReport() {
   const ruleSet = useLocation().state.ruleSet;
   console.log('error data: ', errorData);
 
-  const errorReport = errorData.message.reports[ruleSet];
-  const fileName = errorData.message.filename;
-  const firedErrors = errorReport.firedAssertionErrors;
+  // const errorReport = errorData.reports[ruleSet];
+  const fileName = errorData.filename;
+  const firedErrors = errorData.reports.firedAssertionErrors;
 
   return (
     <>
@@ -77,7 +77,7 @@ export default function InvoiceValidationReport() {
           <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
             <CancelIcon sx={{ color: 'red', fontSize: '3rem' }} />
             <Typography>
-              The file {fileName} is invalid. It contains {errorReport.firedAssertionErrorsCount} failed assertion(s), 
+              The file {fileName} is invalid. It contains {errorData.reports.firedAssertionErrorsCount} failed assertion(s), 
               check individual reports for details.
             </Typography>
           </Stack>
