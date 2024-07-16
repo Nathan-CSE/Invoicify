@@ -78,17 +78,16 @@ class SendEmailAPI(Resource):
         target_email = args["target_email"]
         invoice = Invoice.query.where(Invoice.id==id).where(Invoice.user_id==user.id).first()
         if invoice:
+            if not invoice.is_valid:
+                return make_response(jsonify({"message": "Article is not ready to be sent"}), 400)
             cs = ConversionService()
-            print("#################")
-            print(invoice.fields)
-            print("#################")
-
-            print(json.dumps(invoice.fields))
-            print("#################")
             xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
-            send_xml([target_email], xml, invoice.name + ".xml")
+            #TODO also send to user email
+            if ".xml" in invoice.name:
+                send_xml([target_email], xml, invoice.name)
+            else:
+                send_xml([target_email], xml, invoice.name + ".xml")
             return make_response(jsonify({"message": "Successfully sent"}), 200)
-
         else:
             return make_response(jsonify({"message": "Article not found"}), 400)
         
