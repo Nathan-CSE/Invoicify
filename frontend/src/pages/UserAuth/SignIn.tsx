@@ -29,7 +29,8 @@ export default function SignIn(props: {
 
     const email = data.get('email') as string;
     const password = data.get('password') as string;
-
+    console.log(email);
+    console.log(password);
     if (email.length === 0 || password.length === 0) {
       alert('Fill out all required fields');
     } else {
