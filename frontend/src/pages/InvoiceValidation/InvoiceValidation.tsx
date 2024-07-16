@@ -83,7 +83,7 @@ export default function InvoiceValidation(props: { token: string; }) {
       }
     } catch (err) {
       console.error(err);
-      alert("Unable to validate invoice.");
+      alert("Unable to validate invoice. Make sure the XML file itself is complete and has no syntactic errors.");
     }
 
   };
