@@ -64,7 +64,7 @@ export default function InvoiceValidation(props: { token: string; }) {
           }
         });
       } else {
-        response = await axios.get(`http://localhost:5000/invoice/validate/${invoice}`, {
+        response = await axios.get(`http://localhost:5000/invoice/validate/${invoice}?rules=${ruleSet}`, {
           headers: {
             'Authorisation': `${props.token}`,
           }

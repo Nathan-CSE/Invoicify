@@ -127,7 +127,7 @@ export default function InvoiceSending(props: { token: string; }) {
         //     'Authorisation': `${props.token}`,
         //   }
         // });
-        const response = await axios.get('http://localhost:5000/invoice/history?is_ready=false', {
+        const response = await axios.get('http://localhost:5000/invoice/history?is_ready=true', {
           headers: {
             'Authorisation': `${props.token}`,
           }

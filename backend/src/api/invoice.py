@@ -78,7 +78,7 @@ class SendEmailAPI(Resource):
         target_email = args["target_email"]
         invoice = Invoice.query.where(Invoice.id==id).where(Invoice.user_id==user.id).first()
         if invoice:
-            if not invoice.is_valid:
+            if not invoice.is_ready:
                 return make_response(jsonify({"message": "Article is not ready to be sent"}), 400)
             cs = ConversionService()
             xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
