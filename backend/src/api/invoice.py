@@ -1,56 +1,25 @@
-from flask import request, jsonify, make_response, send_file
-from flask_restx import Namespace, Resource, fields, reqparse
-from werkzeug.datastructures import FileStorage
 import io
 import json
 
+from flask import request, jsonify, make_response, send_file
+from flask_restx import Resource
+
 from models import db, Invoice
+from src.namespaces.invoice import InvoiceNamespace
 from src.services.create_xml import create_xml
 from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.conversion import ConversionService
 from src.services.upload import UploadService
+import re;
 
-invoice_ns = Namespace('invoice', description='Operations related to creating invoices')
+invoice_ns = InvoiceNamespace(name='invoice', description='Operations related to creating invoices')
 
-address_fields = invoice_ns.model("Address", {
-    "streetName": fields.String(),
-    "additionalStreetName": fields.String(),
-    "cityName": fields.String(),
-    "postalCode": fields.Integer(),
-    "country": fields.String()
-})
-seller_fields = invoice_ns.model("Seller", {
-    "ABN": fields.Integer(),
-    "companyName": fields.String(),
-    "address": fields.Nested(address_fields)
-})
-buyer_fields= invoice_ns.clone("Buyer", seller_fields)
-invoice_item_fields = invoice_ns.model("InvoiceItem", {
-    "quantity": fields.Integer(),
-    "unitCode": fields.String(),
-    "item": fields.String(),
-    "description": fields.String(),
-    "unitPrice": fields.Float(default=0.1),
-    "GST": fields.Integer(),
-    "totalPrice": fields.Float(default=0.1)
-})
-create_ubl_fields = invoice_ns.model('CreateUBLFields', {
-    "invoiceName": fields.String(),
-    "invoiceNumber": fields.String(),
-    "invoiceIssueDate": fields.String(),
-    "seller": fields.Nested(seller_fields),
-    "buyer": fields.Nested(buyer_fields),
-    "invoiceItems": fields.List(fields.Nested(invoice_item_fields)),
-    "totalGST": fields.Float(default=0.1),
-    "totalTaxable": fields.Float(default=0.1),
-    "totalAmount": fields.Float(default=0.1)
-})
 @invoice_ns.route("/create")
-class Create(Resource):
+class CreateUBLAPI(Resource):
     @invoice_ns.doc(
         description="Creates a UBL",
-        body=create_ubl_fields,
+        body=invoice_ns.get_create_ubl_fields(),
         responses={
             201: 'Invoice ID',
             400: 'Bad request',
@@ -64,12 +33,12 @@ class Create(Resource):
             res = create_xml(data, user)
             return make_response(jsonify(res), 201)
         except ValueError as e:
-            return make_response(str(e), 422)
+            return make_response(e, 422)
         except Exception as e:
-            return make_response(jsonify({"message": str(e)}), 400)
+            return make_response(jsonify({"message": "UBL not created"}), 400)
         
 @invoice_ns.route("/download")
-class SendUBL(Resource):
+class SendUBLAPI(Resource):
     @invoice_ns.doc(
     description="""Use this api to download xml
         input:
@@ -92,32 +61,11 @@ class SendUBL(Resource):
         else:
             return make_response(jsonify({"message": "Article not found"}), 400)
         
-        # Create a BytesIO object
-
-save_ubl_fields = invoice_ns.model("SaveUBLFields", {
-    "name": fields.String(default="Invoice 1", required=True),
-    "fields": fields.Raw(default={
-        "invoiceName": "test",
-        "invoiceNumber": "1",
-        "invoiceIssueDate": "2024-06-25",
-        "seller": {
-            "ABN": 47555222000,
-            "companyName": "Windows to Fit Pty Ltd",
-            "address": {
-                "streetName": "Test",
-                "additionalStreetName": "test",
-                "cityName": "test",
-                "postalCode": 2912,
-                "country": "AU"
-            }
-        }
-    }, required=True)
-})
 @invoice_ns.route("/save")
-class Save(Resource):
+class SaveAPI(Resource):
     @invoice_ns.doc(
-        description="Ability to save UBLs",
-        body=save_ubl_fields,
+        description="Ability to save UBLs from GUI",
+        body=invoice_ns.get_save_ubl_fields(),
         responses={
             201: 'Saved Successfully',
             400: 'Bad request',
@@ -126,200 +74,19 @@ class Save(Resource):
     @token_required
     def post(self, user):
         data = request.json
-        db_insert(Invoice(name=data["name"], fields=data["fields"], user_id=user.id, is_ready=False))
+        db_insert(Invoice(name=data["name"], fields=data["fields"], rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False))
         
         return make_response(jsonify({"message": "UBL saved successfully"}), 201)
 
-edit_fields = invoice_ns.model("EditUBLFields", {
-    "name": fields.String(default="Invoice 1"),
-    "fields": fields.Raw(default={
-        "ID": "Invoice03",
-        "IssueDate": "2022-07-31",
-        "InvoiceTypeCode": "380",
-        "Note": "Adjustment note to reverse prior bill Invoice01. Free text field can bring attention to reason for credit etc.",
-        "DocumentCurrencyCode": "AUD",
-        "BuyerReference": "Simple solar plan",
-        "InvoicePeriod": {
-            "StartDate": "2022-06-15",
-            "EndDate":"2022-07-15"
-        },
-        "BillingReference": {
-            "InvoiceDocumentReference": {
-            "ID": "Invoice01",
-            "IssueDate": "2022-07-29"
-            }
-        },
-        "AdditionalDocumentReference": {
-            "ID": "Invoice03.pdf",
-            "Attachment": {
-                "EmbeddedDocumentBinaryObject": {
-                    "mimeCode": "application/pdf",
-                    "filename": "Invoice03.pdf",
-                    "value": "UGxhaW4gdGV4dCBpbiBwbGFjZSBvZiBwZGYgYXR0YWNobWVudCBmb3Igc2FtcGxlIGludm9pY2Vz"
-                }
-            }
-        },
-        "AccountingSupplierParty": {
-            "Party": {
-                "EndpointID": {
-                        "schemeID": "0151",
-                        "value": "47555222000"
-                    },
-                "PostalAddress": {
-                    "CityName": "Harrison",
-                    "PostalZone": "2912",
-                    "CountrySubentity": "NSW",
-                    "Country": {
-                    "IdentificationCode": "AU"
-                    }
-                },
-                "PartyLegalEntity": {
-                    "RegistrationName": "Grey Roo Energy",
-                    "CompanyID": {
-                    "schemeID": "0151",
-                    "value": "47555222000"
-                    }
-                }
-            }
-        },
-        "AccountingCustomerParty": {
-            "Party": {
-                "EndpointID": {
-                    "schemeID": "0151",
-                    "value": "47555222000"
-                },
-                "PartyIdentification": {
-                    "ID": "AccountNumber123"
-                },
-                "PostalAddress": {
-                    "StreetName": "100 Queen Street",
-                    "CityName": "Sydney",
-                    "PostalZone": "2000",
-                    "CountrySubentity": "NSW",
-                    "Country": {
-                    "IdentificationCode": "AU"
-                    }
-                },
-                "PartyLegalEntity": {
-                    "RegistrationName": "Trotters Incorporated",
-                    "CompanyID": {
-                    "schemeID": "0151",
-                    "value": "91888222000"
-                    }
-                },
-                "Contact": {
-                    "Name": "Lisa Johnson"
-                }
-            }
-        },
-        "TaxTotal": {
-            "TaxAmount": {
-                "currencyID": "AUD",
-                "value": "-15.94"
-            },
-            "TaxSubtotal": {
-                "TaxableAmount": {
-                    "currencyID": "AUD",
-                    "value": "-159.43"
-                },
-                "TaxAmount": {
-                    "currencyID": "AUD",
-                    "value": "-15.94"
-                },
-                "TaxCategory": {
-                    "ID": "S",
-                    "Percent": "10",
-                    "TaxScheme": {
-                        "ID": "GST"
-                    }
-                }
-            }
-        },
-        "LegalMonetaryTotal": {
-            "LineExtensionAmount": {
-                "currencyID": "AUD",
-                "value": "-159.43"
-            },
-            "TaxExclusiveAmount": {
-                "currencyID": "AUD",
-                "value": "-159.43"
-            },
-            "TaxInclusiveAmount": {
-                "currencyID": "AUD",
-                "value": "-175.37"
-            },
-            "PayableAmount": {
-                "currencyID": "AUD",
-                "value": "-175.37"
-            }
-        },
-        "InvoiceLine": [
-            {
-                "ID": "1",
-                "InvoicedQuantity": {
-                    "unitCode": "KWH",
-                    "value": "-325.2"
-                },
-                "LineExtensionAmount": {
-                    "currencyID": "AUD",
-                    "value": "-129.04"
-                },
-                "Item": {
-                    "Name": "Adjustment - reverse prior Electricity charges - all day rate NMI 9000074677",
-                    "ClassifiedTaxCategory": {
-                        "ID": "S",
-                        "Percent": "10",
-                        "TaxScheme": {
-                            "ID": "GST"
-                        }
-                    }
-                },
-                "Price": {
-                    "PriceAmount": {
-                    "currencyID": "AUD",
-                    "value": "0.3968"
-                    }
-                }
-            },
-            {
-                "ID": "2",
-                "InvoicedQuantity": {
-                    "unitCode": "DAY",
-                    "value": "-31"
-                },
-                "LineExtensionAmount": {
-                    "currencyID": "AUD",
-                    "value": "-30.39"
-                },
-                "Item": {
-                    "Name": "Adjustment - reverse prior Supply charge",
-                        "ClassifiedTaxCategory": {
-                        "ID": "S",
-                        "Percent": "10",
-                        "TaxScheme": {
-                            "ID": "GST"
-                        }
-                    }
-                },
-                "Price": {
-                    "PriceAmount": {
-                    "currencyID": "AUD",
-                    "value": "0.9803"
-                    }
-                }
-            }
-        ]
-    }, required=True),
-    "rule": fields.String(default="AUNZ_PEPPOL_1_0_10")
-})
 @invoice_ns.route("/edit/<int:id>")
-class Edit(Resource):
+class EditAPI(Resource):
     @invoice_ns.doc(
         description="Ability to edit UBLs",
-        body=edit_fields,
+        body=invoice_ns.get_edit_fields(),
         responses={
             204: 'Updated successfully',
             400: 'Bad request',
+            404: "Not Found"
         },
     )
     @token_required
@@ -327,57 +94,42 @@ class Edit(Resource):
         data = request.json
 
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
-            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+            return make_response(jsonify({"message": "Invoice does not exist"}), 404)
 
-        try:
-            cs = ConversionService()
-            xml_str = base64_encode(cs.json_to_xml(json.dumps(data["fields"]), data["rule"]).encode())
-
-            vs = ValidationService()
-            res = vs.validate_xml(
-                filename=data["name"],
-                content=xml_str,
-                rules=[data["rule"]]
-            )
-        except Exception as err:
-            return make_response(jsonify({"message": str(err)}), 400)
-
-        invoice.name = data["name"]
-        invoice.fields = data["fields"] 
-        invoice.rule = data["rule"]
-        if res["successful"]:
-            invoice.completed_ubl = xml_str
-            invoice.is_ready = True
-        else:
+        # Fields or rule has been changed
+        if invoice.fields != data["fields"] or invoice.rule != data["rule"]:
             invoice.completed_ubl = None
             invoice.is_ready = False
 
+        invoice.name = data["name"]
+        invoice.rule = data["rule"]
+        invoice.fields = data["fields"] 
+
         db.session.commit()
+
         return make_response(jsonify(invoice.to_dict()), 204)
 
 @invoice_ns.route("/delete/<int:id>")
-class Delete(Resource):
+class DeleteAPI(Resource):
     @invoice_ns.doc(
         description="Ability to delete UBLs",
         responses={
             200: 'Deleted successfully',
             400: 'Bad request',
+            404: "Not Found"
         },
     )
     @token_required
     def delete(self, id, user):
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
-            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+            return make_response(jsonify({"message": "Invoice does not exist"}), 404)
 
         db.session.delete(invoice)
         db.session.commit()
         return make_response(jsonify({"message": "Invoice was deleted successfully"}), 200)
 
-
-history_fields = reqparse.RequestParser()
-history_fields.add_argument('is_ready', type=bool, choices=['true', 'false'], help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
 @invoice_ns.route("/history")
-class History(Resource):
+class HistoryAPI(Resource):
     def check_is_ready_param(self, is_ready):
         is_ready = is_ready.lower().capitalize()
         if is_ready == "True":
@@ -389,7 +141,7 @@ class History(Resource):
 
     @invoice_ns.doc(
         description="UBL history of user",
-        body=history_fields,
+        body=invoice_ns.get_history_fields(),
         responses={
             200: 'Successful Request',
             400: 'Bad request',
@@ -398,44 +150,38 @@ class History(Resource):
     @token_required
     def get(self, user):
         sql = Invoice.query.filter(Invoice.user_id==user.id)
-
-        if request.args.get("is_ready") != None:
+        args = request.args
+        if args.get("is_ready"):
             try:
-                sql = sql.filter(Invoice.is_ready==self.check_is_ready_param(request.args.get("is_ready")))
+                sql = sql.filter(Invoice.is_ready==self.check_is_ready_param(args.get("is_ready")))
             except Exception as err:
                 return (make_response(jsonify({"message": str(err)}), 400))
 
         return make_response(jsonify([invoice.to_dict() for invoice in sql.all()]), 200)
     
-    
-upload_parser = invoice_ns.parser()
-upload_parser.add_argument('files', location='files',
-                           type=FileStorage, required=True)
-upload_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
 @invoice_ns.route("/uploadValidate")
-class ValidationAPI(Resource):
+class UploadValidationAPI(Resource):
     @invoice_ns.doc(
     description="Upload endpoint for validation of UBL2.1 XML",
+    body=invoice_ns.get_upload_validation_fields(),
     responses={
         200: 'Files received successfully',
         203: 'Files received but failed to validate',
         400: 'Bad request',
     })
-    @invoice_ns.expect(upload_parser)
     @token_required
     def post(self, user):
         ups = UploadService()
         
         res = ups.handle_xml_upload(request)
-        args = upload_parser.parse_args()
+        args = invoice_ns.get_upload_validation_fields().parse_args()
         # takes one file then encodes it to feed to validation service
         file = args['files']
         content = file.read()  
-        rules = args['rules']
+        rules = args["rules"]
         if not res:
             return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
         
-
         vs = ValidationService()
 
         try:
@@ -448,23 +194,117 @@ class ValidationAPI(Resource):
             return make_response(jsonify({"message": str(err)}), 400)
 
         if retval["successful"] is True:
-            return make_response(jsonify({"message": "Invoice validated sucessfully"}), 200)
+            cs = ConversionService()
+            json_str = cs.xml_to_json(content)
+            invoice = Invoice(name=file.filename, fields=json.dumps(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
+            db_insert(invoice)
+            return make_response(jsonify({"message": "Invoice validated sucessfully", "data": invoice.id}), 200)
         else:
+            errors = [
+                {
+                    "id": error["id"],
+                    "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
+                    "text": error["text"]
+                }
+                for report in retval["report"].get("reports", {}).values()
+                for error in report.get("firedAssertionErrors", [])
+            ]
+            
+            response = {
+                "filename": file.filename,
+                "reports": {
+                    "firedAssertionErrors": errors,
+                    "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
+                    "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
+                    "successful": retval["report"].get("successful", False),
+                    "summary": retval["report"].get("summary", "No summary available")
+                }
+            }
+            return make_response(jsonify(response), 203)
+
+@invoice_ns.route("/validate/<int:id>")
+class ValidationAPI(Resource):
+    @invoice_ns.doc(
+        description="Ability to validate created invoices",
+        responses={
+            200: "Validation Complete",
+            203: 'Files received but failed to validate',
+            400: "Bad Request"
+        }
+    )
+    @token_required
+    def get(self, id, user):
+
+        args = invoice_ns.get_id_validation_fields().parse_args()
+        rules = args['rules']
+
+        if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
+            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+
+        converter = ConverterService()
+
+        try:
+            xml_content = converter.json_to_xml(invoice.fields)
+        except Exception as err:
+            return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
+        
+        encoded_xml_content = base64.b64encode(xml_content.encode()).decode()
+
+        vs = ValidationService()
+        
+        try:
+            retval = vs.validate_xml(
+                filename=f"invoice_{id}.xml",
+                content=encoded_xml_content,
+                rules=[rules]  
+            )
+        except Exception as err:
+            return make_response(jsonify({"message": str(err)}), 400)
+
+        if retval["successful"] is True:
+            invoice.is_ready = True
+            invoice.completed_ubl = encoded_xml_content
+            invoice.rule = rules
+            db.session.commit()
+            return make_response(jsonify({"message": "Invoice validated successfully"}), 200)
+        else:
+            invoice.is_ready = False
+            invoice.completed_ubl = None
+            db.session.commit()
+            errors = [
+                {
+                    "id": error["id"],
+                    "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
+                    "text": error["text"]
+                }
+                for report in retval["report"].get("reports", {}).values()
+                for error in report.get("firedAssertionErrors", [])
+            ]
+            
+            response = {
+                "invoice_id": id,
+                "reports": {
+                    "firedAssertionErrors": errors,
+                    "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
+                    "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
+                    "successful": retval["report"].get("successful", False),
+                    "summary": retval["report"].get("summary", "No summary available")
+                }
+            }
+            return make_response(jsonify(response), 203)
             retmessage = retval["report"]
             return make_response(jsonify({"message": retmessage}), 203)
 
-upload_create_parser = invoice_ns.parser()
-upload_create_parser.add_argument('files', location='files',
-                           type=FileStorage, required=True)
+
 @invoice_ns.route("/uploadCreate")
-class CreateAPI(Resource):
+class UploadCreateAPI(Resource):
     @invoice_ns.doc(
     description="Upload endpoint for PDFs and Jsons to create UBLs, returns a list with each item containing the xml name, id of the xml, and json contents",
+    body=invoice_ns.get_upload_create_fields(),
     responses={
         200: 'Invoice(s) created successfully',
         400: 'Bad request',
     })
-    @invoice_ns.expect(upload_create_parser)
     @token_required
     def post(self, user):
         ups = UploadService()
@@ -479,7 +319,7 @@ class CreateAPI(Resource):
             json_str = f.read().decode('utf-8')
             
             temp_xml_filename = f.filename.replace('.json', '.xml')
-            invoice = Invoice(name=temp_xml_filename, fields=json.dumps(json_str), user_id=user.id, is_ready=False)
+            invoice = Invoice(name=temp_xml_filename, fields=json.loads(json_str), user_id=user.id, is_ready=False)
             db_insert(invoice)
             
             ublretval.append({

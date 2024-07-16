@@ -8,7 +8,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
-import ErrorModal from '../components/ErrorModal';
+import ErrorModal from '../../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
 
 export default function SignIn(props: {
@@ -29,7 +29,8 @@ export default function SignIn(props: {
 
     const email = data.get('email') as string;
     const password = data.get('password') as string;
-
+    console.log(email);
+    console.log(password);
     if (email.length === 0 || password.length === 0) {
       alert('Fill out all required fields');
     } else {
