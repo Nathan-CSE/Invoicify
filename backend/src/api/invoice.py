@@ -11,6 +11,8 @@ from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.conversion import ConversionService
 from src.services.upload import UploadService
+from src.services.send_mail import send_xml
+from tests.data import TEST_DATA
 import re;
 
 invoice_ns = InvoiceNamespace(name='invoice', description='Operations related to creating invoices')
@@ -44,7 +46,7 @@ class SendUBLAPI(Resource):
         input:
         article_id: int
         output:
-            nothing (file should start downloading in browser)c
+            nothing (file should start downloading in browser)
         """,
     responses={
         201: 'Created successfully',
@@ -58,6 +60,36 @@ class SendUBLAPI(Resource):
             file.write(invoice.fields.encode('utf-8'))
             file.seek(0)
             return send_file(file, mimetype='application/xml', as_attachment=True, download_name=invoice.name)
+        else:
+            return make_response(jsonify({"message": "Article not found"}), 400)
+
+@invoice_ns.route("/send_ubl/<int:id>")
+class SendEmailAPI(Resource):
+    @invoice_ns.doc(
+    description="""Use this api to send xml""",
+    body=invoice_ns.get_send_mail_fields(),
+
+    responses={
+        200: 'Sent successfully',
+        400: 'Bad request',
+    })
+    @token_required
+    def post(self, user, id):
+        args = invoice_ns.get_send_mail_fields().parse_args()
+        target_email = args["target_email"]
+        invoice = Invoice.query.where(Invoice.id==id).where(Invoice.user_id==user.id).first()
+        if invoice:
+            cs = ConversionService()
+            print("#################")
+            print(invoice.fields)
+            print("#################")
+
+            print(json.dumps(invoice.fields))
+            print("#################")
+            xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
+            send_xml([target_email], xml, invoice.name + ".xml")
+            return make_response(jsonify({"message": "Successfully sent"}), 200)
+
         else:
             return make_response(jsonify({"message": "Article not found"}), 400)
         
@@ -241,7 +273,7 @@ class ValidationAPI(Resource):
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 400)
 
-        converter = ConverterService()
+        converter = ConversionService()
 
         try:
             xml_content = converter.json_to_xml(invoice.fields)

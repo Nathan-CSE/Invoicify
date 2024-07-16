@@ -57,7 +57,7 @@ def create_xml(file, user):
     invoice = Invoice(name=file["invoiceName"], fields=json,  rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
 
     db_insert(invoice)
-    return invoice.id
+    return invoice.name + ".xml"
  
 if __name__ == "__main__":
     create_xml("test")
