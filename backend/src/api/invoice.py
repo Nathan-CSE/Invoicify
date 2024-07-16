@@ -316,7 +316,7 @@ class UploadCreateAPI(Resource):
             json_str = f.read().decode('utf-8')
             
             temp_xml_filename = f.filename.replace('.json', '.xml')
-            invoice = Invoice(name=temp_xml_filename, fields=json.dumps(json_str), user_id=user.id, is_ready=False)
+            invoice = Invoice(name=temp_xml_filename, fields=json.loads(json_str), user_id=user.id, is_ready=False)
             db_insert(invoice)
             
             ublretval.append({

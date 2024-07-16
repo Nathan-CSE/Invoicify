@@ -10,6 +10,8 @@ import InvoiceCreationConfirmation from './pages/InvoiceCreation/InvoiceCreation
 import CreationGUI from './pages/InvoiceCreation/CreationGUI';
 import Navbar from './components/Navbar';
 import PreviewInvoice from './pages/PreviewInvoice';
+import InvoiceManagement from './pages/InvoiceManagementPage';
+import HistoryPreviewInvoice from './pages/HistoryPreviewInvoice';
 import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
 import InvalidReport from './pages/InvoiceValidation/InvalidReport';
 import ValidReport from './pages/InvoiceValidation/ValidReport';
@@ -108,32 +110,50 @@ function PageList() {
             </>
           }
         />
-        <Route 
+        <Route
           path='/invoice-validation'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
               <InvoiceValidation token={token} />
             </>
-          } 
+          }
         />
-        <Route 
+        <Route
           path='/invoice-validation-report-valid'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
               <ValidReport />
             </>
-          } 
+          }
         />
-        <Route 
+        <Route
           path='/invoice-validation-report-invalid'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
               <InvalidReport />
             </>
-          } 
+          }
+        />
+        <Route
+          path='/invoice-management'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvoiceManagement token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/invoice-preview-history'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <HistoryPreviewInvoice token={token} />
+            </>
+          }
         />
         <Route
           path='/settings'

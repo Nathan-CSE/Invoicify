@@ -39,7 +39,7 @@ interface FileObject {
   file: File;
 }
 
-export default function CreationGUI(props: { token: string; }) {
+export default function CreationGUI(props: { token: string }) {
   const navigate = useNavigate();
   const countries = Object.keys(vatRates);
 
@@ -50,7 +50,7 @@ export default function CreationGUI(props: { token: string; }) {
   const [buyerCountry, setBuyerCountry] = React.useState('');
   const [vatRate, setVatRate] = React.useState<number>(0);
   const [rows, setRows] = React.useState([
-    { 
+    {
       id: 1,
       quantity: 0,
       unitCode: '',
@@ -58,10 +58,10 @@ export default function CreationGUI(props: { token: string; }) {
       description: '',
       unitPrice: 0,
       GST: 0,
-      totalPrice: 0 
+      totalPrice: 0,
     },
   ]);
-  
+
   // Uploading additional documents
   const [openFileUpload, setOpenFileUpload] = React.useState(false);
   const [fileList, setFileList] = React.useState<FileObject[]>([]);
@@ -73,7 +73,11 @@ export default function CreationGUI(props: { token: string; }) {
   // Popover Info
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
 
-  const handleClickPopover = (event: React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement>) => {
+  const handleClickPopover = (
+    event:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.MouseEvent<HTMLAnchorElement>
+  ) => {
     if (event.currentTarget instanceof Element) {
       setAnchorEl(event.currentTarget);
     }
@@ -91,33 +95,33 @@ export default function CreationGUI(props: { token: string; }) {
     let totalGST = 0;
     let totalTaxable = 0;
     let totalAmount = 0;
-  
+
     rows.forEach((row) => {
       totalGST += row.GST;
       totalTaxable += row.totalPrice - row.GST;
       totalAmount += row.totalPrice;
     });
-  
+
     return {
       totalGST: totalGST,
       totalTaxable: totalTaxable,
-      totalAmount: totalAmount
+      totalAmount: totalAmount,
     };
   };
 
   const { totalGST, totalTaxable, totalAmount } = calculateTotals();
 
   // Changes the VAT rate based on the buyer's country
-  const handleChange = (event: { target: { value: any; name: string; }; }) => {
+  const handleChange = (event: { target: { value: any; name: string } }) => {
     const selectedCountry = event.target.value as keyof typeof vatRates;
-    
-    if (event.target.name == "buyerCountry") {
+
+    if (event.target.name == 'buyerCountry') {
       setBuyerCountry(selectedCountry);
       setVatRate(vatRates[selectedCountry]);
 
       rows.forEach((row) => {
         handleCellValueChange(row);
-      })
+      });
     } else {
       setSellerCountry(selectedCountry);
     }
@@ -125,17 +129,46 @@ export default function CreationGUI(props: { token: string; }) {
 
   // For adding invoice items
   const columns: GridColDef[] = [
-    { field: 'quantity', headerName: 'Quantity', type: 'number', width: 75, editable: true },
+    {
+      field: 'quantity',
+      headerName: 'Quantity',
+      type: 'number',
+      width: 75,
+      editable: true,
+    },
     { field: 'unitCode', headerName: 'Unit Code', width: 100, editable: true },
     { field: 'item', headerName: 'Item', width: 120, editable: true },
-    { field: 'description', headerName: 'Description', width: 180, editable: true },
-    { field: 'unitPrice', headerName: 'Unit Price ($)', type: 'number', width: 120, editable: true },
-    { field: 'GST', headerName: 'GST ($)', type: 'number', width: 80, editable: false },
-    { field: 'totalPrice', headerName: 'Total Price ($)', type: 'number', width: 120, editable: false },
+    {
+      field: 'description',
+      headerName: 'Description',
+      width: 180,
+      editable: true,
+    },
+    {
+      field: 'unitPrice',
+      headerName: 'Unit Price ($)',
+      type: 'number',
+      width: 120,
+      editable: true,
+    },
+    {
+      field: 'GST',
+      headerName: 'GST ($)',
+      type: 'number',
+      width: 80,
+      editable: false,
+    },
+    {
+      field: 'totalPrice',
+      headerName: 'Total Price ($)',
+      type: 'number',
+      width: 120,
+      editable: false,
+    },
   ];
 
   const addRow = () => {
-    const newRow = { 
+    const newRow = {
       id: nextId,
       quantity: 0,
       unitCode: '',
@@ -143,7 +176,7 @@ export default function CreationGUI(props: { token: string; }) {
       description: '',
       unitPrice: 0,
       GST: 0,
-      totalPrice: 0 
+      totalPrice: 0,
     };
     setRows([...rows, newRow]);
     setNextId(nextId + 1);
@@ -155,8 +188,16 @@ export default function CreationGUI(props: { token: string; }) {
     setSelectedRowIds([]);
   };
 
-  const handleCellValueChange = (newRow: { id: any; quantity: any; unitCode?: string; item?: string; description?: string; unitPrice: any; GST: any; totalPrice: any; }) => {
-
+  const handleCellValueChange = (newRow: {
+    id: any;
+    quantity: any;
+    unitCode?: string;
+    item?: string;
+    description?: string;
+    unitPrice: any;
+    GST: any;
+    totalPrice: any;
+  }) => {
     newRow.GST = (vatRate / 100) * newRow.unitPrice;
     newRow.totalPrice = newRow.quantity * (newRow.unitPrice + newRow.GST);
 
@@ -165,11 +206,14 @@ export default function CreationGUI(props: { token: string; }) {
     );
     setRows(updatedRows);
   };
-  
+
   // Form submission & sending to backend + error handling
-  const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
+  const handleSubmit = async (event: {
+    preventDefault: () => void;
+    currentTarget: HTMLFormElement | undefined;
+  }) => {
     event.preventDefault();
-    
+
     let errorCheck = false;
 
     const formData = new FormData(event.currentTarget);
@@ -201,7 +245,7 @@ export default function CreationGUI(props: { token: string; }) {
           country: buyerCountry,
         },
       },
-      invoiceItems: rows.map(row => ({
+      invoiceItems: rows.map((row) => ({
         quantity: row.quantity,
         unitCode: row.unitCode,
         item: row.item,
@@ -214,7 +258,7 @@ export default function CreationGUI(props: { token: string; }) {
       totalTaxable: totalTaxable,
       totalAmount: totalAmount,
       buyerVatRate: vatRate,
-      additionalDocuments: fileList.map(file => ({
+      additionalDocuments: fileList.map((file) => ({
         fileName: file.file.name,
         fileSize: file.file.size,
         fileMimeType: file.file.type,
@@ -223,132 +267,133 @@ export default function CreationGUI(props: { token: string; }) {
     };
 
     const dummyData = {
-      "invoiceName": "string",
-      "invoiceNumber": "string",
-      "invoiceIssueDate": "string",
-      "seller": {
-        "ABN": 0,
-        "companyName": "string",
-        "address": {
-          "streetName": "string",
-          "additionalStreetName": "string",
-          "cityName": "string",
-          "postalCode": 0,
-          "country": "string"
-        }
+      invoiceName: 'string',
+      invoiceNumber: 'string',
+      invoiceIssueDate: 'string',
+      seller: {
+        ABN: 0,
+        companyName: 'string',
+        address: {
+          streetName: 'string',
+          additionalStreetName: 'string',
+          cityName: 'string',
+          postalCode: 0,
+          country: 'string',
+        },
       },
-      "buyer": {
-        "ABN": 0,
-        "companyName": "string",
-        "address": {
-          "streetName": "string",
-          "additionalStreetName": "string",
-          "cityName": "string",
-          "postalCode": 0,
-          "country": "string"
-        }
+      buyer: {
+        ABN: 0,
+        companyName: 'string',
+        address: {
+          streetName: 'string',
+          additionalStreetName: 'string',
+          cityName: 'string',
+          postalCode: 0,
+          country: 'string',
+        },
       },
-      "invoiceItems": [
+      invoiceItems: [
         {
-          "quantity": 0,
-          "unitCode": 0,
-          "item": "string",
-          "description": "string",
-          "unitPrice": 0.1,
-          "GST": "string",
-          "totalPrice": 0.1
-        }
+          quantity: 0,
+          unitCode: 0,
+          item: 'string',
+          description: 'string',
+          unitPrice: 0.1,
+          GST: 'string',
+          totalPrice: 0.1,
+        },
       ],
-      "totalGST": 0.1,
-      "totalTaxable": 0.1,
-      "totalAmount": 0.1
-    }
+      totalGST: 0.1,
+      totalTaxable: 0.1,
+      totalAmount: 0.1,
+    };
 
-    if (invoiceData.invoiceIssueDate === "") {
+    if (invoiceData.invoiceIssueDate === '') {
       setOpenError(true);
-      setError("Please select an invoice issue date.");
+      setError('Please select an invoice issue date.');
       errorCheck = true;
     }
 
-    
     for (let i = 0; i < rows.length; i++) {
       const unitCode = rows[i].unitCode;
 
       if (!unitCode.match(/^[A-Z]{3}$/)) {
         setOpenError(true);
-        setError(`Invalid unit code '${unitCode}' for item ${rows[i].item}. Unit code must be a 3-letter alphanumeric combination in all uppercase.`);
+        setError(
+          `Invalid unit code '${unitCode}' for item ${rows[i].item}. Unit code must be a 3-letter alphanumeric combination in all uppercase.`
+        );
         errorCheck = true;
         break;
       }
     }
 
-    const { buyerVatRate, additionalDocuments, extraComments, ...filteredInvoiceData } = invoiceData;
+    const {
+      buyerVatRate,
+      additionalDocuments,
+      extraComments,
+      ...filteredInvoiceData
+    } = invoiceData;
     var str = JSON.stringify(filteredInvoiceData, null, 2);
     console.log('filtered: ', str);
 
     if (errorCheck) {
       return;
     } else {
-      
       // Currently this fails, most likely because there are bugs with the backend endpoint
       try {
-        const response = await axios.post('http://localhost:5000/invoice/create', filteredInvoiceData, {
-          headers: {
-            'Authorisation': `${props.token}`
+        const response = await axios.post(
+          'http://localhost:5000/invoice/create',
+          filteredInvoiceData,
+          {
+            headers: {
+              Authorisation: `${props.token}`,
+            },
           }
-        });
+        );
 
         if (response.status === 201) {
           // This is the one that should be working, but the api backend does not work
           // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
-          navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI', invoiceId: response.data } });
-
+          navigate('/invoice-confirmation', {
+            state: {
+              invoice: invoiceData,
+              type: 'GUI',
+              invoiceId: response.data,
+            },
+          });
         } else {
           console.log(response);
-          alert("Unable to create invoice");
+          alert('Unable to create invoice');
         }
       } catch (err) {
         console.error(err);
-        alert(err)
+        alert(err);
       }
       // SEND TO BACKEND HERE -> if successful, go to confirmation page
       return;
     }
-
-    
-
   };
 
   return (
-    <>      
-      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>
-          Invoice Creation - GUI
-        </Typography>
+    <>
+      <Container maxWidth='lg' sx={{ marginTop: 11 }}>
+        <Typography variant='h4'>Invoice Creation - GUI</Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
 
         <Breadcrumbs
           aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize="small" />}
+          separator={<NavigateNextIcon fontSize='small' />}
         >
-          <Typography
-            component={Link}
-            to='/sign-in'
-          >
+          <Typography component={Link} to='/sign-in'>
             Dashboard
           </Typography>
 
-          <Typography
-            component={Link}
-            to='/invoice-creation' 
-          >
+          <Typography component={Link} to='/invoice-creation'>
             Invoice Creation
           </Typography>
 
-          <Typography color='text.primary'>
-            Invoice Creation - GUI
-          </Typography>
+          <Typography color='text.primary'>Invoice Creation - GUI</Typography>
         </Breadcrumbs>
 
         <form onSubmit={handleSubmit}>
@@ -357,14 +402,14 @@ export default function CreationGUI(props: { token: string; }) {
             Invoice Header
           </Typography>
 
-          <Grid container justifyContent="center" spacing={5} sx={{ mb: 2 }}>
+          <Grid container justifyContent='center' spacing={5} sx={{ mb: 2 }}>
             <Grid item xs={6}>
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="invoiceName"
-                label="Invoice Name"
-                name="invoiceName"
+                id='invoiceName'
+                label='Invoice Name'
+                name='invoiceName'
                 autoFocus
                 sx={{ width: '100%' }}
               />
@@ -372,11 +417,11 @@ export default function CreationGUI(props: { token: string; }) {
 
             <Grid item xs={6}>
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="invoiceNumber"
-                label="Invoice Number"
-                name="invoiceNumber"
+                id='invoiceNumber'
+                label='Invoice Number'
+                name='invoiceNumber'
                 autoFocus
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
@@ -386,50 +431,49 @@ export default function CreationGUI(props: { token: string; }) {
             <Grid item xs={12} sx={{ mt: -5 }}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DemoContainer components={['DatePicker']}>
-                  <DatePicker 
-                    label="Invoice Issue Date"
+                  <DatePicker
+                    label='Invoice Issue Date'
                     name='invoiceIssueDate'
-                    format="dd/MM/yyyy"
+                    format='dd/MM/yyyy'
                     sx={{ width: '100%' }}
                   />
                 </DemoContainer>
               </LocalizationProvider>
             </Grid>
-
           </Grid>
 
           {/* BUYER/SELLER HEADER */}
-          <Grid container justifyContent="center" spacing={4} sx={{ mb: 2 }}>
-            <Grid item xs={5.8}> 
+          <Grid container justifyContent='center' spacing={4} sx={{ mb: 2 }}>
+            <Grid item xs={5.8}>
               <Typography variant='h5' sx={{ mt: 4 }}>
                 Seller Information
               </Typography>
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="sellerABN"
-                label="Seller ABN"
-                name="sellerABN"
+                id='sellerABN'
+                label='Seller ABN'
+                name='sellerABN'
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="sellerCompanyName"
-                label="Company Name"
-                name="sellerCompanyName"
+                id='sellerCompanyName'
+                label='Company Name'
+                name='sellerCompanyName'
                 sx={{ width: '100%' }}
               />
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="sellerAddress"
-                label="Address"
-                name="sellerAddress"
+                id='sellerAddress'
+                label='Address'
+                name='sellerAddress'
                 sx={{ width: '100%' }}
               />
 
@@ -437,52 +481,51 @@ export default function CreationGUI(props: { token: string; }) {
                 Postal Address
               </Typography>
 
-
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="sellerStreetName"
-                label="Street Name"
-                name="sellerStreetName"
+                id='sellerStreetName'
+                label='Street Name'
+                name='sellerStreetName'
                 sx={{ width: '100%' }}
               />
 
               <TextField
-                margin="normal"
-                id="sellerAdditionalStreetName"
-                label="Additional Street Name"
-                name="sellerAdditionalStreetName"
+                margin='normal'
+                id='sellerAdditionalStreetName'
+                label='Additional Street Name'
+                name='sellerAdditionalStreetName'
                 sx={{ width: '100%' }}
               />
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="sellerCityName"
-                label="City Name"
-                name="sellerCityName"
+                id='sellerCityName'
+                label='City Name'
+                name='sellerCityName'
                 sx={{ width: '100%' }}
               />
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="sellerPostalCode"
-                label="Postal Code"
-                name="sellerPostalCode"
+                id='sellerPostalCode'
+                label='Postal Code'
+                name='sellerPostalCode'
                 sx={{ width: '100%' }}
               />
 
               <FormControl sx={{ mt: 2, width: '100%' }}>
-                <InputLabel id="country-label">Country</InputLabel>
+                <InputLabel id='country-label'>Country</InputLabel>
                 <Select
-                  labelId="country-label"
-                  id="country"
+                  labelId='country-label'
+                  id='country'
                   required
-                  name="sellerCountry"
+                  name='sellerCountry'
                   value={sellerCountry}
                   onChange={handleChange}
-                  label="Country"
+                  label='Country'
                   // placeholder='Country'
                   sx={{ width: '100%' }}
                 >
@@ -493,43 +536,42 @@ export default function CreationGUI(props: { token: string; }) {
                   ))}
                 </Select>
               </FormControl>
-
             </Grid>
 
             <Grid item xs={0}>
-              <Divider orientation="vertical" sx={{ height: '90%', mt: 10 }} />
+              <Divider orientation='vertical' sx={{ height: '90%', mt: 10 }} />
             </Grid>
 
-            <Grid item xs={5.8}> 
+            <Grid item xs={5.8}>
               <Typography variant='h5' sx={{ mt: 4 }}>
                 Buyer Information
               </Typography>
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="buyerABN"
-                label="Buyer ABN"
-                name="buyerABN"
+                id='buyerABN'
+                label='Buyer ABN'
+                name='buyerABN'
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
               />
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="buyerCompanyName"
-                label="Company Name"
-                name="buyerCompanyName"
+                id='buyerCompanyName'
+                label='Company Name'
+                name='buyerCompanyName'
                 sx={{ width: '100%' }}
               />
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="buyerAddress"
-                label="Address"
-                name="buyerAddress"
+                id='buyerAddress'
+                label='Address'
+                name='buyerAddress'
                 sx={{ width: '100%' }}
               />
 
@@ -537,52 +579,51 @@ export default function CreationGUI(props: { token: string; }) {
                 Postal Address
               </Typography>
 
-
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="buyerStreetName"
-                label="Street Name"
-                name="buyerStreetName"
+                id='buyerStreetName'
+                label='Street Name'
+                name='buyerStreetName'
                 sx={{ width: '100%' }}
               />
 
               <TextField
-                margin="normal"
-                id="buyerAdditionalStreetName"
-                label="Additional Street Name"
-                name="buyerAdditionalStreetName"
+                margin='normal'
+                id='buyerAdditionalStreetName'
+                label='Additional Street Name'
+                name='buyerAdditionalStreetName'
                 sx={{ width: '100%' }}
               />
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="buyerCityName"
-                label="City Name"
-                name="buyerCityName"
+                id='buyerCityName'
+                label='City Name'
+                name='buyerCityName'
                 sx={{ width: '100%' }}
               />
 
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="buyerPostalCode"
-                label="Postal Code"
-                name="buyerPostalCode"
+                id='buyerPostalCode'
+                label='Postal Code'
+                name='buyerPostalCode'
                 sx={{ width: '100%' }}
               />
 
               <FormControl sx={{ mt: 2, width: '100%' }}>
-                <InputLabel id="country-label">Country</InputLabel>
+                <InputLabel id='country-label'>Country</InputLabel>
                 <Select
-                  labelId="country-label"
-                  id="country"
+                  labelId='country-label'
+                  id='country'
                   required
-                  name="buyerCountry"
+                  name='buyerCountry'
                   value={buyerCountry}
                   onChange={handleChange}
-                  label="Country"
+                  label='Country'
                   sx={{ width: '100%' }}
                 >
                   {countries.map((country, index) => (
@@ -592,9 +633,7 @@ export default function CreationGUI(props: { token: string; }) {
                   ))}
                 </Select>
               </FormControl>
-
             </Grid>
-
           </Grid>
 
           {/* INVOICE ITEMS */}
@@ -603,16 +642,12 @@ export default function CreationGUI(props: { token: string; }) {
           </Typography>
 
           <Box sx={{ width: '100%' }}>
-            <Stack direction="row" spacing={1} sx={{ my: 1.5 }}>
-              <Button size="small" onClick={addRow} variant='contained'>
+            <Stack direction='row' spacing={1} sx={{ my: 1.5 }}>
+              <Button size='small' onClick={addRow} variant='contained'>
                 Add a Row
               </Button>
               {selectedRowIds.length > 0 && (
-                <Button
-                  size="small"
-                  onClick={removeRow}
-                  variant='contained'
-                >
+                <Button size='small' onClick={removeRow} variant='contained'>
                   Remove Selected Rows
                 </Button>
               )}
@@ -642,7 +677,7 @@ export default function CreationGUI(props: { token: string; }) {
           </Box>
 
           {/* MONETARY TOTALS */}
-          <Stack direction="row" spacing={1} sx={{ mt: 4 }}>
+          <Stack direction='row' spacing={1} sx={{ mt: 4 }}>
             <Typography variant='h5'>Monetary Totals</Typography>
             <IconButton onClick={handleClickPopover}>
               <InfoIcon sx={{ mt: -0.25 }} />
@@ -658,48 +693,68 @@ export default function CreationGUI(props: { token: string; }) {
               horizontal: 'left',
             }}
           >
-            <Typography sx={{ p: 2 }}>GST is determined by the buyer's country.</Typography>
+            <Typography sx={{ p: 2 }}>
+              GST is determined by the buyer's country.
+            </Typography>
           </Popover>
 
           <TableContainer component={Paper} sx={{ maxWidth: '25vw', my: 2 }}>
-            <Table aria-label="simple table">
+            <Table aria-label='simple table'>
               <TableBody>
                 <TableRow>
                   <TableCell>Total GST ({vatRate}%): </TableCell>
-                  <TableCell align="right">${totalGST.toLocaleString()}</TableCell>
+                  <TableCell align='right'>
+                    ${totalGST.toLocaleString()}
+                  </TableCell>
                 </TableRow>
 
                 <TableRow>
                   <TableCell>Total Taxable Amount: </TableCell>
-                  <TableCell align="right">${totalTaxable.toLocaleString()}</TableCell>
+                  <TableCell align='right'>
+                    ${totalTaxable.toLocaleString()}
+                  </TableCell>
                 </TableRow>
-            
+
                 <TableRow>
                   <TableCell>Total Amount: </TableCell>
-                  <TableCell align="right">${totalAmount.toLocaleString()}</TableCell>
+                  <TableCell align='right'>
+                    ${totalAmount.toLocaleString()}
+                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
           </TableContainer>
 
           {/* ADDITIONAL OPTIONS */}
-          <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>Additional Options</Typography>
-          <Button variant="contained" color="primary" onClick={() => setOpenFileUpload(true)}>
+          <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>
+            Additional Options
+          </Typography>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={() => setOpenFileUpload(true)}
+          >
             Upload Additional Documents
           </Button>
           <DropzoneDialogBase
-            dialogTitle={"Upload file"}
+            dialogTitle={'Upload file'}
             acceptedFiles={['image/*']}
-            fileObjects={fileList.map(fileObj => ({ ...fileObj, data: null }))}
-            cancelButtonText={"cancel"}
-            submitButtonText={"submit"}
+            fileObjects={fileList.map((fileObj) => ({
+              ...fileObj,
+              data: null,
+            }))}
+            cancelButtonText={'cancel'}
+            submitButtonText={'submit'}
             maxFileSize={5000000}
             open={openFileUpload}
             onAdd={(newFileObjs: FileObject[]) => {
               console.log('onAdd', newFileObjs);
-              setFileList(prevFileObjects => [...prevFileObjects, ...newFileObjs]);
+              setFileList((prevFileObjects) => [
+                ...prevFileObjects,
+                ...newFileObjs,
+              ]);
             }}
-            onDelete={deleteFileObj => {
+            onDelete={(deleteFileObj) => {
               console.log('onDelete', deleteFileObj);
             }}
             onClose={() => setOpenFileUpload(false)}
@@ -711,7 +766,9 @@ export default function CreationGUI(props: { token: string; }) {
             showFileNamesInPreview={true}
           />
 
-          <Typography variant='h6' sx={{ mt: 4 }}>Extra Comments</Typography>
+          <Typography variant='h6' sx={{ mt: 4 }}>
+            Extra Comments
+          </Typography>
           <TextField
             multiline
             rows={5}
@@ -721,18 +778,17 @@ export default function CreationGUI(props: { token: string; }) {
 
           <Box textAlign='center'>
             <Button
-              type="submit"
+              type='submit'
               variant='contained'
               sx={{
                 height: '50px',
                 padding: '25px',
-                my: 6
+                my: 6,
               }}
             >
               Finish & Save Invoice
             </Button>
           </Box>
-        
         </form>
 
         <Box sx={{ mb: 6 }}>
