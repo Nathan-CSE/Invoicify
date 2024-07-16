@@ -59,7 +59,7 @@ class InvoiceNamespace(Namespace):
     
 
     def get_id_validation_fields(self):
-        validate_parser = invoice_ns.parser()
+        validate_parser = reqparse.RequestParser()
         validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
 
         return validate_parser
