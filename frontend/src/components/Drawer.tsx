@@ -41,7 +41,7 @@ export default function TemporaryDrawer() {
     'Home Page': { svg: HomeSvg, route: '/dashboard' },
     'Create/Upload an Invoice': { svg: PenSvg, route: '/invoice-creation' },
     'Validate an Invoice': { svg: TickSvg, route: '/invoice-validation' },
-    'Send an Invoice': { svg: SendSvg, route: '/' },
+    'Send an Invoice': { svg: SendSvg, route: '/invoice-sending' },
     'Manage Invoices': { svg: ManageSvg, route: '/invoice-management' },
     'Account Settings': { svg: CogSvg, route: '/settings' },
     'Documentation Info': { svg: DocSvg, route: '/' },
