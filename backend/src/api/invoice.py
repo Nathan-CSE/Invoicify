@@ -1,5 +1,6 @@
 import io
 import json
+import re
 
 from flask import request, jsonify, make_response, send_file
 from flask_restx import Resource
@@ -12,8 +13,6 @@ from src.services.validation import ValidationService
 from src.services.conversion import ConversionService
 from src.services.upload import UploadService
 from src.services.send_mail import send_xml
-from tests.data import TEST_DATA
-import re;
 
 invoice_ns = InvoiceNamespace(name='invoice', description='Operations related to creating invoices')
 
@@ -280,7 +279,7 @@ class ValidationAPI(Resource):
         except Exception as err:
             return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
         
-        encoded_xml_content = base64.b64encode(xml_content.encode()).decode()
+        encoded_xml_content = base64_encode(xml_content.encode()).decode()
 
         vs = ValidationService()
         
@@ -324,9 +323,6 @@ class ValidationAPI(Resource):
                 }
             }
             return make_response(jsonify(response), 203)
-            retmessage = retval["report"]
-            return make_response(jsonify({"message": retmessage}), 203)
-
 
 @invoice_ns.route("/uploadCreate")
 class UploadCreateAPI(Resource):
