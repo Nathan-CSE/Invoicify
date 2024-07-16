@@ -257,6 +257,7 @@ class UploadValidationAPI(Resource):
 class ValidationAPI(Resource):
     @invoice_ns.doc(
         description="Ability to validate created invoices",
+        body=invoice_ns.get_id_validation_fields(),
         responses={
             200: "Validation Complete",
             203: 'Files received but failed to validate',
@@ -275,11 +276,12 @@ class ValidationAPI(Resource):
         converter = ConversionService()
 
         try:
-            xml_content = converter.json_to_xml(invoice.fields)
+            xml_content = converter.json_to_xml(json.dumps(invoice.fields), rules)
         except Exception as err:
+            print(err)
             return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
         
-        encoded_xml_content = base64_encode(xml_content.encode()).decode()
+        encoded_xml_content = base64_encode(xml_content.encode())
 
         vs = ValidationService()
         
