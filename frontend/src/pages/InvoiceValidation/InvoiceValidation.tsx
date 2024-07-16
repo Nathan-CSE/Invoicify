@@ -37,6 +37,11 @@ export default function InvoiceValidation(props: { token: string; }) {
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
+    if (file === null && invoice === '') {
+      alert("You must either upload or select an xml file to create an invoice.");
+      return;
+    }
+
     const formData = new FormData();
 
     if (file) {
@@ -45,15 +50,28 @@ export default function InvoiceValidation(props: { token: string; }) {
 
     console.log('this is formData: ', formData);
     console.log('this is the rule set: ', ruleSet);
+    console.log('this is invoiceId: ', invoice);
 
     try {
       // Placeholder until backend endpoint has been created
-      const response = await axios.post(`http://localhost:5000/invoice/uploadValidate?rules=${ruleSet}`, formData, {
-        headers: {
-          'Authorisation': `${props.token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      var response;
+
+      if (file) {
+        response = await axios.post(`http://localhost:5000/invoice/uploadValidate?rules=${ruleSet}`, formData, {
+          headers: {
+            'Authorisation': `${props.token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+      } else {
+        response = await axios.get(`http://localhost:5000/invoice/validate/${invoice}`, {
+          headers: {
+            'Authorisation': `${props.token}`,
+          }
+        });
+
+      }
+
       
       if (response.status === 200) {
         console.log(response.data);
@@ -62,11 +80,10 @@ export default function InvoiceValidation(props: { token: string; }) {
       } else {
         console.log(response.data);
         navigate('/invoice-validation-report-invalid', { state: { response: response.data, ruleSet: ruleSet } });
-        // alert("Unable to create invoice");
       }
     } catch (err) {
-      // console.log(err);
-      alert(err);
+      console.error(err);
+      alert("Unable to validate invoice.");
     }
 
   };
