@@ -1,5 +1,6 @@
 import io
 import json
+import re
 
 from flask import request, jsonify, make_response, send_file
 from flask_restx import Resource
@@ -11,7 +12,6 @@ from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.conversion import ConversionService
 from src.services.upload import UploadService
-import re;
 
 invoice_ns = InvoiceNamespace(name='invoice', description='Operations related to creating invoices')
 
@@ -241,14 +241,14 @@ class ValidationAPI(Resource):
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 400)
 
-        converter = ConverterService()
+        converter = ConversionService()
 
         try:
             xml_content = converter.json_to_xml(invoice.fields)
         except Exception as err:
             return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
         
-        encoded_xml_content = base64.b64encode(xml_content.encode()).decode()
+        encoded_xml_content = base64_encode(xml_content.encode()).decode()
 
         vs = ValidationService()
         
@@ -292,9 +292,6 @@ class ValidationAPI(Resource):
                 }
             }
             return make_response(jsonify(response), 203)
-            retmessage = retval["report"]
-            return make_response(jsonify({"message": retmessage}), 203)
-
 
 @invoice_ns.route("/uploadCreate")
 class UploadCreateAPI(Resource):
