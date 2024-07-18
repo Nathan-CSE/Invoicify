@@ -20,7 +20,6 @@ export default function SignIn(props: {
   const [error, setError] = React.useState('');
 
   if (props.token) {
-    console.log('SIGNIN');
     navigate('/dashboard');
   }
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -29,10 +28,10 @@ export default function SignIn(props: {
 
     const email = data.get('email') as string;
     const password = data.get('password') as string;
-    console.log(email);
-    console.log(password);
+
     if (email.length === 0 || password.length === 0) {
-      alert('Fill out all required fields');
+      setOpenError(true);
+      setError('Fill out all required fields');
     } else {
       try {
         const response = await axios.post('http://localhost:5000/auth/login', {

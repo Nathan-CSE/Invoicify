@@ -41,7 +41,14 @@ export default function SignUp(props: {
       password.length === 0 ||
       confirmPassword.length === 0
     ) {
-      alert('Fill out all required fields');
+      setOpenError(true);
+      setError('Fill out all required fields');
+    } else if (password !== confirmPassword) {
+      setOpenError(true);
+      setError('Passwords do not match');
+    } else if (password.length < 6) {
+      setOpenError(true);
+      setError('Passwords have a minimum length of 6');
     } else {
       if (password === confirmPassword) {
         try {
