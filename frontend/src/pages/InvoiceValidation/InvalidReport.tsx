@@ -14,6 +14,8 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import DownloadReport from '../../components/DownloadReport';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 export default function InvoiceValidationReport() {
   const navigate = useNavigate();
@@ -110,7 +112,7 @@ export default function InvoiceValidationReport() {
         </TableContainer>
         
         <Stack direction="row" spacing={4} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
-          <Button
+          {/* <Button
             component={Link}
             to='/invoice-validation-report'
             variant='contained'
@@ -120,11 +122,13 @@ export default function InvoiceValidationReport() {
             }}
           >
             Download Report
-          </Button>
+          </Button> */}
+          <DownloadReport invoiceName={fileName} />
 
           <Button
             component={Link}
             to='/invoice-validation'
+            startIcon={<RestartAltIcon />}
             variant='contained'
             sx={{
               height: '50px',
