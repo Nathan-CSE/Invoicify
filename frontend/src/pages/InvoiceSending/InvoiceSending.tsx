@@ -15,23 +15,26 @@ import { DropzoneArea } from "mui-file-dropzone";
 import axios from 'axios';
 import { TextField } from '@mui/material';
 import { request } from 'http';
+import MultipleSelect from '../../components/MultipleSelect';
 
 export default function InvoiceSending(props: { token: string; }) {
   // console.log('user token: ', props.token);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [invoice, setInvoice] = React.useState('');
-  const [file, setFile] = React.useState<File | null>(null);
+  const [invoices, setInvoices] = React.useState<string[]>([]);
+  const [files, setFiles] = React.useState<File[] | null>([]);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
 
 
-  const handleChange = (event: SelectChangeEvent) => {
+  const handleChange = (event: SelectChangeEvent<string[]>) => {
     console.log('this is event.target: ', event.target);
 
-    setInvoice(event.target.value);
+    const { name, value } = event.target;
+
+    setInvoices( typeof value === 'string' ? value.split(',') : value);
 
     if (event.target.value) {
-      setFile(null); // Clear file selection if an invoice is selected
+      setFiles(null); // Clear file selection if an invoice is selected
 
     }
 
@@ -40,17 +43,17 @@ export default function InvoiceSending(props: { token: string; }) {
   const handleFileChange = (loadedFiles: File[]) => {
     console.log('Currently loaded:', loadedFiles);
     if (loadedFiles.length > 0) {
-      setFile(loadedFiles[0]);
-      setInvoice(''); // Clear invoice selection if a file is uploaded
+      setFiles(loadedFiles);
+      setInvoices([]); // Clear invoice selection if a file is uploaded
     } else {
-      setFile(null);
+      setFiles(null);
     }
   };
 
   const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
     event.preventDefault();
 
-    if (file === null && invoice === '') {
+    if (files === null && invoices.length === 0) {
       alert("You must either upload a JSON/PDF file or select a UBL invoice to send.");
       return;
     }
@@ -64,12 +67,16 @@ export default function InvoiceSending(props: { token: string; }) {
 
     const requestData = new FormData();
 
-    if (file) {
-      requestData.append("files", file);
+    if (files) {
+      files.forEach(item => {
+        requestData.append("files", item);
+      });
     } else {
-      requestData.append("target_email", recipientEmail);
-      // requestData.append("id", invoiceId);
+      // requestData.append("target_email", recipientEmail);
+      requestData.append("id", invoiceId);
     }
+    
+    requestData.append("target_email", recipientEmail);
 
     console.log('this is requestData: ', requestData);
     navigate('/invoice-sending-confirmation');
@@ -78,7 +85,7 @@ export default function InvoiceSending(props: { token: string; }) {
       // Placeholder until sending endpoint has been created
       var response;
 
-      if (file) {
+      if (files) {
         // Placeholder until json/pdf send endpoint has been created
         response = await axios.post(`http://localhost:5000/invoice/uploadValidate`, requestData, {
           headers: {
@@ -192,10 +199,10 @@ export default function InvoiceSending(props: { token: string; }) {
           <Box sx={{ my: 5 }}>
             <DropzoneArea
               acceptedFiles={['.json', '.pdf']}
-              fileObjects={file}
+              fileObjects={files}
               onChange={handleFileChange}
               dropzoneText={'Upload an Invoice: JSON, PDF'}
-              filesLimit={1}
+              filesLimit={3}
             />
           </Box>
 
@@ -203,24 +210,7 @@ export default function InvoiceSending(props: { token: string; }) {
             OR
           </Typography>
 
-          <Box sx={{ minWidth: 120 }}>
-            <FormControl variant="standard" fullWidth>
-              <InputLabel id="select-invoice-label">Select Invoice</InputLabel>
-              <Select
-                labelId="select-invoice-label"
-                id="select-invoice"
-                name='select-invoice'
-                value={invoice}
-                label="Select Invoice"
-                onChange={handleChange}
-                disabled={Boolean(file)}
-              >
-                {availableInvoices.map((invoice) => (
-                  <MenuItem value={invoice.invoiceId}>{invoice.name}</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
+          <MultipleSelect invoices={invoices} availableInvoices={availableInvoices} file={files} handleChange={handleChange} />
 
           <Box sx={{ minWidth: 120, mb: 5 }}>
             <FormControl variant="standard" fullWidth>
