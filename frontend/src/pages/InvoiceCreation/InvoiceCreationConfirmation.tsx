@@ -9,6 +9,10 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
+import { Card, CardActionArea, CardContent } from '@mui/material';
+import SettingsMenu from '../../components/SettingsMenu';
+import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
+import DownloadIcon from '@mui/icons-material/Download';
 
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const navigate = useNavigate();
@@ -88,35 +92,53 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
 
         <Box textAlign='center' sx={{ mt: 5 }}>
           <Typography variant='h4'>
-            Your file has been created
+            Your file(s) have been created
           </Typography>
         </Box>
 
+
         <Box
           sx={{
-            my: 10,
-            padding: 5,
-            height: '25vh',
             display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
             justifyContent: 'center',
-            border: 'solid 0.5px',
-            borderRadius: 4
+            alignItems: 'center',
+            my: 5,
           }}
         >
-          <Box sx={{ mt: 1 }}>
-            <Typography textAlign='center'>
-              ANZ-Invoice.xml
-            </Typography>
-          </Box>
+          <Card
+            sx={{
+              border: 1,
+              borderRadius: '16px',
+              width: '20rem',
+              height: '24rem',
+              alignContent: 'center',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              textDecoration: 'none',
+              position: 'relative',
+            }}
+          >
+            <CardContent
+              sx={{
+                mt: 2,
+                height: '24rem',
+              }}
+            >
+              <InvoiceSvg />
+              <Typography variant='h6' component='div'>
+                INVOICE NAME
+              </Typography>
 
+            </CardContent>
+          </Card>
         </Box>
 
         <Grid container justifyContent="center" spacing={6}>
           <Grid item>
             <Button
               onClick={handleDownload}
+              startIcon={<DownloadIcon />}
               variant='contained'
               sx={{
                 height: '50px',
