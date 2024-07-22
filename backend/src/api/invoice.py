@@ -32,7 +32,7 @@ class CreateUBLAPI(Resource):
         data = request.json
         try:
             res = create_xml(data, user)
-            return make_response(jsonify(res), 201)
+            return make_response(jsonify({"data": [res]}), 201)
         except ValueError as e:
             return make_response(e, 422)
         except Exception as e:
@@ -352,7 +352,7 @@ class UploadCreateAPI(Resource):
             db_insert(invoice)
             
             ublretval.append({
-                "filename": temp_xml_filename, "invoiceId": invoice.id, "retJson": json.loads(json_str)}) 
+                "filename": temp_xml_filename, "invoiceId": invoice.id}) 
         
         return make_response(jsonify({"message": "Invoice(s) created successfully", "data": ublretval}), 200)
         

@@ -102,7 +102,10 @@ def test_invoice_creation_successful(client, user):
             "Content-Type": "application/json",
         }
     )
+    response_body = res.get_json()
     assert res.status_code == 201
+    assert response_body["data"] == [{"filename": "test.xml", "invoiceId": 1}]
+    
 
 def test_invoice_creation_invalid(client, user):
     res = client.post(
@@ -114,7 +117,9 @@ def test_invoice_creation_invalid(client, user):
         }
     )
 
+    response_body = res.get_json()
     assert res.status_code == 201
+    assert response_body["data"] == [{"filename": "test.xml", "invoiceId": 1}]
 
 def test_invoice_creation_unauthorised(client):
     res = client.post(
@@ -814,8 +819,6 @@ def test_validate_upload_unsucessful(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
-
-    response_body = res.get_json()
 
     assert res.status_code == 203
 
