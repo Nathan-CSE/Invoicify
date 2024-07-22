@@ -8,7 +8,11 @@ import axios, { AxiosError } from 'axios';
 import ErrorModal from './ErrorModal';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-export default function SettingsMenu(props: { id: number; token: string }) {
+export default function SettingsMenu(props: {
+  id: number;
+  token: string;
+  status: boolean;
+}) {
   // Error checking
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -107,15 +111,20 @@ export default function SettingsMenu(props: { id: number; token: string }) {
               EDIT
             </Button>
           </Box>
-          <Box onClick={handleClose}>
-            <Button
-              onClick={handleSend}
-              variant='contained'
-              sx={{ minWidth: '6rem' }}
-            >
-              SEND
-            </Button>
-          </Box>
+          {props.status ? (
+            <Box onClick={handleClose}>
+              <Button
+                onClick={handleSend}
+                variant='contained'
+                sx={{ minWidth: '6rem' }}
+              >
+                SEND
+              </Button>
+            </Box>
+          ) : (
+            <></>
+          )}
+
           <Box onClick={handleClose}>
             <Button
               onClick={handleDelete}
