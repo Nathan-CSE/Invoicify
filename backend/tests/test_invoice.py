@@ -104,7 +104,7 @@ def test_invoice_creation_successful(client, user):
     )
     response_body = res.get_json()
     assert res.status_code == 201
-    assert response_body["data"] == {"filename": "test.xml", "invoiceId": 1}
+    assert response_body["data"] == [{"filename": "test.xml", "invoiceId": 1}]
     
 
 def test_invoice_creation_invalid(client, user):
@@ -119,7 +119,7 @@ def test_invoice_creation_invalid(client, user):
 
     response_body = res.get_json()
     assert res.status_code == 201
-    assert response_body["data"] == {"filename": "test.xml", "invoiceId": 1}
+    assert response_body["data"] == [{"filename": "test.xml", "invoiceId": 1}]
 
 def test_invoice_creation_unauthorised(client):
     res = client.post(

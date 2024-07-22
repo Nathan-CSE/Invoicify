@@ -32,7 +32,7 @@ class CreateUBLAPI(Resource):
         data = request.json
         try:
             res = create_xml(data, user)
-            return make_response(jsonify({"data": res}), 201)
+            return make_response(jsonify({"data": [res]}), 201)
         except ValueError as e:
             return make_response(e, 422)
         except Exception as e:
