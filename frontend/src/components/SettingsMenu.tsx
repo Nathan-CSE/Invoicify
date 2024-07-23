@@ -6,8 +6,13 @@ import { Box, Stack, Typography } from '@mui/material';
 import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
 import axios, { AxiosError } from 'axios';
 import ErrorModal from './ErrorModal';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-export default function SettingsMenu(props: { id: number; token: string }) {
+export default function SettingsMenu(props: {
+  id: number;
+  token: string;
+  status: boolean;
+}) {
   // Error checking
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -24,13 +29,18 @@ export default function SettingsMenu(props: { id: number; token: string }) {
     setAnchorEl(null);
   };
 
+  const navigate = useNavigate();
+
   // Three functions to handle the settings option
   const handleEdit = () => {
     console.log('1');
   };
 
   const handleSend = () => {
-    console.log('1');
+    console.log(props.id);
+    navigate('/invoice-sending', {
+      state: { cardID: props.id },
+    });
   };
 
   const handleDelete = async () => {
@@ -101,15 +111,20 @@ export default function SettingsMenu(props: { id: number; token: string }) {
               EDIT
             </Button>
           </Box>
-          <Box onClick={handleClose}>
-            <Button
-              onClick={handleSend}
-              variant='contained'
-              sx={{ minWidth: '6rem' }}
-            >
-              SEND
-            </Button>
-          </Box>
+          {props.status ? (
+            <Box onClick={handleClose}>
+              <Button
+                onClick={handleSend}
+                variant='contained'
+                sx={{ minWidth: '6rem' }}
+              >
+                SEND
+              </Button>
+            </Box>
+          ) : (
+            <></>
+          )}
+
           <Box onClick={handleClose}>
             <Button
               onClick={handleDelete}
