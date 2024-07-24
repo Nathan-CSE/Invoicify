@@ -346,6 +346,11 @@ class UploadCreateAPI(Resource):
             if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
                 pass
             json_str = f.read().decode('utf-8')
+
+            try:
+                json.loads(json_str)
+            except json.JSONDecodeError as e:
+                return make_response(jsonify({"message": f"Invalid JSON file: {str(e)}"}), 400)
             
             temp_xml_filename = f.filename.replace('.json', '.xml')
             invoice = Invoice(name=temp_xml_filename, fields=json.loads(json_str), user_id=user.id, is_ready=False)

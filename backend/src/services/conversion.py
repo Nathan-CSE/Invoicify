@@ -62,7 +62,6 @@ class ConversionService():
             Returns a string containing the converted XML
         '''
         try:
-            print(json_str)
             data = json.loads(json_str)
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON: {str(e)}")
@@ -162,7 +161,7 @@ class ConversionService():
         else:
             # Has attributes and a value 
             if isinstance(fields[element_tag], dict):
-                fields[element_tag]["value"] = element.text
+                fields[element_tag]["@value"] = element.text
             # Has only a value
             else:
                 fields[element_tag] = element.text
@@ -195,7 +194,7 @@ class ConversionService():
         # Sub-element is an XML-tag AND contains attributes OR child elements
         if is_xml_tag and isinstance(value, dict):
             # Sub-element contains no attributes BUT has more child elements
-            if not value.get("value"):
+            if not value.get("@value"):
                 namespace = "cac"
 
             # Set the sub-element as a child of the element and recurses down the dictionary   
@@ -206,7 +205,7 @@ class ConversionService():
             subelement = SubElement(element, f"{namespace}:{key}")
             subelement.text = value
         # Set the element's value
-        elif key == "value":
+        elif key == "@value":
             element.text = value
         # Set the element attributes
         else:
