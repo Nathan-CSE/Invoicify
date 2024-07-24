@@ -160,11 +160,11 @@ class DeleteAPI(Resource):
 
 @invoice_ns.route("/history")
 class HistoryAPI(Resource):
-    def check_is_ready_param(self, is_ready):
-        is_ready = is_ready.lower().capitalize()
-        if is_ready == "True":
+    def check_bool(self, bool):
+        bool = bool.lower().capitalize()
+        if bool == "True":
             return True
-        elif is_ready == "False":
+        elif bool == "False":
             return False
         else:
             raise Exception("Invalid parameter value passed for is_ready")
@@ -183,10 +183,15 @@ class HistoryAPI(Resource):
         args = request.args
         if args.get("is_ready"):
             try:
-                sql = sql.filter(Invoice.is_ready==self.check_is_ready_param(args.get("is_ready")))
+                sql = sql.filter(Invoice.is_ready==self.check_bool(args.get("is_ready")))
             except Exception as err:
                 return (make_response(jsonify({"message": str(err)}), 400))
 
+        if args.get("is_gui"):
+            try:
+                sql = sql.filter(Invoice.is_gui==self.check_bool(args.get("is_gui")))
+            except Exception as err:
+                return (make_response(jsonify({"message": str(err)}), 400))
         return make_response(jsonify([invoice.to_dict() for invoice in sql.all()]), 200)
     
 @invoice_ns.route("/uploadValidate")
