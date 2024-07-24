@@ -906,7 +906,6 @@ def test_validate_id_successful(client, user, invoice):
     data = {}
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'
    
-   
     res = client.get(
         f"{INVOICE_VALIDATE_PATH}/{invoice.id}",
         query_string=data,
