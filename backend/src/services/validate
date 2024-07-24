@@ -1,0 +1,26 @@
+JSON -> XML:
+
+- value as an actual XML prop name (FIXED: Changed to @value)
+i.e.
+{
+    "Test": {
+        "attribute": "a1",
+        "value": "a2",
+        "@value": "v" 
+    }
+} 
+<Test attribute="a1" value="a2">
+    v
+</Test>
+
+- value type check? int, str, bool, array, null
+i.e.
+{
+    "Test": null
+}
+
+- attribute-value pair is not of type str, int, bool, null
+i.e.
+{
+    "attribute": {}
+}
