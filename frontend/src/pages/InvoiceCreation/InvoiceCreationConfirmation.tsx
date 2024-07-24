@@ -10,22 +10,33 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
 import { Card, CardActionArea, CardContent } from '@mui/material';
-import SettingsMenu from '../../components/SettingsMenu';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
 import DownloadIcon from '@mui/icons-material/Download';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+
+type Invoice = {
+  invoiceId: React.Key;
+  filename: string;
+};
 
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
-  const navigate = useNavigate();
   const invoiceData = useLocation().state;
-  const invoiceType = invoiceData.type;
+  const { data: invoices, type } = invoiceData.invoice;
+  // const invoiceType = invoiceData.type;
+  const [currentIndex, setCurrentIndex] = React.useState(0);
+
   console.log('this is the invoice data: ', invoiceData);
+  
+  const handlePrevious = () => {
+    setCurrentIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+  };
 
-  const handlePreview = () => {
-    navigate('/invoice-preview', { state: invoiceData.invoice });
-  }
+  const handleNext = () => {
+    setCurrentIndex((prevIndex) => Math.min(prevIndex + 1, invoices.length - 1));
+  };
 
-  const handleDownload = async (event: any) => {
-    
+
+  const handleDownload = async (event: any) => {    
     
     event.preventDefault();
   
@@ -96,43 +107,45 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
           </Typography>
         </Box>
 
+        {invoices.length > 0 && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4, mb: 8 }}>
+            <Button 
+              onClick={handlePrevious} 
+              disabled={currentIndex === 0} 
+              sx={{ mr: 2 }}
+            >
+              Previous
+            </Button>
 
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            my: 5,
-          }}
-        >
-          <Card
-            sx={{
-              border: 1,
-              borderRadius: '16px',
-              width: '20rem',
-              height: '24rem',
-              alignContent: 'center',
-              textAlign: 'center',
-              display: 'flex',
-              flexDirection: 'column',
-              textDecoration: 'none',
-              position: 'relative',
-            }}
-          >
-            <CardContent
+            <Card
               sx={{
-                mt: 2,
+                border: 1,
+                borderRadius: '16px',
+                width: '20rem',
                 height: '24rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
               }}
             >
-              <InvoiceSvg />
-              <Typography variant='h6' component='div'>
-                INVOICE NAME
-              </Typography>
+              <CardContent>
+                <InvoiceSvg style={{ width: 175, height: 175, marginBottom: 65, marginTop: 25 }} />
+                <Typography variant='h6' component='div'>
+                  {invoices[currentIndex].filename}
+                </Typography>
+              </CardContent>
+            </Card>
 
-            </CardContent>
-          </Card>
-        </Box>
+            <Button 
+              onClick={handleNext} 
+              disabled={currentIndex === invoices.length - 1} 
+              sx={{ ml: 2 }}
+            >
+              Next
+            </Button>
+          </Box>
+        )}
 
         <Grid container justifyContent="center" spacing={6}>
           <Grid item>
@@ -149,27 +162,11 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
             </Button>
           </Grid>
 
-          {/* Conditionally show preview only if invoice created via gui */}
-          {
-            invoiceType !== 'upload' &&
-            <Grid item>
-              <Button
-                onClick={handlePreview}
-                variant='contained'
-                sx={{
-                  height: '50px',
-                  padding: '25px',
-                }}
-              >
-                Preview Invoice
-              </Button>
-            </Grid>
-          }
-
           <Grid item>
             <Button
               component={Link}
               to='/invoice-creation'
+              startIcon={<RestartAltIcon />}
               variant='contained'
               sx={{
                 height: '50px',
@@ -185,3 +182,4 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
     </>
   );
 }
+

@@ -21,7 +21,7 @@ import { DropzoneArea } from 'mui-file-dropzone';
 export default function InvoiceCreation(props: { token: string }) {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [file, setFile] = React.useState<File>();
+  const [files, setFiles] = React.useState<File[]>([]);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
@@ -34,8 +34,10 @@ export default function InvoiceCreation(props: { token: string }) {
 
     const formData = new FormData();
 
-    if (file) {
-      formData.append('files', file);
+    if (files) {
+      files.forEach(item => {
+        formData.append("files", item);
+      });
     } else {
       alert('You must upload a valid file to create an invoice.');
       return;
@@ -44,16 +46,12 @@ export default function InvoiceCreation(props: { token: string }) {
     // console.log('file to be sent: ', file);
 
     try {
-      const response = await axios.post(
-        'http://localhost:5000/invoice/uploadCreate',
-        formData,
-        {
-          headers: {
-            Authorisation: `${props.token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      );
+      const response = await axios.post('http://localhost:5000/invoice/uploadCreate', formData, {
+        headers: {
+          Authorisation: `${props.token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       if (response.status === 200) {
         console.log(response.data);
@@ -96,12 +94,12 @@ export default function InvoiceCreation(props: { token: string }) {
         <Box sx={{ my: 5 }}>
           <DropzoneArea
             acceptedFiles={['.pdf', '.json']}
-            fileObjects={file}
+            fileObjects={files}
             onChange={(loadedFile) => {
               console.log('Currently loaded:', loadedFile);
-              setFile(loadedFile[0]);
+              setFiles(loadedFile);
             }}
-            filesLimit={1}
+            filesLimit={5}
           />
         </Box>
 
