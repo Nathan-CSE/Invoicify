@@ -13,6 +13,9 @@ import { Card, CardActionArea, CardContent } from '@mui/material';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
 import DownloadIcon from '@mui/icons-material/Download';
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import IconButton from '@mui/material/IconButton';
+import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 type Invoice = {
   invoiceId: React.Key;
@@ -109,13 +112,14 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
 
         {invoices.length > 0 && (
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4, mb: 8 }}>
-            <Button 
+            <IconButton
+              aria-label="check"
               onClick={handlePrevious} 
               disabled={currentIndex === 0} 
               sx={{ mr: 2 }}
             >
-              Previous
-            </Button>
+              <KeyboardArrowLeftIcon sx={{ fontSize: 60 }} />
+            </IconButton>
 
             <Card
               sx={{
@@ -137,13 +141,15 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
               </CardContent>
             </Card>
 
-            <Button 
+            <IconButton
+              aria-label="check"
               onClick={handleNext} 
               disabled={currentIndex === invoices.length - 1} 
               sx={{ ml: 2 }}
             >
-              Next
-            </Button>
+              <KeyboardArrowRightIcon sx={{ fontSize: 60 }} />
+            </IconButton>
+
           </Box>
         )}
 
