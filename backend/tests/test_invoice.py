@@ -92,6 +92,7 @@ INVOICE_SAVE_PATH = "/invoice/save"
 INVOICE_EDIT_PATH = "/invoice/edit"
 INVOICE_DELETE_PATH = "/invoice/delete"
 INVOICE_HISTORY_PATH = "/invoice/history"
+INVOICE_VALIDATE_PATH = "/invoice/validate"
 
 def test_invoice_creation_successful(client, user):
     res = client.post(
@@ -110,7 +111,7 @@ def test_invoice_creation_successful(client, user):
 def test_invoice_creation_invalid(client, user):
     res = client.post(
         INVOICE_CREATE_PATH,
-        data=json.dumps(test_json),
+        data=json.dumps(test_invalid_json),
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json",
@@ -118,8 +119,7 @@ def test_invoice_creation_invalid(client, user):
     )
 
     response_body = res.get_json()
-    assert res.status_code == 201
-    assert response_body["data"] == [{"filename": "test.xml", "invoiceId": 1}]
+    assert res.status_code == 400
 
 def test_invoice_creation_unauthorised(client):
     res = client.post(
@@ -902,5 +902,63 @@ def test_uploadcreate_invalidjson(client, user):
     assert response_body['message'] == "Invoice(s) created successfully"
     assert (len(response_body['data']) == 1)
     
-    
+def test_validate_id_successful(client, user, invoice):
+    data = {}
+    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+   
+    res = client.get(
+        f"{INVOICE_VALIDATE_PATH}/{invoice.id}",
+        query_string=data,
+        headers={
+            "Authorisation": user.token
+        },
+        follow_redirects=True
+    )
+
+    res.status_code == 200
+
+def test_validate_id_unsucessful(client,user,invoice_2):
+    data = {}
+    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+   
+    res = client.get(
+    f"{INVOICE_VALIDATE_PATH}/{invoice_2.id}",
+        query_string=data,
+    headers={
+        "Authorisation": user.token
+    },
+    follow_redirects=True
+    )
+
+    assert res.status_code == 203
+
+def test_validate_id_invalid_rule_fail(client,user,invoice):
+    data = {}
+    data['rules'] = 'blah blah'
+   
+    res = client.get(
+    f"{INVOICE_VALIDATE_PATH}/{invoice.id}",
+        query_string=data,
+    headers={
+        "Authorisation": user.token
+    },
+    follow_redirects=True
+    )
+
+    assert res.status_code == 400
+
+def test_validate_id_unsucessful_invoice_does_not_exist(client,user,invoice):
+    data = {}
+    data['rules'] = 'AUNZ_PEPPOL_SB_1_0_10'
+   
+    res = client.get(
+    f"{INVOICE_VALIDATE_PATH}/9999",
+        query_string=data,
+    headers={
+        "Authorisation": user.token
+    },
+    follow_redirects=True
+    )
+
+    assert res.status_code == 400   
 
