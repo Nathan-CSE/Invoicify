@@ -21,6 +21,7 @@ class Invoice(db.Model):
     rule = db.Column(db.String, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     is_ready = db.Column(db.Boolean, nullable=False)
+    is_gui = db.Column(db.Boolean, default=False)
 
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

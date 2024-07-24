@@ -54,7 +54,7 @@ def create_xml(file, user):
         json = cs.xml_to_json(content)
     except Exception as e:
         print(f"ERROR: {e}")
-    invoice = Invoice(name=file["invoiceName"], fields=json,  rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False)
+    invoice = Invoice(name=file["invoiceName"], fields=json,  rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False, is_gui=True)
 
     db_insert(invoice)
     
