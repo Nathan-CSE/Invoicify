@@ -15,9 +15,8 @@ import InvoiceSendingConfirmation from './pages/InvoiceSending/InvoiceSendingCon
 import InvoiceManagement from './pages/InvoiceManagementPage';
 import HistoryPreviewInvoice from './pages/HistoryPreviewInvoice';
 import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
-import InvalidReport from './pages/InvoiceValidation/InvalidReport';
-import ValidReport from './pages/InvoiceValidation/ValidReport';
 import ResetPassword from './pages/UserAuth/ResetPasswordPage';
+import ValidationReport from './pages/InvoiceValidation/ValidationReport';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -122,20 +121,11 @@ function PageList() {
           }
         />
         <Route
-          path='/invoice-validation-report-valid'
+          path='/invoice-validation-report'
           element={
             <>
               <Navbar token={token} setToken={setToken} />
-              <ValidReport />
-            </>
-          }
-        />
-        <Route
-          path='/invoice-validation-report-invalid'
-          element={
-            <>
-              <Navbar token={token} setToken={setToken} />
-              <InvalidReport />
+              <ValidationReport />
             </>
           }
         />

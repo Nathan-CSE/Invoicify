@@ -4,20 +4,20 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { DropzoneArea } from "mui-file-dropzone";
+import { DropzoneArea } from 'mui-file-dropzone';
 import axios from 'axios';
 import { TextField } from '@mui/material';
 import { request } from 'http';
 import MultipleSelect from '../../components/MultipleSelect';
 
-export default function InvoiceSending(props: { token: string; }) {
+export default function InvoiceSending(props: { token: string }) {
   // console.log('user token: ', props.token);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
@@ -25,6 +25,15 @@ export default function InvoiceSending(props: { token: string; }) {
   const [files, setFiles] = React.useState<File[] | null>([]);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
 
+  // How we preload data from another page
+  const location = useLocation();
+  React.useEffect(() => {
+    // Checks if we have some props from another page otherwise it will be null
+    if (location && location.state) {
+      const id = location.state.cardID;
+      setInvoices(id);
+    }
+  }, []);
 
   const handleChange = (event: SelectChangeEvent<string[]>) => {
     console.log('this is event.target: ', event.target);
@@ -37,7 +46,6 @@ export default function InvoiceSending(props: { token: string; }) {
       setFiles(null); // Clear file selection if an invoice is selected
 
     }
-
   };
 
   const handleFileChange = (loadedFiles: File[]) => {
@@ -50,7 +58,10 @@ export default function InvoiceSending(props: { token: string; }) {
     }
   };
 
-  const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
+  const handleSubmit = async (event: {
+    preventDefault: () => void;
+    currentTarget: HTMLFormElement | undefined;
+  }) => {
     event.preventDefault();
 
     if (files === null && invoices.length === 0) {
@@ -59,11 +70,11 @@ export default function InvoiceSending(props: { token: string; }) {
     }
 
     const formData = new FormData(event.currentTarget);
-    const recipientEmail = formData.get("recipientEmail") || '';
-    const invoiceId = formData.get("select-invoice") || '';
+    const recipientEmail = formData.get('recipientEmail') || '';
+    const invoiceId = formData.get('select-invoice') || '';
 
-    console.log("recipient email: ", recipientEmail);
-    console.log("invoice id: ", invoiceId);
+    console.log('recipient email: ', recipientEmail);
+    console.log('invoice id: ', invoiceId);
 
     const requestData = new FormData();
 
@@ -87,12 +98,16 @@ export default function InvoiceSending(props: { token: string; }) {
 
       if (files) {
         // Placeholder until json/pdf send endpoint has been created
-        response = await axios.post(`http://localhost:5000/invoice/uploadValidate`, requestData, {
-          headers: {
-            'Authorisation': `${props.token}`,
-            'Content-Type': 'multipart/form-data'
+        response = await axios.post(
+          `http://localhost:5000/invoice/uploadValidate`,
+          requestData,
+          {
+            headers: {
+              Authorisation: `${props.token}`,
+              'Content-Type': 'multipart/form-data',
+            },
           }
-        });
+        );
       } else {
         // console.log(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`);
         // response = await axios.post(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`, {
@@ -101,18 +116,20 @@ export default function InvoiceSending(props: { token: string; }) {
         //   }
         // });
 
-        response = await axios.post(`http://localhost:5000/invoice/send_ubl/${invoiceId}`, requestData, {
-          headers: {
-            'Authorisation': `${props.token}`,
+        response = await axios.post(
+          `http://localhost:5000/invoice/send_ubl/${invoiceId}`,
+          requestData,
+          {
+            headers: {
+              Authorisation: `${props.token}`,
+            },
           }
-        });
-
+        );
       }
-      
+
       if (response.status === 200) {
         console.log(response.data);
         navigate('/invoice-sending-confirmation');
-        
       } else {
         console.log(response.data);
         navigate('/invoice-sending-confirmation');
@@ -122,7 +139,6 @@ export default function InvoiceSending(props: { token: string; }) {
       // console.log(err);
       alert(err);
     }
-
   };
 
   React.useEffect(() => {
@@ -134,68 +150,61 @@ export default function InvoiceSending(props: { token: string; }) {
         //     'Authorisation': `${props.token}`,
         //   }
         // });
-        const response = await axios.get('http://localhost:5000/invoice/history?is_ready=true', {
-          headers: {
-            'Authorisation': `${props.token}`,
+        const response = await axios.get(
+          'http://localhost:5000/invoice/history?is_ready=true',
+          {
+            headers: {
+              Authorisation: `${props.token}`,
+            },
           }
-        });
-        
+        );
+
         var allInvoices = [];
-        
+
         if (response.status === 200) {
           for (let i = 0; i < response.data.length; i++) {
             var invoiceInfo = {
               name: response.data[i].name,
-              invoiceId: response.data[i].id
-            }
-           
+              invoiceId: response.data[i].id,
+            };
+
             allInvoices.push(invoiceInfo);
-          } 
+          }
           console.log(response.data);
           setAvailableInvoices(allInvoices);
           // console.log("all invoices: ", allInvoices);
           // navigate('/invoice-creation-confirmation', { state: invoiceData });
         } else {
           console.log(response);
-          alert("Unable to retrieve valid invoices");
+          alert('Unable to retrieve valid invoices');
         }
       } catch (err) {
         alert(err);
       }
     };
-  
+
     fetchData();
   }, []);
 
-
   return (
     <>
-     
-      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>
-          Invoice Sending
-        </Typography>
+      <Container maxWidth='lg' sx={{ marginTop: 11 }}>
+        <Typography variant='h4'>Invoice Sending</Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
 
         <Breadcrumbs
           aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize="small" />}
+          separator={<NavigateNextIcon fontSize='small' />}
         >
-          <Typography
-            component={Link}
-            to='/dashboard'
-          >
+          <Typography component={Link} to='/dashboard'>
             Dashboard
           </Typography>
 
-          <Typography color='text.primary'>
-            Invoice Sending
-          </Typography>
+          <Typography color='text.primary'>Invoice Sending</Typography>
         </Breadcrumbs>
 
         <form onSubmit={handleSubmit}>
-
           <Box sx={{ my: 5 }}>
             <DropzoneArea
               acceptedFiles={['.json', '.pdf']}
@@ -213,14 +222,14 @@ export default function InvoiceSending(props: { token: string; }) {
           <MultipleSelect invoices={invoices} availableInvoices={availableInvoices} file={files} handleChange={handleChange} />
 
           <Box sx={{ minWidth: 120, mb: 5 }}>
-            <FormControl variant="standard" fullWidth>
+            <FormControl variant='standard' fullWidth>
               <TextField
-                margin="normal"
+                margin='normal'
                 required
-                id="recipientEmail"
-                label="Recipient Email"
-                name="recipientEmail"
-                variant="standard"
+                id='recipientEmail'
+                label='Recipient Email'
+                name='recipientEmail'
+                variant='standard'
                 sx={{ width: '100%' }}
               />
             </FormControl>
@@ -228,7 +237,7 @@ export default function InvoiceSending(props: { token: string; }) {
 
           <Box textAlign='center'>
             <Button
-              type="submit"
+              type='submit'
               variant='contained'
               sx={{
                 height: '50px',
@@ -240,7 +249,6 @@ export default function InvoiceSending(props: { token: string; }) {
           </Box>
         </form>
       </Container>
-      
     </>
   );
 }

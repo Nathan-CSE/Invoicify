@@ -83,11 +83,11 @@ export default function InvoiceValidation(props: { token: string; }) {
       
       if (response.status === 200) {
         console.log(response.data);
-        // navigate('/invoice-validation-report-valid', { state: { fileName: files?.name, ruleSet: ruleSet } });
+        navigate('/invoice-validation-report', { state: { fileName: files && files[0].name, ruleSet: ruleSet } });
         
       } else {
         console.log(response.data);
-        navigate('/invoice-validation-report-invalid', { state: { response: response.data, ruleSet: ruleSet } });
+        navigate('/invoice-validation-report', { state: { response: response.data, ruleSet: ruleSet } });
       }
     } catch (err) {
       console.error(err);
