@@ -212,7 +212,7 @@ class UploadValidationAPI(Resource):
         args = invoice_ns.get_upload_validation_fields().parse_args()
         rules = args["rules"]
         if not res:
-            return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
+            return make_response(jsonify({"message": f"One or more of the files uploaded is not a XML, please upload XMLs only"}), 400)
         
         vs = ValidationService()
         retlist = []
