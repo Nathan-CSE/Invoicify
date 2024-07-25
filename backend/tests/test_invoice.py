@@ -808,7 +808,35 @@ def test_validate_upload_unsucessful(client, user):
             <cbc:DueDate>2022-08-30</cbc:DueDate>
         </Invoice>
         '''),
-        'test.xml'),(io.BytesIO(b'''<?xml version="1.0" encoding="UTF-8"?>
+        'test.xml')]
+    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
+    res = client.post(
+        INVOICE_UPLOAD_VALIDATE_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+
+    response_body = res.get_json()
+    assert res.status_code == 200
+    assert response_body['validationOutcome'][0]['validated'] == False
+    
+def test_validate_upload_multiple_mixed_result(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(b'''<?xml version="1.0" encoding="UTF-8"?>
+        <!-- Example of a simple invoice with 'mixed' taxable and non-taxable supplies including a non-taxable solar rebate (e.g. micro-business not registered for GST) -->
+        <Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
+            <cbc:CustomizationID>urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0</cbc:CustomizationID>
+            <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
+            <cbc:ID>Invoice01</cbc:ID>
+            <cbc:IssueDate>2022-07-29</cbc:IssueDate>
+            <cbc:DueDate>2022-08-30</cbc:DueDate>
+        </Invoice>
+        '''),
+        'test.xml'), (io.BytesIO(b'''<?xml version="1.0" encoding="UTF-8"?>
         <!-- Example of a simple invoice with 'mixed' taxable and non-taxable supplies including a non-taxable solar rebate (e.g. micro-business not registered for GST) -->
         <Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
             <cbc:CustomizationID>urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0</cbc:CustomizationID>
@@ -981,37 +1009,11 @@ def test_validate_upload_unsucessful(client, user):
     )
 
     response_body = res.get_json()
+    print(response_body)
     assert res.status_code == 200
     assert response_body['validationOutcome'][0]['validated'] == False
     assert response_body['validationOutcome'][1]['validated'] == True
     
-def test_validate_upload_multiple_mixed_result(client, user):
-    data = {}
-    data['files'] = [(io.BytesIO(b'''<?xml version="1.0" encoding="UTF-8"?>
-        <!-- Example of a simple invoice with 'mixed' taxable and non-taxable supplies including a non-taxable solar rebate (e.g. micro-business not registered for GST) -->
-        <Invoice xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2">
-            <cbc:CustomizationID>urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0</cbc:CustomizationID>
-            <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
-            <cbc:ID>Invoice01</cbc:ID>
-            <cbc:IssueDate>2022-07-29</cbc:IssueDate>
-            <cbc:DueDate>2022-08-30</cbc:DueDate>
-        </Invoice>
-        '''),
-        'test.xml')]
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
-    res = client.post(
-        INVOICE_UPLOAD_VALIDATE_PATH,
-        headers={
-            "Authorisation": user.token
-        },
-        data=data,  
-        content_type='multipart/form-data',
-        follow_redirects=True
-    )
-
-    response_body = res.get_json()
-    assert res.status_code == 200
-    assert response_body['validationOutcome'][0]['validated'] == False
 
 def test_uploadcreate_json(client, user):
     data = {}

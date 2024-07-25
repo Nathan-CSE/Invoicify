@@ -210,9 +210,6 @@ class UploadValidationAPI(Resource):
         
         res = ups.handle_xml_upload(request)
         args = invoice_ns.get_upload_validation_fields().parse_args()
-        # takes one file then encodes it to feed to validation service
-        file = args['files']
-        content = file.read()  
         rules = args["rules"]
         if not res:
             return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
@@ -220,7 +217,8 @@ class UploadValidationAPI(Resource):
         vs = ValidationService()
         retlist = []
         
-        for f in request.files.getlist('files'):
+        for file in request.files.getlist('files'):
+            content = file.read()
             try:
                 retval = vs.validate_xml(
                     filename=file.filename,
