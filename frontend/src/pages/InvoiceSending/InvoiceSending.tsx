@@ -14,13 +14,13 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { DropzoneArea } from 'mui-file-dropzone';
 import axios from 'axios';
 import { TextField } from '@mui/material';
-import { request } from 'http';
 import MultipleSelect from '../../components/MultipleSelect';
 
 export default function InvoiceSending(props: { token: string }) {
   // console.log('user token: ', props.token);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const [invoiceNames, setInvoiceNames] = React.useState<string[]>([]);
   const [invoices, setInvoices] = React.useState<string[]>([]);
   const [files, setFiles] = React.useState<File[] | null>([]);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
@@ -51,6 +51,7 @@ export default function InvoiceSending(props: { token: string }) {
   const handleFileChange = (loadedFiles: File[]) => {
     console.log('Currently loaded:', loadedFiles);
     if (loadedFiles.length > 0) {
+      console.log("these are the files that have currently been loaded: ", loadedFiles);
       setFiles(loadedFiles);
       setInvoices([]); // Clear invoice selection if a file is uploaded
     } else {
@@ -74,23 +75,38 @@ export default function InvoiceSending(props: { token: string }) {
     const invoiceId = formData.get('select-invoice') || '';
 
     console.log('recipient email: ', recipientEmail);
-    console.log('invoice id: ', invoiceId);
+    // console.log('invoice id: ', invoiceId);
 
     const requestData = new FormData();
+    let tempInvoiceNames: string[] = [];
 
     if (files) {
       files.forEach(item => {
         requestData.append("files", item);
+        tempInvoiceNames.push(item.name);
       });
     } else {
-      // requestData.append("target_email", recipientEmail);
-      requestData.append("id", invoiceId);
+      invoices.forEach(item => {
+        requestData.append("id", item);
+
+        // console.log("available invoices: ", availableInvoices);
+        // This sends the name of the invoices across
+        const specificInvoice = availableInvoices.find(invoice => invoice.invoiceId === Number(item));
+        tempInvoiceNames.push(specificInvoice.name);
+        
+      })
     }
-    
+
+    // BUG:
+    // fucking stupid bug where this wont change the value of invoiceNames for somereason
+    setInvoiceNames(tempInvoiceNames);
+
+    console.log("These are the invoice names: ", invoiceNames);
+    console.log("These are the invoice names2: ", tempInvoiceNames);
+
     requestData.append("target_email", recipientEmail);
 
     console.log('this is requestData: ', requestData);
-    navigate('/invoice-sending-confirmation');
 
     try {
       // Placeholder until sending endpoint has been created
@@ -109,12 +125,6 @@ export default function InvoiceSending(props: { token: string }) {
           }
         );
       } else {
-        // console.log(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`);
-        // response = await axios.post(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`, {
-        //   headers: {
-        //     'Authorisation': `${props.token}`,
-        //   }
-        // });
 
         response = await axios.post(
           `http://localhost:5000/invoice/send_ubl/${invoiceId}`,
@@ -129,13 +139,16 @@ export default function InvoiceSending(props: { token: string }) {
 
       if (response.status === 200) {
         console.log(response.data);
-        navigate('/invoice-sending-confirmation');
+        navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
       } else {
         console.log(response.data);
-        navigate('/invoice-sending-confirmation');
+        navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
         // alert("Unable to send invoice");
       }
     } catch (err) {
+      // FIXME:
+      // Here temporarily until endpoint has been created for bulk sending
+      navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
       // console.log(err);
       alert(err);
     }

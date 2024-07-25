@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import InputLabel from '@mui/material/InputLabel';
@@ -13,10 +13,15 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { DropzoneArea } from "mui-file-dropzone";
 import axios from 'axios';
-import { Grid, TextField } from '@mui/material';
+import { Card, CardActionArea, CardContent, Grid, TextField } from '@mui/material';
+import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
+
 
 export default function InvoiceSending(props: { token: string; }) {
   console.log('user token: ', props.token);
+  console.log("location state: ", useLocation().state);
+  const { invoiceNames } = useLocation().state;
+
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
   const [invoice, setInvoice] = React.useState('');
@@ -34,59 +39,6 @@ export default function InvoiceSending(props: { token: string; }) {
 
     } else {
       setShowOverlay(false);
-    }
-
-  };
-
-  const handleFileChange = (loadedFiles: File[]) => {
-    console.log('Currently loaded:', loadedFiles);
-    if (loadedFiles.length > 0) {
-      setFile(loadedFiles[0]);
-      setInvoice(''); // Clear invoice selection if a file is uploaded
-      setShowOverlay(false);
-    } else {
-      setFile(null);
-    }
-  };
-
-  const handleSubmit = async (event: any) => {
-    event.preventDefault();
-
-    const formData = new FormData();
-
-    if (file) {
-      formData.append("files", file);
-    }
-
-    if (invoice) {
-      formData.append("invoice", invoice);
-    }
-
-    formData.append("email", email);
-
-    console.log('this is formData: ', formData);
-
-    try {
-      // Placeholder until sending endpoint has been created
-      const response = await axios.post(`http://localhost:5000/invoice/uploadValidate`, formData, {
-        headers: {
-          'Authorisation': `${props.token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      
-      if (response.status === 200) {
-        console.log(response.data);
-        // navigate('/invoice-validation-report-valid', { state: { fileName: file?.name, ruleSet: ruleSet } });
-        
-      } else {
-        console.log(response.data);
-        // navigate('/invoice-validation-report-invalid', { state: { response: response.data, ruleSet: ruleSet } });
-        // alert("Unable to create invoice");
-      }
-    } catch (err) {
-      // console.log(err);
-      alert(err);
     }
 
   };
@@ -144,6 +96,33 @@ export default function InvoiceSending(props: { token: string; }) {
           </Box>
         
         </Box>
+
+        <Grid container spacing={4} sx={{ my: 5 }}>
+          {invoiceNames.map((invoice: any) => (
+            <Grid item xs={12} sm={6} md={4} key={invoice.invoiceId}>
+              <Card
+                sx={{
+                  border: 1,
+                  borderRadius: '16px',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                }}
+              >
+                <CardActionArea>
+                  <CardContent>
+                    <InvoiceSvg style={{ width: '100px', height: '100px', marginBottom: '16px' }} />
+                    <Typography variant='h6' component='div'>
+                      {invoice.filename}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
 
         <Grid container justifyContent="center" spacing={6}>
           <Grid item>
