@@ -8,12 +8,8 @@ import axios, { AxiosError } from 'axios';
 import ErrorModal from './ErrorModal';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-export default function SettingsMenu(props: {
-  id: number;
-  token: string;
-  status: boolean;
-  gui: boolean;
-}) {
+export default function SettingsMenu(props: { token: string; details: any }) {
+  console.log(props.details);
   // Error checking
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -38,16 +34,15 @@ export default function SettingsMenu(props: {
   };
 
   const handleSend = () => {
-    console.log(props.id);
     navigate('/invoice-sending', {
-      state: { cardID: props.id },
+      state: { cardID: props.details.id },
     });
   };
 
   const handleDelete = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:5000/invoice/delete/${props.id}`,
+        `http://localhost:5000/invoice/delete/${props.details.id}`,
         {
           headers: {
             Authorisation: `${props.token}`,
@@ -103,7 +98,7 @@ export default function SettingsMenu(props: {
           Settings
         </Typography>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          {props.gui ? (
+          {props.details.is_gui ? (
             <Box onClick={handleClose}>
               <Button
                 onClick={handleEdit}
@@ -116,7 +111,7 @@ export default function SettingsMenu(props: {
           ) : (
             <></>
           )}
-          {props.status ? (
+          {props.details.is_ready ? (
             <Box onClick={handleClose}>
               <Button
                 onClick={handleSend}

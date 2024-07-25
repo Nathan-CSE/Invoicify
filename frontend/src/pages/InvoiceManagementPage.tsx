@@ -155,12 +155,7 @@ export default function InvoiceManagement(props: { token: string }) {
             position: 'relative',
           }}
         >
-          <SettingsMenu
-            id={items.id}
-            token={props.token}
-            status={items.is_ready}
-            gui={items.is_gui}
-          ></SettingsMenu>
+          <SettingsMenu token={props.token} details={items}></SettingsMenu>
           <CardActionArea onClick={handleCardClick(items.id)}>
             <CardContent
               sx={{
