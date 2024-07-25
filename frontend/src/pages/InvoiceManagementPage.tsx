@@ -159,6 +159,7 @@ export default function InvoiceManagement(props: { token: string }) {
             id={items.id}
             token={props.token}
             status={items.is_ready}
+            gui={items.is_gui}
           ></SettingsMenu>
           <CardActionArea onClick={handleCardClick(items.id)}>
             <CardContent

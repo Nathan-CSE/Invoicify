@@ -12,6 +12,7 @@ export default function SettingsMenu(props: {
   id: number;
   token: string;
   status: boolean;
+  gui: boolean;
 }) {
   // Error checking
   const [openError, setOpenError] = React.useState(false);
@@ -102,15 +103,19 @@ export default function SettingsMenu(props: {
           Settings
         </Typography>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <Box onClick={handleClose}>
-            <Button
-              onClick={handleEdit}
-              variant='contained'
-              sx={{ minWidth: '6rem' }}
-            >
-              EDIT
-            </Button>
-          </Box>
+          {props.gui ? (
+            <Box onClick={handleClose}>
+              <Button
+                onClick={handleEdit}
+                variant='contained'
+                sx={{ minWidth: '6rem' }}
+              >
+                EDIT
+              </Button>
+            </Box>
+          ) : (
+            <></>
+          )}
           {props.status ? (
             <Box onClick={handleClose}>
               <Button

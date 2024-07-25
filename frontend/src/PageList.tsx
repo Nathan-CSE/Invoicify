@@ -18,6 +18,7 @@ import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
 import InvalidReport from './pages/InvoiceValidation/InvalidReport';
 import ValidReport from './pages/InvoiceValidation/ValidReport';
 import ResetPassword from './pages/UserAuth/ResetPasswordPage';
+import InvoiceEdit from './pages/InvoiceEdit';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -145,6 +146,15 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <InvoiceManagement token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/invoice-edit'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvoiceEdit />
             </>
           }
         />

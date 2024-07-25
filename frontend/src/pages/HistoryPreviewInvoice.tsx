@@ -53,7 +53,6 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
       setDataFields(data);
       setInvoiceType('GUI');
     } else {
-      // console.log('JSON');
       // When validating theres a chance the JSON is double stringed so we
       // Have this check in place to parse it correctly
       if (typeof location.state.fields === 'string') {
@@ -85,8 +84,6 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   };
 
   const formatGUI = (dataFields: any) => {
-    console.log(dataFields);
-
     return (
       <>
         <Box>
