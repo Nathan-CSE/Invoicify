@@ -215,6 +215,7 @@ class UploadValidationAPI(Resource):
             return make_response(jsonify({"message": f"One or more of the files uploaded is not a XML, please upload XMLs only"}), 400)
         
         vs = ValidationService()
+        cs = ConversionService()
         retlist = []
         
         for file in request.files.getlist('files'):
@@ -229,7 +230,6 @@ class UploadValidationAPI(Resource):
                 return make_response(jsonify({"message": str(err)}), 400)
 
             if retval["successful"] is True:
-                cs = ConversionService()
                 json_str = cs.xml_to_json(content)
                 invoice = Invoice(name=file.filename, fields=json.dumps(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
                 db_insert(invoice)

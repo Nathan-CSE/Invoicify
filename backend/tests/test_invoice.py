@@ -4,7 +4,7 @@ import json
 from models import User, Invoice
 from src.services.utils import db_insert, salt_and_hash
 from tests.fixtures import client, user, user_2, invoice, invoice_2
-from tests.data import TEST_DATA, GOOD_XML, BAD_XML
+from tests.data import TEST_DATA
 
 test_json = {
     "invoiceName": "test",
@@ -423,7 +423,7 @@ def test_invoice_history_handles_invalid_query_param(client, user):
 def test_validate_upload_success(client, user):
     data = {}
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'
-    data['files'] = [(io.BytesIO(GOOD_XML.encode()),
+    data['files'] = [(io.BytesIO(TEST_DATA['GOOD_XML'].encode('UTF-8')),
         'test.xml')]
     res = client.post(
         INVOICE_UPLOAD_VALIDATE_PATH,
@@ -443,7 +443,7 @@ def test_validate_upload_success(client, user):
 def test_validate_upload_fail_rules(client, user):
     data = {}
     data['rules'] = 'AUNZ_PEPPOL_SB_1_0_10'
-    data['files'] = [(io.BytesIO(GOOD_XML.encode()),
+    data['files'] = [(io.BytesIO(TEST_DATA['GOOD_XML'].encode('UTF-8')),
         'test.xml')]
     res = client.post(
         INVOICE_UPLOAD_VALIDATE_PATH,
@@ -480,7 +480,7 @@ def test_validate_upload_nonXML(client, user):
     
 def test_validate_upload_unsucessful(client, user):
     data = {}
-    data['files'] = [(io.BytesIO(BAD_XML.encode()),
+    data['files'] = [(io.BytesIO(TEST_DATA["BAD_XML"].encode('UTF-8')),
         'test.xml')]
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'
     res = client.post(
@@ -499,8 +499,8 @@ def test_validate_upload_unsucessful(client, user):
     
 def test_validate_upload_multiple_mixed_result(client, user):
     data = {}
-    data['files'] = [(io.BytesIO(BAD_XML.encode()),
-        'test.xml'), (io.BytesIO(GOOD_XML.encode()),
+    data['files'] = [(io.BytesIO(TEST_DATA['BAD_XML'].encode('UTF-8')),
+        'test.xml'), (io.BytesIO(TEST_DATA['GOOD_XML'].encode('UTF-8')),
         'good.xml')]
     data['rules'] = 'AUNZ_PEPPOL_1_0_10'
     res = client.post(
@@ -514,7 +514,6 @@ def test_validate_upload_multiple_mixed_result(client, user):
     )
 
     response_body = res.get_json()
-    print(response_body)
     assert res.status_code == 200
     assert response_body['validationOutcome'][0]['validated'] == False
     assert response_body['validationOutcome'][1]['validated'] == True
