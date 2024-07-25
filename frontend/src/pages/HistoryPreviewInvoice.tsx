@@ -44,18 +44,27 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   const openPopover = Boolean(anchorEl);
   const id = openPopover ? 'simple-popover' : undefined;
   const [dataFields, setDataFields] = React.useState(location.state.fields);
+
   const [invoiceType, setInvoiceType] = React.useState('JSON');
   React.useEffect(() => {
-    if (typeof location.state.fields === 'string') {
+    console.log(location.state);
+    if (location.state.status) {
       const data = JSON.parse(location.state.fields);
       setDataFields(data);
       setInvoiceType('GUI');
     } else {
+      // console.log('JSON');
+      // When validating theres a chance the JSON is double stringed so we
+      // Have this check in place to parse it correctly
+      if (typeof location.state.fields === 'string') {
+        setDataFields(JSON.parse(JSON.parse(location.state.fields)));
+      }
       setInvoiceType('JSON');
     }
   }, []);
 
   const formatJSON = (dataFields: any, indentLevel = 0) => {
+    console.log(typeof dataFields);
     let formattedString = '';
     const indent = ' '.repeat(indentLevel * 2); // Use two spaces for each indent level
 

@@ -31,6 +31,7 @@ export default function InvoiceManagement(props: { token: string }) {
     rule: string;
     user_id: number;
     is_ready: boolean;
+    is_gui: boolean;
   }
 
   // const [details, setDetails] = React.useState<Details[]>([]);
@@ -64,12 +65,16 @@ export default function InvoiceManagement(props: { token: string }) {
   const handleCardClick =
     (id: number) => (event: React.MouseEvent<HTMLButtonElement>) => {
       // alert(1);
-      console.log(id);
+      // console.log(id);
       let cardDetails = details.get(id);
-      console.log(cardDetails);
+      // console.log(cardDetails);
       let cardFields = cardDetails?.fields;
       navigate('/invoice-preview-history', {
-        state: { fields: cardFields, name: cardDetails?.name },
+        state: {
+          fields: cardFields,
+          name: cardDetails?.name,
+          status: cardDetails?.is_gui,
+        },
       });
     };
   // Just to fetch data on load
@@ -166,19 +171,18 @@ export default function InvoiceManagement(props: { token: string }) {
               <Typography variant='h6' component='div'>
                 {items.name}
               </Typography>
-
+              <Typography variant='h6' component='div'>
+                Invoice ID: {items.id}
+              </Typography>
               {items.is_ready ? (
                 <>
-                  <Typography variant='subtitle1' gutterBottom>
+                  <Typography sx={{ mt: 1 }} variant='subtitle1' gutterBottom>
                     Status: Validated
                   </Typography>
 
-                  {
-                    // Vaulted till a later sprint
-                    /* <Typography variant='subtitle1' gutterBottom>
+                  <Typography variant='subtitle1' gutterBottom>
                     Validated with {items.rule}
-                  </Typography> */
-                  }
+                  </Typography>
                 </>
               ) : (
                 <>
