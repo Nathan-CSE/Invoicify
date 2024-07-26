@@ -80,14 +80,14 @@ export default function InvoiceValidation(props: { token: string; }) {
         });
 
       }
-
       
       if (response.status === 200) {
-        console.log(response.data);
-        navigate('/invoice-validation-report', { state: { fileName: files && files[0].name, ruleSet: ruleSet } });
+        console.log("api resonse: ", response);
+        // navigate('/invoice-validation-report', { state: { fileName: files && files[0].name, ruleSet: ruleSet } });
+        navigate('/invoice-validation-report', { state: { response: response.data, ruleSet: ruleSet } });
         
       } else {
-        console.log(response.data);
+        console.log("api resonse: ", response);
         navigate('/invoice-validation-report', { state: { response: response.data, ruleSet: ruleSet } });
       }
     } catch (err) {
