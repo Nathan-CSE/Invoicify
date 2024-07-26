@@ -40,10 +40,12 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
       });
       
       if (response.status === 200) {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        console.log(response.data)
+        const url = window.URL.createObjectURL(new Blob([response.data[0]["message"]]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', invoiceData["invoice"]["invoiceName"]);
+        console.log(response.data[0]["message"])
+        link.setAttribute('download', invoiceData["invoiceId"].data[0]["filename"]);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -112,7 +114,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
         >
           <Box sx={{ mt: 1 }}>
             <Typography textAlign='center'>
-              ANZ-Invoice.xml
+              {invoiceData["invoice"]["invoiceName"]}
             </Typography>
           </Box>
 

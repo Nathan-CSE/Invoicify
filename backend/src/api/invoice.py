@@ -45,7 +45,7 @@ class SendUBLAPI(Resource):
             input:
             article_id: int
             output:
-                nothing (file should start downloading in browser)
+                xml string 
             """,
         responses={
             200: 'Created successfully',
@@ -53,7 +53,6 @@ class SendUBLAPI(Resource):
         }
     )
     def post(self, id):
-        print(id)
         invoice = Invoice.query.where(Invoice.id==id).first()
         if invoice:
             cs = ConversionService()
