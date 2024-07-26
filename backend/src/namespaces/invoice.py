@@ -68,7 +68,7 @@ class InvoiceNamespace(Namespace):
     def get_id_validation_fields(self):
         validate_parser = reqparse.RequestParser()
         validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
-
+        validate_parser.add_argument('id', type=str, help='Id for validation', action='split')
         return validate_parser
 
     def get_save_ubl_fields(self):

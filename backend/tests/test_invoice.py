@@ -597,19 +597,17 @@ def test_uploadcreate_invalidjson(client, user):
     assert (len(response_body['data']) == 1)
     
 def test_validate_id_successful(client, user, invoice):
-    data = {}
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
-   
     res = client.get(
-        f"{INVOICE_VALIDATE_PATH}/{invoice.id}",
-        query_string=data,
+        f"{INVOICE_VALIDATE_PATH}?id={invoice.id}&rules=AUNZ_PEPPOL_1_0_10",
         headers={
             "Authorisation": user.token
         },
         follow_redirects=True
     )
-
-    res.status_code == 200
+    responsejson = res.get_json()
+    assert responsejson['validationOutcome']['invoiceId'] == 1
+    assert responsejson['validationOutcome']['']
+    assert res.status_code == 200
 
 def test_validate_id_unsucessful(client,user,invoice_2):
     data = {}

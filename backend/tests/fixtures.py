@@ -27,7 +27,7 @@ def user_2(client):
 @pytest.fixture
 def invoice(user):
     invoice = Invoice(
-        name="test-invoice", 
+        name="test-invoice.xml", 
         fields={
             "name": "Invoice 1",
             "fields": {
@@ -220,7 +220,7 @@ def invoice(user):
 @pytest.fixture
 def invoice_2(user):
     invoice = Invoice(
-        name="test-invoice", 
+        name="test-invoice.xml", 
         fields={
             "name": "Invoice 1",
             "fields": {
