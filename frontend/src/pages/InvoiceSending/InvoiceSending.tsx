@@ -30,8 +30,9 @@ export default function InvoiceSending(props: { token: string }) {
   React.useEffect(() => {
     // Checks if we have some props from another page otherwise it will be null
     if (location && location.state) {
-      const id = location.state.cardID;
-      setInvoices(id);
+      // Type cast id to string, since allInvoices contains a list of ID strings
+      const id: string = location.state.cardID.toString();
+      setInvoices([id]);
     }
   }, []);
 
@@ -41,6 +42,8 @@ export default function InvoiceSending(props: { token: string }) {
     const { name, value } = event.target;
 
     setInvoices( typeof value === 'string' ? value.split(',') : value);
+
+    console.log("this is invoices: ", invoices);
 
     if (event.target.value) {
       setFiles(null); // Clear file selection if an invoice is selected
@@ -182,7 +185,7 @@ export default function InvoiceSending(props: { token: string }) {
 
             allInvoices.push(invoiceInfo);
           }
-          console.log(response.data);
+          // console.log(response.data);
           setAvailableInvoices(allInvoices);
           // console.log("all invoices: ", allInvoices);
           // navigate('/invoice-creation-confirmation', { state: invoiceData });

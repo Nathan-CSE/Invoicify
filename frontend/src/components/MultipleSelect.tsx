@@ -7,6 +7,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
 import { IoInformationCircleOutline } from "react-icons/io5";
+import { AiOutlineFieldNumber } from "react-icons/ai";
 
 export default function MultipleSelect(props: { invoices: string[], availableInvoices: { invoiceId: number; name: string; }[], file: File[] | null, handleChange: (event: SelectChangeEvent<string[]>, child: React.ReactNode) => void }) {
   const { invoices, availableInvoices, file, handleChange } = props;
@@ -40,12 +41,23 @@ export default function MultipleSelect(props: { invoices: string[], availableInv
           )}
           sx={{ height: '45px' }}
         >
-          {availableInvoices.map((invoice) => (
-            <MenuItem key={invoice.invoiceId} value={invoice.invoiceId.toString()}>
-              <Checkbox checked={invoices.indexOf(invoice.invoiceId.toString()) > -1} />
-              <IoInformationCircleOutline style={{ paddingBottom: '1px', marginRight: '4px' }} /> {invoice.invoiceId}: {invoice.name}
-            </MenuItem>
-          ))}
+          {availableInvoices.map((invoice) => {
+            // Log invoice details
+            // console.log("all invoices: ", invoices);
+            // console.log("curr invoice: ", invoice);
+            // console.log("invoice id: ", invoice.invoiceId);
+
+            return (
+              <MenuItem key={invoice.invoiceId} value={invoice.invoiceId.toString()}>
+                <Checkbox
+                  checked={invoices.includes(invoice.invoiceId.toString())}
+                  // {/* <Checkbox checked={invoices.indexOf(invoice.invoiceId.toString()) > -1} /> */}
+                />
+                <AiOutlineFieldNumber style={{ paddingBottom: '1px', marginRight: '4px' }} /> 
+                {invoice.invoiceId}: {invoice.name}
+              </MenuItem>
+            );
+          })}
         </Select>
       </FormControl>
     </Box>
