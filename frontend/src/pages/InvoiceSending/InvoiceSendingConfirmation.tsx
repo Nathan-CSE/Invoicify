@@ -4,44 +4,18 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { DropzoneArea } from "mui-file-dropzone";
-import axios from 'axios';
-import { Card, CardActionArea, CardContent, Grid, TextField } from '@mui/material';
+import { Card, CardContent, Grid } from '@mui/material';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
-
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import SendIcon from '@mui/icons-material/Send';
 
 export default function InvoiceSending(props: { token: string; }) {
   console.log('user token: ', props.token);
   console.log("location state: ", useLocation().state);
-  const { invoiceNames } = useLocation().state;
-
-  const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
-  const [invoice, setInvoice] = React.useState('');
-  const [file, setFile] = React.useState<File | null>(null);
-  const [email, setEmail] = React.useState('');
-  const [showOverlay, setShowOverlay] = React.useState(false);
-
-  const handleChange = (event: SelectChangeEvent) => {
-    console.log('this is event.target: ', event.target);
-
-    setInvoice(event.target.value);
-
-    if (event.target.value) {
-      setFile(null); // Clear file selection if an invoice is selected
-
-    } else {
-      setShowOverlay(false);
-    }
-
-  };
+  const { invoiceNames, recipientEmail } = useLocation().state;
 
   return (
     <>
@@ -76,30 +50,18 @@ export default function InvoiceSending(props: { token: string; }) {
           </Typography>
         </Breadcrumbs>
 
-        <Box
-          sx={{
-            my: 10,
-            padding: 5,
-            height: '25vh',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: 'solid 0.5px',
-            borderRadius: 4
-          }}
-        >
-          <Box sx={{ mt: 1 }}>
-            <Typography textAlign='center'>
-              File sent successfully!
-            </Typography>
-          </Box>
-        
+        <Box textAlign='center' sx={{ mt: 5 }}>
+          <Typography variant='h4' sx={{ mb: 1 }}>
+            Your file(s) have been sent!
+          </Typography>
+          <Typography variant='h6'>
+            <SendIcon style={{ marginBottom: -5, marginRight: 10 }}/>{recipientEmail}
+          </Typography>
         </Box>
 
-        <Grid container spacing={4} sx={{ my: 5 }}>
-          {invoiceNames.map((invoice: any) => (
-            <Grid item xs={12} sm={6} md={4} key={invoice.invoiceId}>
+        <Grid container spacing={4} sx={{ mt: 1, mb: 5 }}>
+          {invoiceNames.map((invoice: string, index: number) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
               <Card
                 sx={{
                   border: 1,
@@ -111,14 +73,12 @@ export default function InvoiceSending(props: { token: string; }) {
                   textAlign: 'center',
                 }}
               >
-                <CardActionArea>
-                  <CardContent>
-                    <InvoiceSvg style={{ width: '100px', height: '100px', marginBottom: '16px' }} />
-                    <Typography variant='h6' component='div'>
-                      {invoice.filename}
-                    </Typography>
-                  </CardContent>
-                </CardActionArea>
+                <CardContent>
+                  <InvoiceSvg style={{ width: '100px', height: '100px', marginBottom: '16px' }} />
+                  <Typography variant='h6' component='div'>
+                    {invoice}
+                  </Typography>
+                </CardContent> 
               </Card>
             </Grid>
           ))}
@@ -128,21 +88,8 @@ export default function InvoiceSending(props: { token: string; }) {
           <Grid item>
             <Button
               component={Link}
-              to='/dashboard'
-              variant='contained'
-              sx={{
-                height: '50px',
-                padding: '25px',
-              }}
-            >
-              Back to Dashboard
-            </Button>
-          </Grid>
-
-          <Grid item>
-            <Button
-              component={Link}
               to='/invoice-sending'
+              startIcon={<RestartAltIcon />}
               variant='contained'
               sx={{
                 height: '50px',

@@ -20,7 +20,6 @@ export default function InvoiceSending(props: { token: string }) {
   // console.log('user token: ', props.token);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
-  const [invoiceNames, setInvoiceNames] = React.useState<string[]>([]);
   const [invoices, setInvoices] = React.useState<string[]>([]);
   const [files, setFiles] = React.useState<File[] | null>([]);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
@@ -78,12 +77,12 @@ export default function InvoiceSending(props: { token: string }) {
     // console.log('invoice id: ', invoiceId);
 
     const requestData = new FormData();
-    let tempInvoiceNames: string[] = [];
+    let invoiceNames: string[] = [];
 
     if (files) {
       files.forEach(item => {
         requestData.append("files", item);
-        tempInvoiceNames.push(item.name);
+        invoiceNames.push(item.name);
       });
     } else {
       invoices.forEach(item => {
@@ -92,22 +91,20 @@ export default function InvoiceSending(props: { token: string }) {
         // console.log("available invoices: ", availableInvoices);
         // This sends the name of the invoices across
         const specificInvoice = availableInvoices.find(invoice => invoice.invoiceId === Number(item));
-        tempInvoiceNames.push(specificInvoice.name);
+        invoiceNames.push(specificInvoice.name);
         
       })
     }
 
-    // BUG:
-    // fucking stupid bug where this wont change the value of invoiceNames for somereason
-    setInvoiceNames(tempInvoiceNames);
-
-    console.log("These are the invoice names: ", invoiceNames);
-    console.log("These are the invoice names2: ", tempInvoiceNames);
+    console.log("These are the invoice names2: ", invoiceNames);
 
     requestData.append("target_email", recipientEmail);
 
     console.log('this is requestData: ', requestData);
 
+    // navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames, recipientEmail: recipientEmail } });
+
+    // FIXME: Commented this out until the endpoint supports multiple send
     try {
       // Placeholder until sending endpoint has been created
       var response;
@@ -139,18 +136,19 @@ export default function InvoiceSending(props: { token: string }) {
 
       if (response.status === 200) {
         console.log(response.data);
-        navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
+        navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames, recipientEmail: recipientEmail } });
       } else {
-        console.log(response.data);
-        navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
-        // alert("Unable to send invoice");
+        // console.log(response.data);
+        // navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
+        alert("Unable to send invoice");
       }
     } catch (err) {
       // FIXME:
       // Here temporarily until endpoint has been created for bulk sending
-      navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
+      alert("Unable to send invoice");
+      // navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
       // console.log(err);
-      alert(err);
+      // alert(err);
     }
   };
 

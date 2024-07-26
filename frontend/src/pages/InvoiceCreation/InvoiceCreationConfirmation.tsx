@@ -17,11 +17,6 @@ import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
-type Invoice = {
-  invoiceId: React.Key;
-  filename: string;
-};
-
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const invoiceData = useLocation().state;
   const { data: invoices, type } = invoiceData.invoice;
