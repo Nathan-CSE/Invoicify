@@ -39,9 +39,105 @@ interface FileObject {
   file: File;
 }
 
-export default function CreationGUI(props: { token: string }) {
+// Edit flag to determine if we are editing
+// Data passed in to preload it if we are editing
+export default function CreationGUI(props: {
+  token: string;
+  editFlag: boolean;
+  data: any;
+  id: number;
+}) {
   const navigate = useNavigate();
   const countries = Object.keys(vatRates);
+  console.log(props.id);
+  const [fields, setFields] = React.useState<any>(null);
+  // Preloading the saved data
+
+  React.useEffect(() => {
+    if (props.editFlag && props.data) {
+      console.log('Hey guys');
+      const info = props.data.fields;
+      // console.log(props.data);
+      setFields(JSON.parse(props.data.fields));
+    }
+  }, []);
+
+  React.useEffect(() => {
+    setInvName(fields?.BuyerReference || '');
+    setSellerABN(
+      fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID?.value ||
+        ''
+    );
+    setSellerName(
+      fields?.AccountingSupplierParty.Party.PartyLegalEntity.RegistrationName ||
+        ''
+    );
+    setSellerStreetName(
+      fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
+    );
+    setSellerAddStreetName(
+      fields?.AccountingSupplierParty.Party.PostalAddress
+        .additionalStreetName || ''
+    );
+    setSellerCityName(
+      fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
+    );
+    setSellerCode(
+      fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
+    );
+
+    setBuyerABN(
+      fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID?.value ||
+        ''
+    );
+    setBuyerName(
+      fields?.AccountingCustomerParty.Party.PartyLegalEntity.RegistrationName ||
+        ''
+    );
+    setBuyerStreetName(
+      fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
+    );
+    setBuyerAddStreetName(
+      fields?.AccountingCustomerParty.Party.PostalAddress
+        .AdditionalStreetName || ''
+    );
+    setBuyerCityName(
+      fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
+    );
+    setBuyerCode(
+      fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
+    );
+
+    const temp_rows = [];
+    if (Array.isArray(fields?.InvoiceLine)) {
+      for (const row in fields?.InvoiceLine) {
+        console.log(row);
+      }
+    } else {
+      console.log('hi');
+    }
+  }, [fields]);
+
+  console.log(fields);
+
+  // Invoice Name State
+  const [invName, setInvName] = React.useState<string>('');
+  const [sellerABN, setSellerABN] = React.useState<string>('');
+  const [sellerName, setSellerName] = React.useState<string>('');
+  // const [sellerAddr, setSellerAddr] = React.useState<string>('');
+  const [sellerStreetName, setSellerStreetName] = React.useState<string>('');
+  const [sellerAddStreetName, setSellerAddStreetName] =
+    React.useState<string>('');
+  const [sellerCityName, setSellerCityName] = React.useState<string>('');
+  const [sellerCode, setSellerCode] = React.useState<string>('');
+
+  const [buyerABN, setBuyerABN] = React.useState<string>('');
+  const [buyerName, setBuyerName] = React.useState<string>('');
+  const [buyerStreetName, setBuyerStreetName] = React.useState<string>('');
+  const [buyerAddStreetName, setBuyerAddStreetName] =
+    React.useState<string>('');
+  const [buyerCityName, setBuyerCityName] = React.useState<string>('');
+  const [buyerCode, setBuyerCode] = React.useState<string>('');
 
   // Form Information
   const [nextId, setNextId] = React.useState(2);
@@ -385,7 +481,7 @@ export default function CreationGUI(props: { token: string }) {
           aria-label='breadcrumb'
           separator={<NavigateNextIcon fontSize='small' />}
         >
-          <Typography component={Link} to='/sign-in'>
+          <Typography component={Link} to='/dashboard'>
             Dashboard
           </Typography>
 
@@ -412,6 +508,8 @@ export default function CreationGUI(props: { token: string }) {
                 name='invoiceName'
                 autoFocus
                 sx={{ width: '100%' }}
+                value={invName}
+                onChange={(e) => setInvName(e.target.value)}
               />
             </Grid>
 
@@ -457,6 +555,8 @@ export default function CreationGUI(props: { token: string }) {
                 name='sellerABN'
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={sellerABN}
+                onChange={(e) => setSellerABN(e.target.value)}
               />
 
               <TextField
@@ -466,6 +566,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Company Name'
                 name='sellerCompanyName'
                 sx={{ width: '100%' }}
+                value={sellerName}
+                onChange={(e) => setSellerName(e.target.value)}
               />
 
               <TextField
@@ -488,6 +590,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Street Name'
                 name='sellerStreetName'
                 sx={{ width: '100%' }}
+                value={sellerStreetName}
+                onChange={(e) => setSellerStreetName(e.target.value)}
               />
 
               <TextField
@@ -496,6 +600,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Additional Street Name'
                 name='sellerAdditionalStreetName'
                 sx={{ width: '100%' }}
+                value={sellerAddStreetName}
+                onChange={(e) => setSellerAddStreetName(e.target.value)}
               />
 
               <TextField
@@ -505,6 +611,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='City Name'
                 name='sellerCityName'
                 sx={{ width: '100%' }}
+                value={sellerCityName}
+                onChange={(e) => setSellerCityName(e.target.value)}
               />
 
               <TextField
@@ -514,6 +622,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Postal Code'
                 name='sellerPostalCode'
                 sx={{ width: '100%' }}
+                value={sellerCode}
+                onChange={(e) => setSellerCode(e.target.value)}
               />
 
               <FormControl sx={{ mt: 2, width: '100%' }}>
@@ -555,6 +665,8 @@ export default function CreationGUI(props: { token: string }) {
                 name='buyerABN'
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={buyerABN}
+                onChange={(e) => setBuyerABN(e.target.value)}
               />
 
               <TextField
@@ -564,6 +676,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Company Name'
                 name='buyerCompanyName'
                 sx={{ width: '100%' }}
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
               />
 
               <TextField
@@ -586,6 +700,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Street Name'
                 name='buyerStreetName'
                 sx={{ width: '100%' }}
+                value={buyerStreetName}
+                onChange={(e) => setBuyerStreetName(e.target.value)}
               />
 
               <TextField
@@ -594,6 +710,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Additional Street Name'
                 name='buyerAdditionalStreetName'
                 sx={{ width: '100%' }}
+                value={buyerAddStreetName}
+                onChange={(e) => setBuyerAddStreetName(e.target.value)}
               />
 
               <TextField
@@ -603,6 +721,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='City Name'
                 name='buyerCityName'
                 sx={{ width: '100%' }}
+                value={buyerCityName}
+                onChange={(e) => setBuyerCityName(e.target.value)}
               />
 
               <TextField
@@ -612,6 +732,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Postal Code'
                 name='buyerPostalCode'
                 sx={{ width: '100%' }}
+                value={buyerCode}
+                onChange={(e) => setBuyerCode(e.target.value)}
               />
 
               <FormControl sx={{ mt: 2, width: '100%' }}>

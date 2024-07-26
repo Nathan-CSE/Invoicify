@@ -9,7 +9,6 @@ import ErrorModal from './ErrorModal';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export default function SettingsMenu(props: { token: string; details: any }) {
-  console.log(props.details);
   // Error checking
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -30,7 +29,9 @@ export default function SettingsMenu(props: { token: string; details: any }) {
 
   // Three functions to handle the settings option
   const handleEdit = () => {
-    console.log('1');
+    navigate('/invoice-edit', {
+      state: { details: props.details },
+    });
   };
 
   const handleSend = () => {
