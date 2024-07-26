@@ -15,6 +15,7 @@ import { DropzoneArea } from 'mui-file-dropzone';
 import axios from 'axios';
 import { TextField } from '@mui/material';
 import MultipleSelect from '../../components/MultipleSelect';
+import SendIcon from '@mui/icons-material/Send';
 
 export default function InvoiceSending(props: { token: string }) {
   // console.log('user token: ', props.token);
@@ -250,12 +251,13 @@ export default function InvoiceSending(props: { token: string }) {
             <Button
               type='submit'
               variant='contained'
+              startIcon={<SendIcon style={{ marginTop: 2 }} />}
               sx={{
                 height: '50px',
                 padding: '25px',
               }}
             >
-              Continue
+              Send Invoice(s)
             </Button>
           </Box>
         </form>

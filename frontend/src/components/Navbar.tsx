@@ -5,6 +5,9 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
+import DescriptionIcon from '@mui/icons-material/Description';
 
 import { Link, useNavigate } from 'react-router-dom';
 import TemporaryDrawer from './Drawer';
@@ -30,6 +33,7 @@ function Navbar(props: {
         <Button
           component={Link}
           to='/sign-in'
+          startIcon={<LogoutIcon />}
           variant='contained'
           color='secondary'
           onClick={logout}
@@ -42,6 +46,7 @@ function Navbar(props: {
         <Button
           component={Link}
           to='/sign-in'
+          startIcon={<LoginIcon />}
           variant='contained'
           color='secondary'
         >

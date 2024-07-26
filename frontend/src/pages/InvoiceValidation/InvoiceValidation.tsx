@@ -17,6 +17,7 @@ import { Checkbox } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import MultipleSelect from '../../components/MultipleSelect';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
 
 export default function InvoiceValidation(props: { token: string; }) {
   console.log('user token: ', props.token);
@@ -213,13 +214,13 @@ export default function InvoiceValidation(props: { token: string; }) {
             <Button
               type='submit'
               variant='contained'
+              startIcon={<FactCheckIcon />}
               sx={{
                 height: '50px',
                 padding: '25px',
               }}
-              endIcon={<ArrowForwardIcon />}
             >
-              Continue
+              Validate Invoice(s)
             </Button>
           </Box>
         </form>

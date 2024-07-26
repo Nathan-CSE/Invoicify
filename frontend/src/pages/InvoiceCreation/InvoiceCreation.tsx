@@ -17,6 +17,8 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
 import { DropzoneArea } from 'mui-file-dropzone';
+import { BsPencilSquare } from "react-icons/bs";
+import { FaFileUpload } from "react-icons/fa";
 
 export default function InvoiceCreation(props: { token: string }) {
   const navigate = useNavigate();
@@ -107,31 +109,16 @@ export default function InvoiceCreation(props: { token: string }) {
           <Button
             onClick={handleSubmit}
             variant='contained'
+            startIcon={<FaFileUpload />}
             sx={{
               height: '50px',
               padding: '25px',
             }}
           >
-            Generate Invoices
+            Generate Invoices from Uploaded Files
           </Button>
           {/* NOTE: Send to backend and create invoices */}
         </Box>
-
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby='alert-dialog-title'
-          aria-describedby='alert-dialog-description'
-        >
-          <DialogTitle id='alert-dialog-title'>
-            {'Your invoice has been created and saved to your account.'}
-          </DialogTitle>
-          <DialogActions>
-            <Button onClick={handleClose} autoFocus>
-              Confirm
-            </Button>
-          </DialogActions>
-        </Dialog>
 
         <Typography variant='h5' textAlign='center' sx={{ my: 2 }}>
           OR
@@ -142,12 +129,13 @@ export default function InvoiceCreation(props: { token: string }) {
             component={Link}
             to='/invoice-creation-GUI'
             variant='contained'
+            startIcon={<BsPencilSquare style={{ marginRight: 2 }}/>}
             sx={{
               height: '50px',
               padding: '25px',
             }}
           >
-            Create a New Invoice
+            Create a New Invoice from a GUI Form
           </Button>
         </Box>
       </Container>
