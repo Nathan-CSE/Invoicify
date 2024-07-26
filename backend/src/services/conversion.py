@@ -191,25 +191,33 @@ class ConversionService():
         is_xml_tag = key[0].isupper()
 
         namespace = "cbc"
-        # Sub-element is an XML-tag AND contains attributes OR child elements
-        if is_xml_tag and isinstance(value, dict):
-            # Sub-element contains no attributes BUT has more child elements
-            if not value.get("@value"):
-                namespace = "cac"
+        # Sub-element is an XML-tag
+        if is_xml_tag:
+            # Contains attributes OR child elements
+            if isinstance(value, dict):
+                # Sub-element contains no attributes BUT has more child elements
+                if not value.get("@value"):
+                    namespace = "cac"
 
-            # Set the sub-element as a child of the element and recurses down the dictionary   
-            subelement = SubElement(element, f"{namespace}:{key}")
-            self._build_xml_from_json(subelement, value)
-        # Sub-element is an XML-tag AND contains no attributes or child elements
-        elif is_xml_tag and isinstance(value, str):
-            subelement = SubElement(element, f"{namespace}:{key}")
-            subelement.text = value
+                # Set the sub-element as a child of the element and recurses down the dictionary   
+                subelement = SubElement(element, f"{namespace}:{key}")
+                self._build_xml_from_json(subelement, value)
+            # Contains no attributes or child elements
+            elif isinstance(value, str):
+                subelement = SubElement(element, f"{namespace}:{key}")
+                subelement.text = value
+            else:
+                raise TypeError(f"{key}'s value is not of type string")
         # Set the element's value
         elif key == "@value":
             element.text = value
         # Set the element attributes
-        else:
+        elif key.isalpha():
+            if not isinstance(value, str):
+                raise TypeError(f"{key} is not of type string")
             element.set(key, value)
+        else:
+            raise ValueError(f"{key} contains invalid characters")
 
     def _build_xml_from_json(self, element, data):
         '''

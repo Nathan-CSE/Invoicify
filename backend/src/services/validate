@@ -13,14 +13,16 @@ i.e.
     v
 </Test>
 
-- value type check? int, str, bool, array, null
+- value type check, must be str (ALREADY CHECKED)
 i.e.
 {
     "Test": null
 }
 
-- attribute-value pair is not of type str, int, bool, null
+- attribute-value pair must be str (FIXED: Throw type error if not type str)
 i.e.
 {
     "attribute": {}
 }
+
+- attribute must be lowercase str with no non-alpha characters (FIXED)
