@@ -252,7 +252,7 @@ class UploadValidationAPI(Resource):
                         "successful": retval["report"].get("successful", False),
                         "summary": retval["report"].get("summary", "No summary available")
                     }, 
-                    "invoiceId": "no id", 
+                    "invoiceId": -1, 
                     "invoiceName": file.filename
                 })
         return make_response(jsonify({"validationOutcome": validationRetval}), 200)
@@ -324,7 +324,7 @@ class ValidationAPI(Resource):
                         "successful": retval["report"].get("successful", False),
                         "summary": retval["report"].get("summary", "No summary available")
                     }, 
-                    "invoiceId": id, 
+                    "invoiceId": invoice.id, 
                     "invoiceName": invoice.name
                 })
         return make_response(jsonify({"validationOutcome": validationRetval}), 200)
