@@ -654,7 +654,6 @@ def test_validate_multiple_id(client,user, invoice, invoice_2):
         follow_redirects=True
     )
     responsejson = res.get_json()
-    print(responsejson)
     assert responsejson['validationOutcome'][0]['invoiceId'] == '1'
     assert responsejson['validationOutcome'][0]['validated'] == True
     assert responsejson['validationOutcome'][1]['invoiceId'] == '2'
