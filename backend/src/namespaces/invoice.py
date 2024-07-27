@@ -37,7 +37,7 @@ class InvoiceNamespace(Namespace):
             "totalTaxable": fields.Float(default=0.1),
             "totalAmount": fields.Float(default=0.1)
         })
-        
+    
     def get_upload_validation_fields(self):
         upload_validate_parser = reqparse.RequestParser()
         upload_validate_parser.add_argument('files', location='files', type=FileStorage, required=True)
@@ -68,7 +68,7 @@ class InvoiceNamespace(Namespace):
     def get_id_validation_fields(self):
         validate_parser = reqparse.RequestParser()
         validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
-
+        validate_parser.add_argument('id', type=str, help='Id for validation', action='split')
         return validate_parser
 
     def get_save_ubl_fields(self):
