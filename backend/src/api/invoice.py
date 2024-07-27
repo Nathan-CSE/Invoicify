@@ -316,13 +316,18 @@ class ValidationAPI(Resource):
                     for report in retval["report"].get("reports", {}).values()
                     for error in report.get("firedAssertionErrors", [])
                 ]
-                validationRetval.append({"validated": False, "data": {
+                validationRetval.append({
+                    "validated": False, 
+                    "data": {
                         "firedAssertionErrors": errors,
                         "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
                         "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
                         "successful": retval["report"].get("successful", False),
                         "summary": retval["report"].get("summary", "No summary available")
-                    }, "invoiceId": id, "invoiceName": invoice.name})
+                    }, 
+                    "invoiceId": id, 
+                    "invoiceName": invoice.name
+                })
         return make_response(jsonify({"validationOutcome": validationRetval}), 200)
         
 
