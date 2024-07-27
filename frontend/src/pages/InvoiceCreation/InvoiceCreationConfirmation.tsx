@@ -37,8 +37,8 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const handleDownload = async (event: any) => {    
     
     event.preventDefault();
-  
-    const invoiceInt = invoiceData.invoiceInt;
+    
+    const invoiceInt = invoiceData.invoiceId.data[0]["invoiceId"];
     console.log('this is invoice int ', invoiceInt);
     const data = {
       "article_id": invoiceInt
@@ -46,15 +46,22 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
 
     try {
       // Placeholder until backend endpoint has been created
-      const response = await axios.post(`http://localhost:5000/invoice/download`, data, {
+      const response = await axios.post(`http://localhost:5000/invoice/download/` + invoiceInt, {
         headers: {
           'Authorisation': `${props.token}`,
         }
       });
       
       if (response.status === 200) {
-        // navigate('/invoice-confirmation');
-        console.log(response);
+        console.log(response.data)
+        const url = window.URL.createObjectURL(new Blob([response.data[0]["message"]]));
+        const link = document.createElement('a');
+        link.href = url;
+        console.log(response.data[0]["message"])
+        link.setAttribute('download', invoiceData["invoiceId"].data[0]["filename"]);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
 
       } else {
         console.log(response);

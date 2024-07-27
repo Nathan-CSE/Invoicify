@@ -597,62 +597,65 @@ def test_uploadcreate_invalidjson(client, user):
     assert (len(response_body['data']) == 1)
     
 def test_validate_id_successful(client, user, invoice):
-    data = {}
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
-   
     res = client.get(
-        f"{INVOICE_VALIDATE_PATH}/{invoice.id}",
-        query_string=data,
+        f"{INVOICE_VALIDATE_PATH}?id={invoice.id}&rules=AUNZ_PEPPOL_1_0_10",
+        headers={
+            "Authorisation": user.token
+        },
+        follow_redirects=True
+    )
+    responsejson = res.get_json()
+    assert responsejson['validationOutcome'][0]['invoiceId'] == '1'
+    assert responsejson['validationOutcome'][0]['validated'] == True
+    assert res.status_code == 200
+
+def test_validate_id_unsucessful(client,user,invoice_2):
+    res = client.get(
+        f"{INVOICE_VALIDATE_PATH}?id={invoice_2.id}&rules=AUNZ_PEPPOL_1_0_10",
+        headers={
+            "Authorisation": user.token
+        },
+        follow_redirects=True
+    )
+    responsejson = res.get_json()
+    assert responsejson['validationOutcome'][0]['invoiceId'] == '1'
+    assert responsejson['validationOutcome'][0]['validated'] == False
+    assert res.status_code == 200
+
+def test_validate_id_invalid_rule_fail(client,user,invoice):
+    res = client.get(
+        f"{INVOICE_VALIDATE_PATH}?id={invoice.id}&rules=BLAHBLAH",
         headers={
             "Authorisation": user.token
         },
         follow_redirects=True
     )
 
-    res.status_code == 200
-
-def test_validate_id_unsucessful(client,user,invoice_2):
-    data = {}
-    data['rules'] = 'AUNZ_PEPPOL_1_0_10'
-   
-    res = client.get(
-    f"{INVOICE_VALIDATE_PATH}/{invoice_2.id}",
-        query_string=data,
-    headers={
-        "Authorisation": user.token
-    },
-    follow_redirects=True
-    )
-
-    assert res.status_code == 203
-
-def test_validate_id_invalid_rule_fail(client,user,invoice):
-    data = {}
-    data['rules'] = 'blah blah'
-   
-    res = client.get(
-    f"{INVOICE_VALIDATE_PATH}/{invoice.id}",
-        query_string=data,
-    headers={
-        "Authorisation": user.token
-    },
-    follow_redirects=True
-    )
-
     assert res.status_code == 400
 
-def test_validate_id_unsucessful_invoice_does_not_exist(client,user,invoice):
-    data = {}
-    data['rules'] = 'AUNZ_PEPPOL_SB_1_0_10'
-   
+def test_validate_id_unsucessful_invoice_does_not_exist(client,user):
     res = client.get(
-    f"{INVOICE_VALIDATE_PATH}/9999",
-        query_string=data,
-    headers={
-        "Authorisation": user.token
-    },
-    follow_redirects=True
+        f"{INVOICE_VALIDATE_PATH}?id=9999&rules=AUNZ_PEPPOL_1_0_10",
+        headers={
+            "Authorisation": user.token
+        },
+        follow_redirects=True
     )
 
     assert res.status_code == 400   
 
+
+def test_validate_multiple_id(client,user, invoice, invoice_2):
+    res = client.get(
+        f"{INVOICE_VALIDATE_PATH}?id={invoice.id},{invoice_2.id}&rules=AUNZ_PEPPOL_1_0_10",
+        headers={
+            "Authorisation": user.token
+        },
+        follow_redirects=True
+    )
+    responsejson = res.get_json()
+    assert responsejson['validationOutcome'][0]['invoiceId'] == '1'
+    assert responsejson['validationOutcome'][0]['validated'] == True
+    assert responsejson['validationOutcome'][1]['invoiceId'] == '2'
+    assert responsejson['validationOutcome'][1]['validated'] == False
+    assert res.status_code == 200
