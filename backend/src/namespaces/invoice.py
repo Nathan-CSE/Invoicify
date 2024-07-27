@@ -59,6 +59,8 @@ class InvoiceNamespace(Namespace):
     
     def get_send_mail_fields(self):
         send_mail_fields = reqparse.RequestParser()
+        send_mail_fields = add_argument('xml_id', type=list, required=True)
+        send_mail_fields.add_argument('files', location='files', type=FileStorage, required=False)
         send_mail_fields.add_argument('target_email', type=str, required=True)
         return send_mail_fields
 

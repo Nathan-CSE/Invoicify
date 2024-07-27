@@ -40,7 +40,7 @@ def auth_request(email, code):
         server.sendmail(sender_email, email, text)
     return {}
 
-def send_attachment(send_to:list, text, files=None):
+def send_attachment(send_to:list, text, ubl_content, ubl_name, files):
     '''
     Sends an email with an attachment
 
@@ -63,6 +63,13 @@ def send_attachment(send_to:list, text, files=None):
     msg['Subject'] = "Tax Invoice"
 
     msg.attach(MIMEText(text))
+
+    file_data = MIMEApplication(
+        str.encode(ubl_content),
+        Name=basename(ubl_name)
+    )
+    file_data['Content-Disposition'] = 'attachment; filename="%s"' % basename(ubl_name)
+    msg.attach(file_data)
 
     for f in files or []:
         with open(f, "rb") as file:

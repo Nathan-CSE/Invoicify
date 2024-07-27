@@ -62,7 +62,7 @@ class SendUBLAPI(Resource):
         else:
             return make_response(jsonify({"message": "Article not found"}), 400)
 
-@invoice_ns.route("/send_ubl/<int:id>")
+@invoice_ns.route("/send_ubl")
 class SendEmailAPI(Resource):
     @invoice_ns.doc(
     description="""Use this api to send xml""",
@@ -73,9 +73,16 @@ class SendEmailAPI(Resource):
         400: 'Bad request',
     })
     @token_required
-    def post(self, user, id):
+    def post(self, user):
+        ups = UploadService()
+        res = ups.handle_file_upload(request)
+        if not res:
+            return make_response(jsonify({"message": f"the file uploaded is not a pdf/json, please upload a valid file"}), 400)
+        
+
         args = invoice_ns.get_send_mail_fields().parse_args()
         target_email = args["target_email"]
+        for invoice in xml_id:
         invoice = Invoice.query.where(Invoice.id==id).where(Invoice.user_id==user.id).first()
         if invoice:
             if not invoice.is_ready:
@@ -83,10 +90,14 @@ class SendEmailAPI(Resource):
             cs = ConversionService()
             xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
             #TODO also send to user email
-            if ".xml" in invoice.name:
-                send_xml([target_email], xml, invoice.name)
-            else:
-                send_xml([target_email], xml, invoice.name + ".xml")
+            file_data = MIMEApplication(
+                str.encode(text),
+                Name=basename(file_name)
+            )
+            xml_name = invoice.name
+            if ".xml" not in xml_name:
+                xml_name += ".xml"
+            send_attachment([target_email], "test", xml, invoice.name, request.files.getlist('files'))
             return make_response(jsonify({"message": "Successfully sent"}), 200)
         else:
             return make_response(jsonify({"message": "Article not found"}), 400)
