@@ -38,27 +38,26 @@ class CreateUBLAPI(Resource):
         except Exception as e:
             return make_response(jsonify({"message": "UBL not created"}), 400)
         
-@invoice_ns.route("/download")
+@invoice_ns.route("/download/<int:id>")
 class SendUBLAPI(Resource):
     @invoice_ns.doc(
-    description="""Use this api to download xml
-        input:
-        article_id: int
-        output:
-            nothing (file should start downloading in browser)
-        """,
-    responses={
-        201: 'Created successfully',
-        400: 'Bad request',
-    })
-    @token_required
-    def post(self, user, article_id):
-        invoice = Invoice.query.where(Invoice.id==article_id).where(Invoice.user_id==user.id).where(Invoice.is_ready==True).first()
+        description="""Use this api to download xml
+            input:
+            article_id: int
+            output:
+                xml string 
+            """,
+        responses={
+            200: 'Created successfully',
+            400: 'Bad request',
+        }
+    )
+    def post(self, id):
+        invoice = Invoice.query.where(Invoice.id==id).first()
         if invoice:
-            file = io.BytesIO()
-            file.write(invoice.fields.encode('utf-8'))
-            file.seek(0)
-            return send_file(file, mimetype='application/xml', as_attachment=True, download_name=invoice.name)
+            cs = ConversionService()
+            xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
+            return make_response(jsonify({"message": xml}, 200))
         else:
             return make_response(jsonify({"message": "Article not found"}), 400)
 
