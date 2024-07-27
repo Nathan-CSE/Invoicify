@@ -283,7 +283,7 @@ class ValidationAPI(Resource):
             try:
                 xml_content = converter.json_to_xml(json.dumps(invoice.fields), rules)
             except Exception as err:
-                return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
+                return make_response(jsonify({"message": f"Error converting JSON to XML, {str(err)}"}), 400)
             
             encoded_xml_content = base64_encode(xml_content.encode())
 
