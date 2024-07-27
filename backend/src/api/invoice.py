@@ -64,7 +64,7 @@ class SendUBLAPI(Resource):
 @invoice_ns.route("/send_ubl")
 class SendEmailAPI(Resource):
     @invoice_ns.doc(
-    description="""Use this api to send xml""",
+    description="""Use this api to send ubl""",
     body=invoice_ns.get_send_mail_fields(),
 
     responses={
