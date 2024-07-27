@@ -38,27 +38,26 @@ class CreateUBLAPI(Resource):
         except Exception as e:
             return make_response(jsonify({"message": "UBL not created"}), 400)
         
-@invoice_ns.route("/download")
+@invoice_ns.route("/download/<int:id>")
 class SendUBLAPI(Resource):
     @invoice_ns.doc(
-    description="""Use this api to download xml
-        input:
-        article_id: int
-        output:
-            nothing (file should start downloading in browser)
-        """,
-    responses={
-        201: 'Created successfully',
-        400: 'Bad request',
-    })
-    @token_required
-    def post(self, user, article_id):
-        invoice = Invoice.query.where(Invoice.id==article_id).where(Invoice.user_id==user.id).where(Invoice.is_ready==True).first()
+        description="""Use this api to download xml
+            input:
+            article_id: int
+            output:
+                xml string 
+            """,
+        responses={
+            200: 'Created successfully',
+            400: 'Bad request',
+        }
+    )
+    def post(self, id):
+        invoice = Invoice.query.where(Invoice.id==id).first()
         if invoice:
-            file = io.BytesIO()
-            file.write(invoice.fields.encode('utf-8'))
-            file.seek(0)
-            return send_file(file, mimetype='application/xml', as_attachment=True, download_name=invoice.name)
+            cs = ConversionService()
+            xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
+            return make_response(jsonify({"message": xml}, 200))
         else:
             return make_response(jsonify({"message": "Article not found"}), 400)
 
@@ -171,11 +170,11 @@ class DeleteAPI(Resource):
 
 @invoice_ns.route("/history")
 class HistoryAPI(Resource):
-    def check_is_ready_param(self, is_ready):
-        is_ready = is_ready.lower().capitalize()
-        if is_ready == "True":
+    def check_bool(self, bool):
+        bool = bool.lower().capitalize()
+        if bool == "True":
             return True
-        elif is_ready == "False":
+        elif bool == "False":
             return False
         else:
             raise Exception("Invalid parameter value passed for is_ready")
@@ -194,10 +193,15 @@ class HistoryAPI(Resource):
         args = request.args
         if args.get("is_ready"):
             try:
-                sql = sql.filter(Invoice.is_ready==self.check_is_ready_param(args.get("is_ready")))
+                sql = sql.filter(Invoice.is_ready==self.check_bool(args.get("is_ready")))
             except Exception as err:
                 return (make_response(jsonify({"message": str(err)}), 400))
 
+        if args.get("is_gui"):
+            try:
+                sql = sql.filter(Invoice.is_gui==self.check_bool(args.get("is_gui")))
+            except Exception as err:
+                return (make_response(jsonify({"message": str(err)}), 400))
         return make_response(jsonify([invoice.to_dict() for invoice in sql.all()]), 200)
     
 @invoice_ns.route("/uploadValidate")
@@ -216,54 +220,55 @@ class UploadValidationAPI(Resource):
         
         res = ups.handle_xml_upload(request)
         args = invoice_ns.get_upload_validation_fields().parse_args()
-        # takes one file then encodes it to feed to validation service
-        file = args['files']
-        content = file.read()  
         rules = args["rules"]
         if not res:
-            return make_response(jsonify({"message": f"{file.filename} is not a XML, please upload a valid file"}), 400)
+            return make_response(jsonify({"message": f"One or more of the files uploaded is not a XML, please upload XMLs only"}), 400)
         
         vs = ValidationService()
+        cs = ConversionService()
+        retlist = []
+        
+        for file in request.files.getlist('files'):
+            content = file.read()
+            try:
+                retval = vs.validate_xml(
+                    filename=file.filename,
+                    content=base64_encode(content),
+                    rules=[rules]
+                )
+            except Exception as err:
+                return make_response(jsonify({"message": str(err)}), 400)
 
-        try:
-            retval = vs.validate_xml(
-                filename=file.filename,
-                content=base64_encode(content),
-                rules=[rules]
-            )
-        except Exception as err:
-            return make_response(jsonify({"message": str(err)}), 400)
-
-        if retval["successful"] is True:
-            cs = ConversionService()
-            json_str = cs.xml_to_json(content)
-            invoice = Invoice(name=file.filename, fields=json.dumps(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
-            db_insert(invoice)
-            return make_response(jsonify({"message": "Invoice validated sucessfully", "data": invoice.id}), 200)
-        else:
-            errors = [
-                {
-                    "id": error["id"],
-                    "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
-                    "text": error["text"]
+            if retval["successful"] is True:
+                json_str = cs.xml_to_json(content)
+                invoice = Invoice(name=file.filename, fields=json.dumps(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
+                db_insert(invoice)
+                retlist.append({"validated": True, "data": invoice.id})
+            else:
+                errors = [
+                    {
+                        "id": error["id"],
+                        "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
+                        "text": error["text"]
+                    }
+                    for report in retval["report"].get("reports", {}).values()
+                    for error in report.get("firedAssertionErrors", [])
+                ]
+                
+                response = {
+                    "filename": file.filename,
+                    "reports": {
+                        "firedAssertionErrors": errors,
+                        "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
+                        "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
+                        "successful": retval["report"].get("successful", False),
+                        "summary": retval["report"].get("summary", "No summary available")
+                    }
                 }
-                for report in retval["report"].get("reports", {}).values()
-                for error in report.get("firedAssertionErrors", [])
-            ]
-            
-            response = {
-                "filename": file.filename,
-                "reports": {
-                    "firedAssertionErrors": errors,
-                    "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
-                    "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
-                    "successful": retval["report"].get("successful", False),
-                    "summary": retval["report"].get("summary", "No summary available")
-                }
-            }
-            return make_response(jsonify(response), 203)
+                retlist.append({"validated": False, "data": response})
+        return make_response(jsonify({"validationOutcome": retlist}), 200)
 
-@invoice_ns.route("/validate/<int:id>")
+@invoice_ns.route("/validate")
 class ValidationAPI(Resource):
     @invoice_ns.doc(
         description="Ability to validate created invoices",
@@ -275,66 +280,66 @@ class ValidationAPI(Resource):
         }
     )
     @token_required
-    def get(self, id, user):
-
+    def get(self, user):
         args = invoice_ns.get_id_validation_fields().parse_args()
+        invoice_ids = args['id']
         rules = args['rules']
-
-        if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
-            return make_response(jsonify({"message": "Invoice does not exist"}), 400)
-
         converter = ConversionService()
-
-        try:
-            xml_content = converter.json_to_xml(json.dumps(invoice.fields), rules)
-        except Exception as err:
-            print(err)
-            return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
-        
-        encoded_xml_content = base64_encode(xml_content.encode())
-
         vs = ValidationService()
         
-        try:
-            retval = vs.validate_xml(
-                filename=f"invoice_{id}.xml",
-                content=encoded_xml_content,
-                rules=[rules]  
-            )
-        except Exception as err:
-            return make_response(jsonify({"message": str(err)}), 400)
-
-        if retval["successful"] is True:
-            invoice.is_ready = True
-            invoice.completed_ubl = encoded_xml_content
-            invoice.rule = rules
-            db.session.commit()
-            return make_response(jsonify({"message": "Invoice validated successfully"}), 200)
-        else:
-            invoice.is_ready = False
-            invoice.completed_ubl = None
-            db.session.commit()
-            errors = [
-                {
-                    "id": error["id"],
-                    "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
-                    "text": error["text"]
-                }
-                for report in retval["report"].get("reports", {}).values()
-                for error in report.get("firedAssertionErrors", [])
-            ]
+        validationRetval = []
+        for id in invoice_ids:
+            if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
+                return make_response(jsonify({"message": "Invoice does not exist"}), 400)
+            try:
+                xml_content = converter.json_to_xml(json.dumps(invoice.fields), rules)
+            except Exception as err:
+                return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
             
-            response = {
-                "invoice_id": id,
-                "reports": {
-                    "firedAssertionErrors": errors,
-                    "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
-                    "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
-                    "successful": retval["report"].get("successful", False),
-                    "summary": retval["report"].get("summary", "No summary available")
-                }
-            }
-            return make_response(jsonify(response), 203)
+            encoded_xml_content = base64_encode(xml_content.encode())
+
+            try:
+                retval = vs.validate_xml(
+                    filename=invoice.name,
+                    content=encoded_xml_content,
+                    rules=[rules]  
+                )
+            except Exception as err:
+                return make_response(jsonify({"message": str(err)}), 400)
+
+            if retval["successful"] is True:
+                invoice.is_ready = True
+                invoice.completed_ubl = encoded_xml_content
+                invoice.rule = rules
+                db.session.commit()
+                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": id, "invoiceName": invoice.name})
+            else:
+                invoice.is_ready = False
+                invoice.completed_ubl = None
+                db.session.commit()
+                errors = [
+                    {
+                        "id": error["id"],
+                        "location": ', '.join(re.findall(r'\*\:(\w+)', error["location"])),
+                        "text": error["text"]
+                    }
+                    for report in retval["report"].get("reports", {}).values()
+                    for error in report.get("firedAssertionErrors", [])
+                ]
+                validationRetval.append({
+                    "validated": False, 
+                    "data": {
+                        "firedAssertionErrors": errors,
+                        "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
+                        "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
+                        "successful": retval["report"].get("successful", False),
+                        "summary": retval["report"].get("summary", "No summary available")
+                    }, 
+                    "invoiceId": id, 
+                    "invoiceName": invoice.name
+                })
+        return make_response(jsonify({"validationOutcome": validationRetval}), 200)
+        
 
 @invoice_ns.route("/uploadCreate")
 class UploadCreateAPI(Resource):
