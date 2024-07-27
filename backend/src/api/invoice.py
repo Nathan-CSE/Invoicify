@@ -255,7 +255,7 @@ class UploadValidationAPI(Resource):
                     "invoiceId": -1, 
                     "invoiceName": file.filename
                 })
-        return make_response(jsonify({"validationOutcome": validationRetval}), 200)
+        return make_response(jsonify({"validationOutcome": validationRetval, "rules": rules}), 200)
 
 @invoice_ns.route("/validate")
 class ValidationAPI(Resource):
@@ -327,7 +327,7 @@ class ValidationAPI(Resource):
                     "invoiceId": invoice.id, 
                     "invoiceName": invoice.name
                 })
-        return make_response(jsonify({"validationOutcome": validationRetval}), 200)
+        return make_response(jsonify({"validationOutcome": validationRetval, "rules": rules}), 200)
         
 
 @invoice_ns.route("/uploadCreate")
