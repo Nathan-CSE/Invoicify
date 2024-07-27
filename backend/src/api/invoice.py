@@ -301,7 +301,7 @@ class ValidationAPI(Resource):
                 invoice.completed_ubl = encoded_xml_content
                 invoice.rule = rules
                 db.session.commit()
-                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": id, "invoiceName": invoice.name})
+                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": invoice.id, "invoiceName": invoice.name})
             else:
                 invoice.is_ready = False
                 invoice.completed_ubl = None
