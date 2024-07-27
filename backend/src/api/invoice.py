@@ -215,7 +215,7 @@ class UploadValidationAPI(Resource):
         
         vs = ValidationService()
         cs = ConversionService()
-        retlist = []
+        validationRetval = []
         
         for file in request.files.getlist('files'):
             content = file.read()
@@ -232,7 +232,7 @@ class UploadValidationAPI(Resource):
                 json_str = cs.xml_to_json(content)
                 invoice = Invoice(name=file.filename, fields=json.dumps(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
                 db_insert(invoice)
-                retlist.append({"validated": True, "data": invoice.id})
+                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": invoice.id, "invoiceName": invoice.name})
             else:
                 errors = [
                     {
@@ -243,19 +243,19 @@ class UploadValidationAPI(Resource):
                     for report in retval["report"].get("reports", {}).values()
                     for error in report.get("firedAssertionErrors", [])
                 ]
-                
-                response = {
-                    "filename": file.filename,
-                    "reports": {
+                validationRetval.append({
+                    "validated": False, 
+                    "data": {
                         "firedAssertionErrors": errors,
                         "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
                         "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
                         "successful": retval["report"].get("successful", False),
                         "summary": retval["report"].get("summary", "No summary available")
-                    }
-                }
-                retlist.append({"validated": False, "data": response})
-        return make_response(jsonify({"validationOutcome": retlist}), 200)
+                    }, 
+                    "invoiceId": -1, 
+                    "invoiceName": file.filename
+                })
+        return make_response(jsonify({"validationOutcome": validationRetval}), 200)
 
 @invoice_ns.route("/validate")
 class ValidationAPI(Resource):
@@ -301,7 +301,7 @@ class ValidationAPI(Resource):
                 invoice.completed_ubl = encoded_xml_content
                 invoice.rule = rules
                 db.session.commit()
-                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": id, "invoiceName": invoice.name})
+                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": invoice.id, "invoiceName": invoice.name})
             else:
                 invoice.is_ready = False
                 invoice.completed_ubl = None
@@ -324,7 +324,7 @@ class ValidationAPI(Resource):
                         "successful": retval["report"].get("successful", False),
                         "summary": retval["report"].get("summary", "No summary available")
                     }, 
-                    "invoiceId": id, 
+                    "invoiceId": invoice.id, 
                     "invoiceName": invoice.name
                 })
         return make_response(jsonify({"validationOutcome": validationRetval}), 200)
