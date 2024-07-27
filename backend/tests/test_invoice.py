@@ -629,10 +629,6 @@ def test_validate_id_unsucessful(client,user,invoice_2):
     )
 
     response_body = res.get_json()
-<<<<<<< HEAD
-
-=======
->>>>>>> origin
     assert res.status_code == 200
     assert response_body['validationOutcome'][0]['invoiceId'] == 1
     assert response_body['validationOutcome'][0]['validated'] == False
