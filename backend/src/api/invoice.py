@@ -284,7 +284,7 @@ class ValidationAPI(Resource):
             try:
                 xml_content = converter.json_to_xml(json.dumps(invoice.fields), rules)
             except Exception as err:
-                return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
+                return make_response(jsonify({"message": f"Error converting JSON to XML, {str(err)}"}), 400)
             
             encoded_xml_content = base64_encode(xml_content.encode())
 
@@ -353,6 +353,11 @@ class UploadCreateAPI(Resource):
             if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
                 pass
             json_str = f.read().decode('utf-8')
+
+            try:
+                json.loads(json_str)
+            except json.JSONDecodeError as e:
+                return make_response(jsonify({"message": f"Invalid JSON file: {str(e)}"}), 400)
             
             temp_xml_filename = f.filename.replace('.json', '.xml')
             invoice = Invoice(name=temp_xml_filename, fields=json.loads(json_str), user_id=user.id, is_ready=False)
