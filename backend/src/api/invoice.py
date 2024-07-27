@@ -12,7 +12,7 @@ from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.conversion import ConversionService
 from src.services.upload import UploadService
-from src.services.send_mail import send_xml
+from src.services.send_mail import send_attachment
 
 invoice_ns = InvoiceNamespace(name='invoice', description='Operations related to creating invoices')
 
@@ -74,32 +74,33 @@ class SendEmailAPI(Resource):
     @token_required
     def post(self, user):
         ups = UploadService()
-        res = ups.handle_file_upload(request)
-        if not res:
-            return make_response(jsonify({"message": f"the file uploaded is not a pdf/json, please upload a valid file"}), 400)
-        
-
+        if 'files' in request.files:
+            res = ups.handle_file_upload(request)
+            if not res:
+                return make_response(jsonify({"message": f"the file uploaded is not a pdf/json, please upload a valid file"}), 400)
         args = invoice_ns.get_send_mail_fields().parse_args()
         target_email = args["target_email"]
-        for invoice in xml_id:
-        invoice = Invoice.query.where(Invoice.id==id).where(Invoice.user_id==user.id).first()
-        if invoice:
-            if not invoice.is_ready:
-                return make_response(jsonify({"message": "Article is not ready to be sent"}), 400)
-            cs = ConversionService()
-            xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
-            #TODO also send to user email
-            file_data = MIMEApplication(
-                str.encode(text),
-                Name=basename(file_name)
-            )
-            xml_name = invoice.name
-            if ".xml" not in xml_name:
-                xml_name += ".xml"
-            send_attachment([target_email], "test", xml, invoice.name, request.files.getlist('files'))
-            return make_response(jsonify({"message": "Successfully sent"}), 200)
-        else:
-            return make_response(jsonify({"message": "Article not found"}), 400)
+        xml_data = []
+
+        for id in args.xml_id:
+            invoice = Invoice.query.where(Invoice.id==id).where(Invoice.user_id==user.id).first()
+            if invoice:
+                if not invoice.is_ready:
+                    return make_response(jsonify({"message": "Article is not ready to be sent"}), 400)
+                cs = ConversionService()
+                xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
+                xml_name = invoice.name
+                if ".xml" not in xml_name:
+                    xml_name += ".xml"
+                xml_data.append((xml_name, xml))
+            else:
+                return make_response(jsonify({"message": "Article not found"}), 400)
+        for file in request.files.getlist('files'):
+            content = file.read()
+            xml_data.append((file.filename, content.decode("utf-8")))
+        send_attachment([target_email], "test", xml_data)
+        return make_response(jsonify({"message": "Successfully sent"}), 200)
+        
         
 @invoice_ns.route("/save")
 class SaveAPI(Resource):

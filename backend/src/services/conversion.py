@@ -62,7 +62,6 @@ class ConversionService():
             Returns a string containing the converted XML
         '''
         try:
-            print(json_str)
             data = json.loads(json_str)
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON: {str(e)}")
