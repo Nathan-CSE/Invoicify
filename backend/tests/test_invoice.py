@@ -457,6 +457,7 @@ def test_validate_upload_fail_rules(client, user):
     )
     
     response_body = res.get_json()
+
     assert res.status_code == 200
     assert response_body['validationOutcome'][0]['validated'] == False
     assert response_body['validationOutcome'][0]['invoiceId'] == -1
@@ -497,6 +498,7 @@ def test_validate_upload_unsucessful(client, user):
     )
 
     response_body = res.get_json()
+
     assert res.status_code == 200
     assert response_body['validationOutcome'][0]['invoiceId'] == -1
     assert response_body['validationOutcome'][0]['validated'] == False
@@ -538,8 +540,8 @@ def test_uploadcreate_json(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
+
     response_body = res.get_json()
-    
     assert res.status_code == 200
     assert response_body['message'] == "Invoice(s) created successfully"
     assert (len(response_body['data']) == 1)
@@ -558,8 +560,8 @@ def test_uploadcreate_invalid_and_valid_json(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
-    response_body = res.get_json()
     
+    response_body = res.get_json()
     assert res.status_code == 200
     assert response_body['message'] == "Invoice(s) created successfully"
     assert (len(response_body['data']) == 2)
@@ -579,8 +581,8 @@ def test_uploadcreate_invalidfile(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
+    
     response_body = res.get_json()
-
     assert res.status_code == 400
     assert response_body['message'] == "the file uploaded is not a pdf/json, please upload a valid file"
     
@@ -597,6 +599,7 @@ def test_uploadcreate_invalidjson(client, user):
         content_type='multipart/form-data',
         follow_redirects=True
     )
+
     response_body = res.get_json()
     assert res.status_code == 200
     assert response_body['message'] == "Invoice(s) created successfully"
@@ -610,10 +613,11 @@ def test_validate_id_successful(client, user, invoice):
         },
         follow_redirects=True
     )
+
     response_body = res.get_json()
+    assert res.status_code == 200
     assert response_body['validationOutcome'][0]['invoiceId'] == 1
     assert response_body['validationOutcome'][0]['validated'] == True
-    assert res.status_code == 200
 
 def test_validate_id_unsucessful(client,user,invoice_2):
     res = client.get(
@@ -623,10 +627,11 @@ def test_validate_id_unsucessful(client,user,invoice_2):
         },
         follow_redirects=True
     )
+
     response_body = res.get_json()
+    assert res.status_code == 200
     assert response_body['validationOutcome'][0]['invoiceId'] == 1
     assert response_body['validationOutcome'][0]['validated'] == False
-    assert res.status_code == 200
 
 def test_validate_id_invalid_rule_fail(client,user,invoice):
     res = client.get(
@@ -659,9 +664,10 @@ def test_validate_multiple_id(client,user, invoice, invoice_2):
         },
         follow_redirects=True
     )
+
     response_body = res.get_json()
+    assert res.status_code == 200
     assert response_body['validationOutcome'][0]['invoiceId'] == 1
     assert response_body['validationOutcome'][0]['validated'] == True
     assert response_body['validationOutcome'][1]['invoiceId'] == 2
     assert response_body['validationOutcome'][1]['validated'] == False
-    assert res.status_code == 200

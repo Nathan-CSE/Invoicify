@@ -232,7 +232,7 @@ class UploadValidationAPI(Resource):
                 json_str = cs.xml_to_json(content)
                 invoice = Invoice(name=file.filename, fields=json.dumps(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
                 db_insert(invoice)
-                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": invoice.id, "invoiceName": invoice.name})
+                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": invoice.id, "invoiceName": invoice.name, "rule": rules})
             else:
                 errors = [
                     {
@@ -253,7 +253,8 @@ class UploadValidationAPI(Resource):
                         "summary": retval["report"].get("summary", "No summary available")
                     }, 
                     "invoiceId": -1, 
-                    "invoiceName": file.filename
+                    "invoiceName": file.filename,
+                    "rule": rules
                 })
         return make_response(jsonify({"validationOutcome": validationRetval}), 200)
 
@@ -283,7 +284,7 @@ class ValidationAPI(Resource):
             try:
                 xml_content = converter.json_to_xml(json.dumps(invoice.fields), rules)
             except Exception as err:
-                return make_response(jsonify({"message": "Error converting JSON to XML"}), 400)
+                return make_response(jsonify({"message": f"Error converting JSON to XML, {str(err)}"}), 400)
             
             encoded_xml_content = base64_encode(xml_content.encode())
 
@@ -301,7 +302,7 @@ class ValidationAPI(Resource):
                 invoice.completed_ubl = encoded_xml_content
                 invoice.rule = rules
                 db.session.commit()
-                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": invoice.id, "invoiceName": invoice.name})
+                validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": invoice.id, "invoiceName": invoice.name, "rule": rules})
             else:
                 invoice.is_ready = False
                 invoice.completed_ubl = None
@@ -325,7 +326,8 @@ class ValidationAPI(Resource):
                         "summary": retval["report"].get("summary", "No summary available")
                     }, 
                     "invoiceId": invoice.id, 
-                    "invoiceName": invoice.name
+                    "invoiceName": invoice.name,
+                    "rule": rules
                 })
         return make_response(jsonify({"validationOutcome": validationRetval}), 200)
         
@@ -351,6 +353,11 @@ class UploadCreateAPI(Resource):
             if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
                 pass
             json_str = f.read().decode('utf-8')
+
+            try:
+                json.loads(json_str)
+            except json.JSONDecodeError as e:
+                return make_response(jsonify({"message": f"Invalid JSON file: {str(e)}"}), 400)
             
             temp_xml_filename = f.filename.replace('.json', '.xml')
             invoice = Invoice(name=temp_xml_filename, fields=json.loads(json_str), user_id=user.id, is_ready=False)
