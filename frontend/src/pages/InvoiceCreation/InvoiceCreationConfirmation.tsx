@@ -19,6 +19,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const invoiceData = useLocation().state;
+  console.log('invoice data: ', invoiceData);
   const { data: invoices, type } = invoiceData.invoice;
   // const invoiceType = invoiceData.type;
   const [currentIndex, setCurrentIndex] = React.useState(0);

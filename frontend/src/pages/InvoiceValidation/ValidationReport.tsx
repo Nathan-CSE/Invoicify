@@ -13,6 +13,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import DownloadReport from '../../components/DownloadReport';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { saveAs } from 'file-saver';
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
 interface AssertionError {
@@ -26,13 +27,15 @@ export default function ValidationReport() {
   const location = useLocation();
   const { response, ruleSet } = location.state;
 
+  
   const [currentReportIndex, setCurrentReportIndex] = React.useState(0);
   const validationReports = response.validationOutcome;
-
+  console.log("this is response: ", response);
+  
   const currentReport = validationReports[currentReportIndex];
   const isValid = currentReport.validated;
   const errorData = !isValid ? currentReport.data : null;
-  const fileName = !isValid ? currentReport.data.filename : currentReport.data;
+  const fileName = !isValid ? currentReport.invoiceName : currentReport.data;
 
   const handlePrevious = () => {
     if (currentReportIndex > 0) {
@@ -45,6 +48,15 @@ export default function ValidationReport() {
       setCurrentReportIndex(currentReportIndex + 1);
     }
   };
+
+  const handleDownload = () => {
+    var FileSaver = require('file-saver');
+    const dataStr = JSON.stringify(currentReport, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    FileSaver.saveAs(blob, `${fileName}-validation-report.json`);
+
+    // var file = new File(["Hello, world!"], "hello world.txt", {type: "text/plain;charset=utf-8"});
+  }
 
   return (
     <Container maxWidth="lg" sx={{ marginTop: 11 }}>
@@ -71,7 +83,7 @@ export default function ValidationReport() {
           <Box display="flex" alignItems="center" justifyContent="center" sx={{ maxWidth: '40vh', border: 'solid 0.5px', borderRadius: 4, paddingX: 2, margin: '0 auto' }}>
             <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
               <CancelIcon sx={{ color: 'red', fontSize: '3rem' }} />
-              <Typography>The file {fileName} is invalid. It contains {errorData.reports.firedAssertionErrorsCount} failed assertion(s), check individual reports for details.</Typography>
+              <Typography>The file {fileName} is invalid. It contains {errorData.firedAssertionErrorsCount} failed assertion(s), check individual reports for details.</Typography>
             </Stack>
           </Box>
           <Typography variant='h5' sx={{ mt: 4 }}>Errors</Typography>
@@ -84,7 +96,7 @@ export default function ValidationReport() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {errorData.reports.firedAssertionErrors.map((item: AssertionError, index: React.Key) => {
+                {errorData.firedAssertionErrors.map((item: AssertionError, index: React.Key) => {
                   const errorText = `${item.text}\n\nLocation: ${item.location}`;
                   return (
                     <TableRow key={index}>
@@ -108,6 +120,9 @@ export default function ValidationReport() {
         {!isValid && <DownloadReport invoiceName={fileName} />}
         <Button component={Link} to='/invoice-validation' startIcon={<ReplayIcon />} variant='contained' sx={{ height: '50px', padding: '25px' }}>
           Validate Another Report
+        </Button>
+        <Button onClick={handleDownload}>
+          Save This Report
         </Button>
       </Stack>
     </Container>
