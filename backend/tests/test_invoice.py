@@ -611,9 +611,9 @@ def test_validate_id_successful(client, user, invoice):
         follow_redirects=True
     )
     response_body = res.get_json()
+    assert res.status_code == 200
     assert response_body['validationOutcome'][0]['invoiceId'] == 1
     assert response_body['validationOutcome'][0]['validated'] == True
-    assert res.status_code == 200
 
 def test_validate_id_unsucessful(client,user,invoice_2):
     res = client.get(
@@ -624,9 +624,9 @@ def test_validate_id_unsucessful(client,user,invoice_2):
         follow_redirects=True
     )
     response_body = res.get_json()
+    assert res.status_code == 200
     assert response_body['validationOutcome'][0]['invoiceId'] == 1
     assert response_body['validationOutcome'][0]['validated'] == False
-    assert res.status_code == 200
 
 def test_validate_id_invalid_rule_fail(client,user,invoice):
     res = client.get(
@@ -660,8 +660,8 @@ def test_validate_multiple_id(client,user, invoice, invoice_2):
         follow_redirects=True
     )
     response_body = res.get_json()
+    assert res.status_code == 200
     assert response_body['validationOutcome'][0]['invoiceId'] == 1
     assert response_body['validationOutcome'][0]['validated'] == True
     assert response_body['validationOutcome'][1]['invoiceId'] == 2
     assert response_body['validationOutcome'][1]['validated'] == False
-    assert res.status_code == 200
