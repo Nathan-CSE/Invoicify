@@ -40,7 +40,7 @@ def auth_request(email, code):
         server.sendmail(sender_email, email, text)
     return {}
 
-def send_attachment(send_to:list, text, ubl_data):
+def send_attachment(send_to:list, text, ubl_data, files):
     '''
     Sends an email with an attachment
 
@@ -69,6 +69,14 @@ def send_attachment(send_to:list, text, ubl_data):
             Name=basename(ubl[0])
         )
         file_data['Content-Disposition'] = 'attachment; filename="%s"' % basename(ubl[0])
+        msg.attach(file_data)
+
+    for f in files:
+        file_data = MIMEApplication(
+            f.read(),
+            Name=f.filename
+        )
+        file_data['Content-Disposition'] = 'attachment; filename="%s"' % f.filename
         msg.attach(file_data)
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:

@@ -81,13 +81,13 @@ class SendEmailAPI(Resource):
         args = invoice_ns.get_send_mail_fields().parse_args()
         target_email = args["target_email"]
         xml_data = []
+        cs = ConversionService()
 
         for id in args.xml_id:
             invoice = Invoice.query.where(Invoice.id==id).where(Invoice.user_id==user.id).first()
             if invoice:
                 if not invoice.is_ready:
                     return make_response(jsonify({"message": "Article is not ready to be sent"}), 400)
-                cs = ConversionService()
                 xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
                 xml_name = invoice.name
                 if ".xml" not in xml_name:
@@ -95,10 +95,7 @@ class SendEmailAPI(Resource):
                 xml_data.append((xml_name, xml))
             else:
                 return make_response(jsonify({"message": "Article not found"}), 400)
-        for file in request.files.getlist('files'):
-            content = file.read()
-            xml_data.append((file.filename, content.decode("utf-8")))
-        send_attachment([target_email], "test", xml_data)
+        send_attachment([target_email], "These documents were requested to be sent to you", xml_data, request.files.getlist('files'))
         return make_response(jsonify({"message": "Successfully sent"}), 200)
         
         
