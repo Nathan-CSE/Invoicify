@@ -280,7 +280,6 @@ class ValidationAPI(Resource):
         converter = ConversionService()
 
         try:
-            print(json.dumps(invoice.fields))
             xml_content = converter.json_to_xml(json.dumps(invoice.fields), rules)
         except Exception as err:
             print(err)
