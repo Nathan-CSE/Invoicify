@@ -15,13 +15,14 @@ import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { saveAs } from 'file-saver';
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 interface AssertionError {
   id: string;
   text: string;
   location: string;
 }
-
 
 export default function ValidationReport() {
   const location = useLocation();
@@ -49,14 +50,43 @@ export default function ValidationReport() {
     }
   };
 
-  const handleDownload = () => {
+  const handleDownloadJSON = () => {
     var FileSaver = require('file-saver');
     const dataStr = JSON.stringify(currentReport, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
-    FileSaver.saveAs(blob, `${fileName}-validation-report.json`);
+
+    const formatName = fileName.replace(/\.[^/.]+$/, "");
+
+    FileSaver.saveAs(blob, `${formatName}-validation-report.json`);
 
     // var file = new File(["Hello, world!"], "hello world.txt", {type: "text/plain;charset=utf-8"});
   }
+
+  const handleDownloadPDF = async () => {
+    const input = document.getElementById('report-content');
+    if (input) {
+      const canvas = await html2canvas(input);
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF();
+  
+      // with margins
+      const margin = 10; // Define your margin size here
+      const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+  
+      pdf.addImage(imgData, 'PNG', margin, margin, pdfWidth, pdfHeight);
+
+      // without margins
+      // const imgProps = pdf.getImageProperties(imgData);
+      // const pdfWidth = pdf.internal.pageSize.getWidth();
+      // const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      // pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+
+      const formatName = fileName.replace(/\.[^/.]+$/, "");
+      pdf.save(`${formatName}-validation-report.pdf`);
+    }
+  };
 
   return (
     <Container maxWidth="lg" sx={{ marginTop: 11 }}>
@@ -67,49 +97,51 @@ export default function ValidationReport() {
         <Typography component={Link} to='/invoice-validation'>Invoice Validation</Typography>
         <Typography color='text.primary'>Invoice Validation Report</Typography>
       </Breadcrumbs>
-      <Typography variant='h5' fontWeight='bold' textAlign='center' sx={{ my: 2 }}>
-        {ruleSet} Validation Report(s)
-      </Typography>
 
-      {isValid ? (
-        <Box display="flex" alignItems="center" justifyContent="center" sx={{ maxWidth: '40vh', border: 'solid 0.5px', borderRadius: 4, paddingX: 2, margin: '0 auto' }}>
-          <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
-            <CheckCircleIcon sx={{ color: 'green', fontSize: '3rem' }} />
-            <Typography>The file {fileName} is valid.</Typography>
-          </Stack>
-        </Box>
-      ) : (
-        <>
+      <div id="report-content">
+        <Typography variant='h5' fontWeight='bold' textAlign='center' sx={{ my: 2 }}>
+          {ruleSet} Validation Report
+        </Typography>
+        {isValid ? (
           <Box display="flex" alignItems="center" justifyContent="center" sx={{ maxWidth: '40vh', border: 'solid 0.5px', borderRadius: 4, paddingX: 2, margin: '0 auto' }}>
             <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
-              <CancelIcon sx={{ color: 'red', fontSize: '3rem' }} />
-              <Typography>The file {fileName} is invalid. It contains {errorData.firedAssertionErrorsCount} failed assertion(s), check individual reports for details.</Typography>
+              <CheckCircleIcon sx={{ color: 'green', fontSize: '3rem' }} />
+              <Typography>The file {fileName} is valid.</Typography>
             </Stack>
           </Box>
-          <Typography variant='h5' sx={{ mt: 4 }}>Errors</Typography>
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Assertion Rule</TableCell>
-                  <TableCell>Error Message</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {errorData.firedAssertionErrors.map((item: AssertionError, index: React.Key) => {
-                  const errorText = `${item.text}\n\nLocation: ${item.location}`;
-                  return (
-                    <TableRow key={index}>
-                      <TableCell>{item.id}</TableCell>
-                      <TableCell style={{ whiteSpace: 'pre-wrap' }}>{errorText}</TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
+        ) : (
+          <>
+            <Box display="flex" alignItems="center" justifyContent="center" sx={{ maxWidth: '40vh', border: 'solid 0.5px', borderRadius: 4, paddingX: 2, margin: '0 auto' }}>
+              <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
+                <CancelIcon sx={{ color: 'red', fontSize: '3rem' }} />
+                <Typography>The file {fileName} is invalid. It contains {errorData.firedAssertionErrorsCount} failed assertion(s), check individual reports for details.</Typography>
+              </Stack>
+            </Box>
+            <Typography variant='h5' sx={{ mt: 4 }}>Errors</Typography>
+            <TableContainer component={Paper} sx={{ mt: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Assertion Rule</TableCell>
+                    <TableCell>Error Message</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {errorData.firedAssertionErrors.map((item: AssertionError, index: React.Key) => {
+                    const errorText = `${item.text}\n\nLocation: ${item.location}`;
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{item.id}</TableCell>
+                        <TableCell style={{ whiteSpace: 'pre-wrap' }}>{errorText}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
+      </div>
 
       <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
         <Button onClick={handlePrevious} disabled={currentReportIndex === 0} startIcon={<KeyboardArrowLeftIcon />}>Previous</Button>
@@ -121,8 +153,11 @@ export default function ValidationReport() {
         <Button component={Link} to='/invoice-validation' startIcon={<ReplayIcon />} variant='contained' sx={{ height: '50px', padding: '25px' }}>
           Validate Another Report
         </Button>
-        <Button onClick={handleDownload}>
-          Save This Report
+        <Button onClick={handleDownloadJSON}>
+          Save This Report as a JSON
+        </Button>
+        <Button onClick={handleDownloadPDF}>
+          Save This Report as a PDF
         </Button>
       </Stack>
     </Container>

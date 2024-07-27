@@ -53,13 +53,13 @@ export default function DownloadReport(props: { invoiceName: String }) {
           },
         }}
       >
-        <DialogTitle>Download {invoiceName}?</DialogTitle>
+        <DialogTitle>Download report for {invoiceName}?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Which format would you like to download this validation report?
+            Select a download format below.
           </DialogContentText>
 
-          <FormControl fullWidth variant="outlined" margin="normal" required sx={{ mt: 3, mb: -1 }}>      
+          <FormControl fullWidth variant="outlined" margin="normal" required sx={{ mt: 2, mb: -1 }}>      
             <InputLabel id="select-format">Download Format</InputLabel>
             <Select
               labelId="select-format"
