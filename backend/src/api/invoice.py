@@ -273,16 +273,14 @@ class ValidationAPI(Resource):
     def get(self, user):
         args = invoice_ns.get_id_validation_fields().parse_args()
         invoice_ids = args['id']
-        # print(invoice_ids)
         rules = args['rules']
         converter = ConversionService()
         vs = ValidationService()
-
+        
         validationRetval = []
         for id in invoice_ids:
             if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
                 return make_response(jsonify({"message": "Invoice does not exist"}), 400)
-
             try:
                 xml_content = converter.json_to_xml(json.dumps(invoice.fields), rules)
             except Exception as err:
@@ -305,7 +303,6 @@ class ValidationAPI(Resource):
                 invoice.rule = rules
                 db.session.commit()
                 validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": id, "invoiceName": invoice.name})
-                # return make_response(jsonify({"message": "Invoice validated successfully"}), 200)
             else:
                 invoice.is_ready = False
                 invoice.completed_ubl = None
@@ -319,22 +316,13 @@ class ValidationAPI(Resource):
                     for report in retval["report"].get("reports", {}).values()
                     for error in report.get("firedAssertionErrors", [])
                 ]
-                
-                response = {
-                    "validated": False,
-                    "invoiceId": id,
-                    "invoiceName": invoice.name,
-                    "reports": {
+                validationRetval.append({"validated": False, "data": {
                         "firedAssertionErrors": errors,
                         "firedAssertionErrorsCount": retval["report"].get("firedAssertionErrorsCount", 0),
                         "firedSuccessfulReportsCount": retval["report"].get("firedSuccessfulReportsCount", 0),
                         "successful": retval["report"].get("successful", False),
                         "summary": retval["report"].get("summary", "No summary available")
-                    }
-                }
-                # validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": id, "invoiceName": invoice.name})
-                # return make_response(jsonify(response), 203)
-                validationRetval.append(response)
+                    }, "invoiceId": id, "invoiceName": invoice.name})
         return make_response(jsonify({"validationOutcome": validationRetval}), 200)
         
 
