@@ -36,7 +36,7 @@ export default function ValidationReport() {
   const currentReport = validationReports[currentReportIndex];
   const isValid = currentReport.validated;
   const errorData = !isValid ? currentReport.data : null;
-  const fileName = !isValid ? currentReport.invoiceName : currentReport.data;
+  const fileName = currentReport.invoiceName;
 
   const handlePrevious = () => {
     if (currentReportIndex > 0) {
@@ -47,44 +47,6 @@ export default function ValidationReport() {
   const handleNext = () => {
     if (currentReportIndex < validationReports.length - 1) {
       setCurrentReportIndex(currentReportIndex + 1);
-    }
-  };
-
-  const handleDownloadJSON = () => {
-    var FileSaver = require('file-saver');
-    const dataStr = JSON.stringify(currentReport, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-
-    const formatName = fileName.replace(/\.[^/.]+$/, "");
-
-    FileSaver.saveAs(blob, `${formatName}-validation-report.json`);
-
-    // var file = new File(["Hello, world!"], "hello world.txt", {type: "text/plain;charset=utf-8"});
-  }
-
-  const handleDownloadPDF = async () => {
-    const input = document.getElementById('report-content');
-    if (input) {
-      const canvas = await html2canvas(input);
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF();
-  
-      // with margins
-      const margin = 10; // Define your margin size here
-      const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-  
-      pdf.addImage(imgData, 'PNG', margin, margin, pdfWidth, pdfHeight);
-
-      // without margins
-      // const imgProps = pdf.getImageProperties(imgData);
-      // const pdfWidth = pdf.internal.pageSize.getWidth();
-      // const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-      // pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-      const formatName = fileName.replace(/\.[^/.]+$/, "");
-      pdf.save(`${formatName}-validation-report.pdf`);
     }
   };
 
@@ -149,15 +111,9 @@ export default function ValidationReport() {
       </Stack>
 
       <Stack direction="row" spacing={4} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
-        {!isValid && <DownloadReport invoiceName={fileName} />}
+        {!isValid && <DownloadReport invoiceName={fileName} currentReport={currentReport} inputDiv={document.getElementById('report-content')} />}
         <Button component={Link} to='/invoice-validation' startIcon={<ReplayIcon />} variant='contained' sx={{ height: '50px', padding: '25px' }}>
           Validate Another Report
-        </Button>
-        <Button onClick={handleDownloadJSON}>
-          Save This Report as a JSON
-        </Button>
-        <Button onClick={handleDownloadPDF}>
-          Save This Report as a PDF
         </Button>
       </Stack>
     </Container>

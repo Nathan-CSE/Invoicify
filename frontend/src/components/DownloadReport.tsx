@@ -8,11 +8,14 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { InputLabel, Select, MenuItem, SelectChangeEvent, Box, FormControl } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { saveAs } from 'file-saver';
 
-export default function DownloadReport(props: { invoiceName: String }) {
+export default function DownloadReport(props: { invoiceName: String, currentReport: any, inputDiv: any }) {
   const [open, setOpen] = React.useState(false);
   const [downloadFormat, setDownloadFormat] = React.useState('');
-  const { invoiceName } = props;
+  const { invoiceName, currentReport, inputDiv } = props;
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -25,6 +28,50 @@ export default function DownloadReport(props: { invoiceName: String }) {
   const handleChange = (event: SelectChangeEvent) => {
     console.log('this is event.target: ', event.target);
     setDownloadFormat(event.target.value);
+  };
+
+
+  const handleDownloadJSON = () => {
+    var FileSaver = require('file-saver');
+    const dataStr = JSON.stringify(currentReport, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+
+    const formatName = invoiceName.replace(/\.[^/.]+$/, "");
+
+    FileSaver.saveAs(blob, `${formatName}-validation-report.json`);
+
+  }
+
+  const handleDownloadPDF = async () => {
+    const inputDiv = document.getElementById('report-content');
+    if (inputDiv) {
+      
+      const pdf = new jsPDF();
+      const margin = 10;
+      const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
+      const pdfHeight = pdf.internal.pageSize.getHeight() - margin * 2;
+      const canvas = await html2canvas(inputDiv);
+
+      let imgData = canvas.toDataURL('image/png');
+      let imgHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      let heightLeft = imgHeight;
+      let position = margin;
+
+      pdf.addImage(imgData, 'PNG', margin, position, pdfWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', margin, position, pdfWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+
+      const formatName = invoiceName.replace(/\.[^/.]+$/, "");
+      pdf.save(`${formatName}-validation-report.pdf`);
+
+    }
   };
 
   return (
@@ -47,9 +94,11 @@ export default function DownloadReport(props: { invoiceName: String }) {
           component: 'form',
           onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries((formData as any).entries());
-            handleClose();
+            if (downloadFormat == 'JSON') {
+              handleDownloadJSON();
+            } else {
+              handleDownloadPDF();
+            }
           },
         }}
       >
@@ -71,7 +120,6 @@ export default function DownloadReport(props: { invoiceName: String }) {
               fullWidth
             >
               <MenuItem value={'JSON'}>JSON</MenuItem>
-              <MenuItem value={'HTML'}>HTML</MenuItem>
               <MenuItem value={'PDF'}>PDF</MenuItem>
 
             </Select>
