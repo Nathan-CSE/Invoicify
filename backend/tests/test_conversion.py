@@ -33,8 +33,6 @@ def test_json_conversion_to_xml_value_name():
 
     xml_str = cs.json_to_xml(json.dumps(data), "AUNZ_PEPPOL_1_0_10")
 
-    print(xml_str)
-
     assert 'value="test"' in xml_str
     assert '<cbc:EmbeddedDocumentBinaryObject mimeCode="application/pdf" filename="Invoice03.pdf" value="test">UGxhaW4gdGV4dCBpbiBwbGFjZSBvZiBwZGYgYXR0YWNobWVudCBmb3Igc2FtcGxlIGludm9pY2Vz</cbc:EmbeddedDocumentBinaryObject>' in xml_str
 
