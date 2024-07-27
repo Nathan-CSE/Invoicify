@@ -9,7 +9,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Card, CardContent, Grid } from '@mui/material';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ReplayIcon from '@mui/icons-material/Replay';
 import SendIcon from '@mui/icons-material/Send';
 
 export default function InvoiceSending(props: { token: string; }) {
@@ -89,7 +89,7 @@ export default function InvoiceSending(props: { token: string; }) {
             <Button
               component={Link}
               to='/invoice-sending'
-              startIcon={<RestartAltIcon />}
+              startIcon={<ReplayIcon />}
               variant='contained'
               sx={{
                 height: '50px',

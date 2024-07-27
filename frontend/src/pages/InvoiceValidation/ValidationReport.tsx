@@ -9,7 +9,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ReplayIcon from '@mui/icons-material/Replay';
 import DownloadReport from '../../components/DownloadReport';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -106,7 +106,7 @@ export default function ValidationReport() {
 
       <Stack direction="row" spacing={4} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
         {!isValid && <DownloadReport invoiceName={fileName} />}
-        <Button component={Link} to='/invoice-validation' startIcon={<RestartAltIcon />} variant='contained' sx={{ height: '50px', padding: '25px' }}>
+        <Button component={Link} to='/invoice-validation' startIcon={<ReplayIcon />} variant='contained' sx={{ height: '50px', padding: '25px' }}>
           Validate Another Report
         </Button>
       </Stack>

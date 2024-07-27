@@ -12,7 +12,7 @@ import axios from 'axios';
 import { Card, CardActionArea, CardContent } from '@mui/material';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
 import DownloadIcon from '@mui/icons-material/Download';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import ReplayIcon from '@mui/icons-material/Replay';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -174,7 +174,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
             <Button
               component={Link}
               to='/invoice-creation'
-              startIcon={<RestartAltIcon />}
+              startIcon={<ReplayIcon />}
               variant='contained'
               sx={{
                 height: '50px',
