@@ -95,8 +95,10 @@ class SendEmailAPI(Resource):
                 xml_data.append((xml_name, xml))
             else:
                 return make_response(jsonify({"message": "Article not found"}), 400)
-        send_attachment([target_email], "These documents were requested to be sent to you", xml_data, request.files.getlist('files'))
-        return make_response(jsonify({"message": "Successfully sent"}), 200)
+        if send_attachment([target_email], "These documents were requested to be sent to you", xml_data, request.files.getlist('files')):
+            return make_response(jsonify({"message": "Successfully sent"}), 200)
+        else:
+            return make_response(jsonify({"message": "Was unable to be sent"}), 400)
         
         
 @invoice_ns.route("/save")
