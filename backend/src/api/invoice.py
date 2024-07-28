@@ -84,7 +84,7 @@ class SendEmailAPI(Resource):
         xml_data = []
         cs = ConversionService()
 
-        for id in args.xml_id:
+        for id in args.xml_id or []:
             invoice = Invoice.query.where(Invoice.id==id).where(Invoice.user_id==user.id).first()
             if invoice:
                 if not invoice.is_ready:
