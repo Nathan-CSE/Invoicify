@@ -36,7 +36,7 @@ export default function InvoiceCreation(props: { token: string }) {
 
     const formData = new FormData();
 
-    if (files) {
+    if (files.length > 0) {
       files.forEach(item => {
         formData.append("files", item);
       });
