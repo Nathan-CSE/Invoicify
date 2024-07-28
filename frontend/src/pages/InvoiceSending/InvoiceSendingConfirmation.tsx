@@ -84,6 +84,14 @@ export default function InvoiceSending(props: { token: string; }) {
           ))}
         </Grid>
 
+        <Divider 
+          sx={{ 
+            mt: 6,
+            mb: 4,
+            borderBottomWidth: 2,
+          }}
+        />
+
         <Grid container justifyContent="center" spacing={6}>
           <Grid item>
             <Button

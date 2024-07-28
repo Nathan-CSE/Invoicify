@@ -107,8 +107,18 @@ export default function ValidationReport() {
 
       <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
         <Button onClick={handlePrevious} disabled={currentReportIndex === 0} startIcon={<KeyboardArrowLeftIcon />}>Previous</Button>
+        <Typography>
+          {currentReportIndex + 1} / {validationReports.length}
+        </Typography>
         <Button onClick={handleNext} disabled={currentReportIndex === validationReports.length - 1} endIcon={<KeyboardArrowRightIcon />}>Next</Button>
       </Stack>
+      
+      <Divider 
+        sx={{ 
+          my: 5,
+          borderBottomWidth: 2,
+        }}
+      />
 
       <Stack direction="row" spacing={4} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
         {!isValid && <DownloadReport invoiceName={fileName} currentReport={currentReport} inputDiv={document.getElementById('report-content')} />}

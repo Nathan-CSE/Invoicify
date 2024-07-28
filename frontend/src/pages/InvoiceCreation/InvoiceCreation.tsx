@@ -101,7 +101,8 @@ export default function InvoiceCreation(props: { token: string }) {
               console.log('Currently loaded:', loadedFile);
               setFiles(loadedFile);
             }}
-            filesLimit={5}
+            dropzoneText={'Upload an file: JSON, PDF'}
+            filesLimit={10}
           />
         </Box>
 

@@ -9,7 +9,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
-import { Card, CardActionArea, CardContent } from '@mui/material';
+import { Card, CardActionArea, CardContent, Stack } from '@mui/material';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
 import DownloadIcon from '@mui/icons-material/Download';
 import ReplayIcon from '@mui/icons-material/Replay';
@@ -111,15 +111,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
         </Box>
 
         {invoices.length > 0 && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4, mb: 8 }}>
-            <IconButton
-              aria-label="check"
-              onClick={handlePrevious} 
-              disabled={currentIndex === 0} 
-              sx={{ mr: 2 }}
-            >
-              <KeyboardArrowLeftIcon sx={{ fontSize: 60 }} />
-            </IconButton>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 4, mb: 4 }}>
 
             <Card
               sx={{
@@ -141,17 +133,23 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
               </CardContent>
             </Card>
 
-            <IconButton
-              aria-label="check"
-              onClick={handleNext} 
-              disabled={currentIndex === invoices.length - 1} 
-              sx={{ ml: 2 }}
-            >
-              <KeyboardArrowRightIcon sx={{ fontSize: 60 }} />
-            </IconButton>
-
           </Box>
         )}
+
+        <Stack direction="row" spacing={2} sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}>
+          <Button onClick={handlePrevious} disabled={currentIndex === 0} startIcon={<KeyboardArrowLeftIcon />}>Previous</Button>
+          <Typography>
+            {currentIndex + 1} / {invoices.length}
+          </Typography>
+          <Button onClick={handleNext} disabled={currentIndex === invoices.length - 1} endIcon={<KeyboardArrowRightIcon />}>Next</Button>
+        </Stack>
+
+        <Divider 
+          sx={{ 
+            my: 5,
+            borderBottomWidth: 2,
+          }}
+        />
 
         <Grid container justifyContent="center" spacing={6}>
           <Grid item>
@@ -183,6 +181,8 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
             </Button>
           </Grid>
         </Grid>
+
+
       </Container>
 
     </>

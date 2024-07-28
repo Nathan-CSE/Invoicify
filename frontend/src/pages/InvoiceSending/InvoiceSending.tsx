@@ -216,7 +216,7 @@ export default function InvoiceSending(props: { token: string }) {
               fileObjects={files}
               onChange={handleFileChange}
               dropzoneText={'Upload an Invoice: JSON, PDF'}
-              filesLimit={3}
+              filesLimit={10}
             />
           </Box>
 

@@ -176,7 +176,7 @@ export default function InvoiceValidation(props: { token: string; }) {
               fileObjects={files}
               onChange={handleFileChange}
               dropzoneText={'Upload a UBL2.1 XML Invoice File'}
-              filesLimit={5}
+              filesLimit={10}
             />
           </Box>
 
