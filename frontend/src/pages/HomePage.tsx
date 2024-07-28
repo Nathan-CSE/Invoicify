@@ -9,7 +9,6 @@ import InvoiceFlavourImage from '../assets/stock_invoice.png';
 import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
-import { Container } from '@mui/material';
 
 function HomePage(props: { token: string }) {
   const navigate = useNavigate();
@@ -22,179 +21,177 @@ function HomePage(props: { token: string }) {
   return (
     <>
       {/* <Navbar /> */}
-      <Container maxWidth='lg' sx={{ marginY: 10 }}>
-        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Box>
-            <Typography variant='h3' gutterBottom>
-              Placeholder
-            </Typography>
-            <Typography variant='body1' gutterBottom>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-              blanditiis tenetur unde suscipit, quam beatae rerum inventore
-              consectetur, neque doloribus, cupiditate numquam dignissimos laborum
-              fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
-              amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
-              suscipit, quam beatae rerum inventore consectetur, neque doloribus,
-              cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
-              quidem quibusdam.
-            </Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'row', mt: 10 }}>
+        <Box>
+          <Typography variant='h3' gutterBottom>
+            Placeholder
+          </Typography>
+          <Typography variant='body1' gutterBottom>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
+            blanditiis tenetur unde suscipit, quam beatae rerum inventore
+            consectetur, neque doloribus, cupiditate numquam dignissimos laborum
+            fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
+            amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+            suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+            cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+            quidem quibusdam.
+          </Typography>
+        </Box>
+        <Box>
+          <img
+            src={InvoiceFlavourImage}
+            alt='invoice vector illustration'
+          ></img>
+        </Box>
+      </Box>
+
+      {/* Feature Icons */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 8,
+          mt: 8,
+          justifyContent: 'center',
+        }}
+      >
+        <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
+          <Box
+            sx={{
+              border: 6,
+              borderRadius: '50%',
+              borderColor: '#2196F3',
+              width: 150,
+              height: 150,
+              alignContent: 'center',
+              textAlign: 'center',
+            }}
+          >
+            <TickSvg />
           </Box>
-          <Box>
-            <img
-              src={InvoiceFlavourImage}
-              alt='invoice vector illustration'
-            ></img>
-          </Box>
+          <Typography
+            variant='subtitle1'
+            sx={{ fontWeight: 'bold' }}
+            gutterBottom
+          >
+            INVOICE VALIDATION
+          </Typography>
         </Box>
 
-        {/* Feature Icons */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            gap: 8,
-            mt: 8,
-            justifyContent: 'center',
-          }}
-        >
-          <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
-            <Box
-              sx={{
-                border: 6,
-                borderRadius: '50%',
-                borderColor: '#2196F3',
-                width: 150,
-                height: 150,
-                alignContent: 'center',
-                textAlign: 'center',
-              }}
-            >
-              <TickSvg />
-            </Box>
-            <Typography
-              variant='subtitle1'
-              sx={{ fontWeight: 'bold' }}
-              gutterBottom
-            >
-              INVOICE VALIDATION
-            </Typography>
+        <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
+          <Box
+            sx={{
+              border: 6,
+              borderRadius: '50%',
+              borderColor: '#2196F3',
+              width: 150,
+              height: 150,
+              alignContent: 'center',
+              textAlign: 'center',
+            }}
+          >
+            <PenSvg />
           </Box>
-
-          <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
-            <Box
-              sx={{
-                border: 6,
-                borderRadius: '50%',
-                borderColor: '#2196F3',
-                width: 150,
-                height: 150,
-                alignContent: 'center',
-                textAlign: 'center',
-              }}
-            >
-              <PenSvg />
-            </Box>
-            <Typography
-              variant='subtitle1'
-              sx={{ fontWeight: 'bold' }}
-              gutterBottom
-            >
-              INVOICE CREATION
-            </Typography>
-          </Box>
-
-          <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
-            <Box
-              sx={{
-                border: 6,
-                borderRadius: '50%',
-                borderColor: '#2196F3',
-                width: 150,
-                height: 150,
-                alignContent: 'center',
-                textAlign: 'center',
-              }}
-            >
-              <SendSvg />
-            </Box>
-            <Typography
-              variant='subtitle1'
-              sx={{ fontWeight: 'bold' }}
-              gutterBottom
-            >
-              INVOICE SENDING
-            </Typography>
-          </Box>
+          <Typography
+            variant='subtitle1'
+            sx={{ fontWeight: 'bold' }}
+            gutterBottom
+          >
+            INVOICE CREATION
+          </Typography>
         </Box>
 
-        {/* Documentation Section */}
-        <Stack spacing={3} sx={{ mt: 15 }}>
-          <Typography variant='h4' gutterBottom>
-            Documentation
+        <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
+          <Box
+            sx={{
+              border: 6,
+              borderRadius: '50%',
+              borderColor: '#2196F3',
+              width: 150,
+              height: 150,
+              alignContent: 'center',
+              textAlign: 'center',
+            }}
+          >
+            <SendSvg />
+          </Box>
+          <Typography
+            variant='subtitle1'
+            sx={{ fontWeight: 'bold' }}
+            gutterBottom
+          >
+            INVOICE SENDING
           </Typography>
-          <Divider sx={{ borderColor: 'black' }} />
-          <Typography variant='h4' gutterBottom>
-            Invoice Creation
-          </Typography>
-          <Typography variant='body1' gutterBottom>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-            blanditiis tenetur unde suscipit, quam beatae rerum inventore
-            consectetur, neque doloribus, cupiditate numquam dignissimos laborum
-            fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
-            suscipit, quam beatae rerum inventore consectetur, neque doloribus,
-            cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
-            quidem quibusdam. Lorem ipsum dolor sit amet, consectetur adipisicing
-            elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum
-            inventore consectetur, neque doloribus, cupiditate numquam dignissimos
-            laborum fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor
-            sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
-            suscipit, quam beatae rerum inventore consectetur, neque doloribus,
-            cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
-            quidem quibusdam.
-          </Typography>
-          <Typography variant='h4' gutterBottom>
-            Invoice Validation
-          </Typography>
-          <Typography variant='body1' gutterBottom>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-            blanditiis tenetur unde suscipit, quam beatae rerum inventore
-            consectetur, neque doloribus, cupiditate numquam dignissimos laborum
-            fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
-            suscipit, quam beatae rerum inventore consectetur, neque doloribus,
-            cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
-            quidem quibusdam. Lorem ipsum dolor sit amet, consectetur adipisicing
-            elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum
-            inventore consectetur, neque doloribus, cupiditate numquam dignissimos
-            laborum fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor
-            sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
-            suscipit, quam beatae rerum inventore consectetur, neque doloribus,
-            cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
-            quidem quibusdam.
-          </Typography>
-          <Typography variant='h4' gutterBottom>
-            Invoice Sending
-          </Typography>
-          <Typography variant='body1' gutterBottom>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-            blanditiis tenetur unde suscipit, quam beatae rerum inventore
-            consectetur, neque doloribus, cupiditate numquam dignissimos laborum
-            fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
-            amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
-            suscipit, quam beatae rerum inventore consectetur, neque doloribus,
-            cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
-            quidem quibusdam. Lorem ipsum dolor sit amet, consectetur adipisicing
-            elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum
-            inventore consectetur, neque doloribus, cupiditate numquam dignissimos
-            laborum fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor
-            sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
-            suscipit, quam beatae rerum inventore consectetur, neque doloribus,
-            cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
-            quidem quibusdam.
-          </Typography>
-        </Stack>
-      </Container>
+        </Box>
+      </Box>
+
+      {/* Documentation Section */}
+      <Stack spacing={3} sx={{ mt: 15, mx: 5 }}>
+        <Typography variant='h4' gutterBottom>
+          Documentation
+        </Typography>
+        <Divider sx={{ borderColor: 'black' }} />
+        <Typography variant='h4' gutterBottom>
+          Invoice Creation
+        </Typography>
+        <Typography variant='body1' gutterBottom>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
+          blanditiis tenetur unde suscipit, quam beatae rerum inventore
+          consectetur, neque doloribus, cupiditate numquam dignissimos laborum
+          fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
+          amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam. Lorem ipsum dolor sit amet, consectetur adipisicing
+          elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum
+          inventore consectetur, neque doloribus, cupiditate numquam dignissimos
+          laborum fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor
+          sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam.
+        </Typography>
+        <Typography variant='h4' gutterBottom>
+          Invoice Validation
+        </Typography>
+        <Typography variant='body1' gutterBottom>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
+          blanditiis tenetur unde suscipit, quam beatae rerum inventore
+          consectetur, neque doloribus, cupiditate numquam dignissimos laborum
+          fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
+          amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam. Lorem ipsum dolor sit amet, consectetur adipisicing
+          elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum
+          inventore consectetur, neque doloribus, cupiditate numquam dignissimos
+          laborum fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor
+          sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam.
+        </Typography>
+        <Typography variant='h4' gutterBottom>
+          Invoice Sending
+        </Typography>
+        <Typography variant='body1' gutterBottom>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
+          blanditiis tenetur unde suscipit, quam beatae rerum inventore
+          consectetur, neque doloribus, cupiditate numquam dignissimos laborum
+          fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
+          amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam. Lorem ipsum dolor sit amet, consectetur adipisicing
+          elit. Quos blanditiis tenetur unde suscipit, quam beatae rerum
+          inventore consectetur, neque doloribus, cupiditate numquam dignissimos
+          laborum fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor
+          sit amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
+          suscipit, quam beatae rerum inventore consectetur, neque doloribus,
+          cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
+          quidem quibusdam.
+        </Typography>
+      </Stack>
     </>
   );
 }

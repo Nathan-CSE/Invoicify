@@ -10,8 +10,6 @@ import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
 import ErrorModal from '../../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
-import LoginIcon from '@mui/icons-material/Login';
-import HowToRegIcon from '@mui/icons-material/HowToReg';
 
 export default function SignIn(props: {
   token: string;
@@ -116,14 +114,14 @@ export default function SignIn(props: {
 
             <Typography
               variant='subtitle1'
-              sx={{ color: 'secondary', textDecoration: 'none' }}
+              sx={{ color: 'info.main', textDecoration: 'none' }}
               component={Link}
               to='/reset-pw'
               gutterBottom
             >
               Forgot password?
             </Typography>
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }} startIcon={<LoginIcon />}>
+            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
               Sign In
             </Button>
 
@@ -134,7 +132,7 @@ export default function SignIn(props: {
               component={Link}
               to='/sign-up'
               sx={{ mt: 3, mb: 2 }}
-              startIcon={<HowToRegIcon />}
+              color='secondary'
             >
               Register here
             </Button>

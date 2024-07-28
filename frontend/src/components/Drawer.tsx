@@ -38,7 +38,7 @@ export default function TemporaryDrawer() {
 
   // REPLACE your route to the page when implemented
   const options = {
-    'Dashboard': { svg: HomeSvg, route: '/dashboard' },
+    'Home Page': { svg: HomeSvg, route: '/dashboard' },
     'Create/Upload an Invoice': { svg: PenSvg, route: '/invoice-creation' },
     'Validate an Invoice': { svg: TickSvg, route: '/invoice-validation' },
     'Send an Invoice': { svg: SendSvg, route: '/invoice-sending' },
