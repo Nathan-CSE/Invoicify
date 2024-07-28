@@ -34,4 +34,4 @@ def create_app(db_path="database.db"):
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(debug=True, port=sys.argv[1]) if len(sys.argv) > 1 else app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
