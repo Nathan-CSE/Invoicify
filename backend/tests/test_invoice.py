@@ -613,11 +613,16 @@ def test_validate_id_successful(client, user, invoice):
         },
         follow_redirects=True
     )
+<<<<<<< Updated upstream
 
     response_body = res.get_json()
     assert res.status_code == 200
     assert response_body['validationOutcome'][0]['invoiceId'] == 1
     assert response_body['validationOutcome'][0]['validated'] == True
+=======
+    print(res.data)
+    assert res.status_code == 200
+>>>>>>> Stashed changes
 
 def test_validate_id_unsucessful(client,user,invoice_2):
     res = client.get(
