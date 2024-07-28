@@ -68,7 +68,8 @@ export default function InvoiceManagement(props: { token: string }) {
       // alert(1);
       // console.log(id);
       let cardDetails = details.get(id);
-      // console.log(cardDetails);
+      console.log(cardDetails);
+      console.log(details);
       let cardFields = cardDetails?.fields;
       navigate('/invoice-preview-history', {
         state: {
@@ -233,7 +234,11 @@ export default function InvoiceManagement(props: { token: string }) {
           }}
         >
           <Typography variant='h4'>Invoice Management</Typography>
-          <Button variant='contained' onClick={handleClickFilter} startIcon={<FilterListIcon />}>
+          <Button
+            variant='contained'
+            onClick={handleClickFilter}
+            startIcon={<FilterListIcon />}
+          >
             FILTER
           </Button>
           <FilterModal

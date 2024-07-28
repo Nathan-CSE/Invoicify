@@ -56,138 +56,9 @@ export default function CreationGUI(props: {
   React.useEffect(() => {
     if (props.editFlag && props.data) {
       console.log('Hey guys');
-      const info = props.data.fields;
-      // console.log(props.data);
-      setFields(JSON.parse(props.data.fields));
+      setFields(props.data.fields);
     }
   }, []);
-
-  React.useEffect(() => {
-    setInvName(fields?.BuyerReference || '');
-    setSellerABN(
-      fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID?.value ||
-        ''
-    );
-    setSellerName(
-      fields?.AccountingSupplierParty.Party.PartyLegalEntity.RegistrationName ||
-        ''
-    );
-    setSellerStreetName(
-      fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
-    );
-    setSellerAddStreetName(
-      fields?.AccountingSupplierParty.Party.PostalAddress
-        .additionalStreetName || ''
-    );
-    setSellerCityName(
-      fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
-    );
-    setSellerCode(
-      fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
-    );
-
-    setBuyerABN(
-      fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID?.value ||
-        ''
-    );
-    setBuyerName(
-      fields?.AccountingCustomerParty.Party.PartyLegalEntity.RegistrationName ||
-        ''
-    );
-    setBuyerStreetName(
-      fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
-    );
-    setBuyerAddStreetName(
-      fields?.AccountingCustomerParty.Party.PostalAddress
-        .AdditionalStreetName || ''
-    );
-    setBuyerCityName(
-      fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
-    );
-    setBuyerCode(
-      fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
-    );
-
-    if (Array.isArray(fields?.InvoiceLine)) {
-      // console.log(rows);
-      let firstFlag = true;
-
-      fields?.InvoiceLine.forEach((item: any) => {
-        if (firstFlag) {
-          const newRow = {
-            id: 1,
-            quantity: item?.InvoicedQuantity.value,
-            unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name,
-            description: item?.Item.Description,
-            unitPrice: item?.Price.PriceAmount.value,
-            GST:
-              (Number(item?.Price.PriceAmount.value) *
-                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
-              100,
-            totalPrice: item?.LineExtensionAmount.value,
-          };
-          console.log('========== ITER ============');
-          console.log(newRow);
-          console.log('======================');
-          firstFlag = false;
-          setRows([newRow]);
-          setNextId(nextId + 1);
-          console.log(rows);
-        } else {
-          const newRow = {
-            id: nextId,
-            quantity: item?.InvoicedQuantity.value,
-            unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name,
-            description: item?.Item.Description,
-            unitPrice: item?.Price.PriceAmount.value,
-            GST:
-              (Number(item?.Price.PriceAmount.value) *
-                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
-              100,
-            totalPrice: item?.LineExtensionAmount.value,
-          };
-          setRows([...rows, newRow]);
-          setNextId(nextId + 1);
-        }
-      });
-    } else {
-      console.log('hi');
-      console.log(fields?.InvoiceLine);
-      if (fields?.InvoiceLine) {
-        const newRow = {
-          id: 1,
-          quantity: fields?.InvoiceLine.InvoicedQuantity.value,
-          unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
-          item: fields?.InvoiceLine.Item.Name,
-          description: fields?.InvoiceLine.Item.Description,
-          unitPrice: fields?.InvoiceLine.Price.PriceAmount.value,
-          GST:
-            (Number(fields?.InvoiceLine.Price.PriceAmount.value) *
-              Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
-            100,
-          totalPrice: fields?.InvoiceLine.LineExtensionAmount.value,
-        };
-        setRows([newRow]);
-        // setNextId(nextId + 1);
-      }
-      // const addRow = () => {
-      //   const newRow = {
-      //     id: nextId,
-      //     quantity: 0,
-      //     unitCode: '',
-      //     item: '',
-      //     description: '',
-      //     unitPrice: 0,
-      //     GST: 0,
-      //     totalPrice: 0,
-      //   };
-      //   setRows([...rows, newRow]);
-      //   setNextId(nextId + 1);
-      // };
-    }
-  }, [fields]);
 
   console.log(fields);
 
@@ -229,6 +100,109 @@ export default function CreationGUI(props: {
     },
   ]);
 
+  React.useEffect(() => {
+    setInvName(fields?.BuyerReference || '');
+    setSellerABN(
+      fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID[
+        '@value'
+      ] || ''
+    );
+    setSellerName(
+      fields?.AccountingSupplierParty.Party.PartyLegalEntity.RegistrationName ||
+        ''
+    );
+    setSellerStreetName(
+      fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
+    );
+    setSellerAddStreetName(
+      fields?.AccountingSupplierParty.Party.PostalAddress
+        .additionalStreetName || ''
+    );
+    setSellerCityName(
+      fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
+    );
+    setSellerCode(
+      fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
+    );
+
+    setBuyerABN(
+      fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID[
+        '@value'
+      ] || ''
+    );
+    setBuyerName(
+      fields?.AccountingCustomerParty.Party.PartyLegalEntity.RegistrationName ||
+        ''
+    );
+    setBuyerStreetName(
+      fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
+    );
+    setBuyerAddStreetName(
+      fields?.AccountingCustomerParty.Party.PostalAddress
+        .AdditionalStreetName || ''
+    );
+    setBuyerCityName(
+      fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
+    );
+    setBuyerCode(
+      fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
+    );
+
+    if (Array.isArray(fields?.InvoiceLine)) {
+      // console.log(rows);
+      let tempRows = rows;
+      let firstFlag = true;
+      fields?.InvoiceLine.forEach((item: any) => {
+        if (firstFlag) {
+          const newRow = {
+            id: 1,
+            quantity: item?.InvoicedQuantity['@value'],
+            unitCode: item?.InvoicedQuantity.unitCode,
+            item: item?.Item.Name,
+            description: item?.Item.Description,
+            unitPrice: item?.Price.PriceAmount['@value'],
+            GST: 0,
+            totalPrice: 0,
+          };
+          firstFlag = false;
+          // setRows([...rows, newRow]);
+          tempRows = [newRow];
+          console.log(tempRows);
+          // console.log(rows);
+        } else {
+          const newRow = {
+            id: nextId,
+            quantity: item?.InvoicedQuantity['@value'],
+            unitCode: item?.InvoicedQuantity.unitCode,
+            item: item?.Item.Name,
+            description: item?.Item.Description,
+            unitPrice: item?.Price.PriceAmount['@value'],
+            GST: 0,
+            totalPrice: 0,
+          };
+          tempRows.push(newRow);
+          // setRows([...rows, newRow]);
+          setNextId(nextId + 1);
+        }
+      });
+      setRows(tempRows);
+    } else {
+      if (fields?.InvoiceLine) {
+        const newRow = {
+          id: 1,
+          quantity: fields?.InvoiceLine.InvoicedQuantity['@value'],
+          unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
+          item: fields?.InvoiceLine.Item.Name,
+          description: fields?.InvoiceLine.Item.Description,
+          unitPrice: fields?.InvoiceLine.Price.PriceAmount['@value'],
+          GST: 0,
+          totalPrice: 0,
+        };
+        setRows([newRow]);
+        // setNextId(nextId + 1);
+      }
+    }
+  }, [fields]);
   // Uploading additional documents
   const [openFileUpload, setOpenFileUpload] = React.useState(false);
   const [fileList, setFileList] = React.useState<FileObject[]>([]);
@@ -281,7 +255,7 @@ export default function CreationGUI(props: {
   // Changes the VAT rate based on the buyer's country
   const handleChange = (event: { target: { value: any; name: string } }) => {
     const selectedCountry = event.target.value as keyof typeof vatRates;
-
+    console.log(buyerCountry);
     if (event.target.name == 'buyerCountry') {
       setBuyerCountry(selectedCountry);
       setVatRate(vatRates[selectedCountry]);
@@ -465,48 +439,71 @@ export default function CreationGUI(props: {
     if (errorCheck) {
       return;
     } else {
-      try {
-        const response = await axios.post('http://localhost:5000/invoice/create', filteredInvoiceData, {
-          headers: {
-            Authorisation: `${props.token}`,
-          },
-        });
-
-        if (response.status === 201) {
-          // This is the one that should be working, but the api backend does not work
-          // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
-
-          // This is to make the response object consistent betwee invoices create via GUI and upload
-          console.log("this is reponse data: ", response.data);
-          console.log("this is reponse data.data: ", response.data.data);
-          const customResponse = {
-            "invoice": {
-              "data": [
-                {
-                  // NOTE: This method chaining fucking sucks -> wtf is this
-                  "filename": response.data.data[0].filename,
-                  "invoiceId": response.data.data[0].invoiceId
-                }
-              ]
+      if (props.editFlag) {
+        const response = await axios.put(
+          `http://localhost:5000/invoice/edit/${props.id}`,
+          filteredInvoiceData,
+          {
+            headers: {
+              Authorisation: `${props.token}`,
             },
-            "type": "GUI",
-            // This doesn't seem right... but it's how the invoicecreation gui via bulk upload returns
-            "invoiceId": response.data.data[0].invoiceId
           }
+        );
 
-          navigate('/invoice-creation-confirmation', {
-            state: customResponse
-          });
+        if (response.status === 204) {
+          alert('Edit Successful');
         } else {
           console.log(response);
-          alert('Unable to create invoice');
+          alert('Unable to edit invoice');
         }
-      } catch (err) {
-        console.error(err);
-        alert(err);
+      } else {
+        try {
+          const response = await axios.post(
+            'http://localhost:5000/invoice/create',
+            filteredInvoiceData,
+            {
+              headers: {
+                Authorisation: `${props.token}`,
+              },
+            }
+          );
+
+          if (response.status === 201) {
+            // This is the one that should be working, but the api backend does not work
+            // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
+
+            // This is to make the response object consistent betwee invoices create via GUI and upload
+            console.log('this is reponse data: ', response.data);
+            console.log('this is reponse data.data: ', response.data.data);
+            const customResponse = {
+              invoice: {
+                data: [
+                  {
+                    // NOTE: This method chaining fucking sucks -> wtf is this
+                    filename: response.data.data[0].filename,
+                    invoiceId: response.data.data[0].invoiceId,
+                  },
+                ],
+              },
+              type: 'GUI',
+              // This doesn't seem right... but it's how the invoicecreation gui via bulk upload returns
+              invoiceId: response.data.data[0].invoiceId,
+            };
+
+            navigate('/invoice-creation-confirmation', {
+              state: customResponse,
+            });
+          } else {
+            console.log(response);
+            alert('Unable to create invoice');
+          }
+        } catch (err) {
+          console.error(err);
+          alert(err);
+        }
+        // SEND TO BACKEND HERE -> if successful, go to confirmation page
+        return;
       }
-      // SEND TO BACKEND HERE -> if successful, go to confirmation page
-      return;
     }
   };
 
