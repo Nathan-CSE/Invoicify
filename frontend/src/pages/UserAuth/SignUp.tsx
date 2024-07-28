@@ -11,6 +11,8 @@ import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
 import ErrorModal from '../../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+import LoginIcon from '@mui/icons-material/Login';
 
 export default function SignUp(props: {
   token: string;
@@ -105,7 +107,7 @@ export default function SignUp(props: {
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component='h1' variant='h5'>
+          <Typography component='h1' variant='h5' sx={{ mb: 4 }}>
             Sign up
           </Typography>
           <Box component='form' noValidate onSubmit={handleSubmit}>
@@ -162,7 +164,7 @@ export default function SignUp(props: {
                 />
               </Grid>
             </Grid>
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
+            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }} startIcon={<HowToRegIcon />}>
               Sign Up
             </Button>
             <Button
@@ -172,6 +174,7 @@ export default function SignUp(props: {
               component={Link}
               to='/sign-in'
               sx={{ mt: 3, mb: 2 }}
+              startIcon={<LoginIcon />}
               color='secondary'
             >
               Back to Sign In
