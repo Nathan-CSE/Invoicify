@@ -59,7 +59,7 @@ export default function InvoiceSending(props: { token: string; }) {
           </Typography>
         </Box>
 
-        <Grid container spacing={4} sx={{ mt: 1, mb: 5 }}>
+        <Grid container spacing={4} sx={{ mt: 1, mb: 5 }} justifyContent="center">
           {invoiceNames.map((invoice: string, index: number) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card

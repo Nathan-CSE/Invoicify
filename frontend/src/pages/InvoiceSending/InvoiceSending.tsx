@@ -20,7 +20,6 @@ import SendIcon from '@mui/icons-material/Send';
 export default function InvoiceSending(props: { token: string }) {
   // console.log('user token: ', props.token);
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
   const [invoices, setInvoices] = React.useState<string[]>([]);
   const [files, setFiles] = React.useState<File[] | null>([]);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);

@@ -20,9 +20,8 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const invoiceData = useLocation().state;
   console.log('invoice data: ', invoiceData);
-  const { data: invoices, type } = invoiceData.invoice;
+  const { data: invoices } = invoiceData.invoice;
   const invoiceId = invoiceData.invoiceId;
-  // const invoiceType = invoiceData.type;
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
   console.log('this is the invoice data: ', invoiceData);
@@ -39,11 +38,8 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const handleDownload = async (event: any) => {    
     
     event.preventDefault();
-    
-    // const invoiceInt = invoiceData.invoiceId.data[0]["invoiceId"];
 
     try {
-      // Placeholder until backend endpoint has been created
       const response = await axios.post(`http://localhost:5000/invoice/download/${invoiceId}`, {
         headers: {
           'Authorisation': `${props.token}`,
@@ -52,6 +48,9 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
       
       if (response.status === 200) {
         console.log(response.data)
+
+        // Tried to change this to use saveAs lib, but ran into a bunch of issues trying to format the 
+        // string into a file that was able to be saved
         const url = window.URL.createObjectURL(new Blob([response.data[0]["message"]]));
         const link = document.createElement('a');
         link.href = url;
