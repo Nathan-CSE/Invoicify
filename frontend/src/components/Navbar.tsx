@@ -5,6 +5,10 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import LogoutIcon from '@mui/icons-material/Logout';
+import LoginIcon from '@mui/icons-material/Login';
+import LayersIcon from '@mui/icons-material/Layers';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 import { Link, useNavigate } from 'react-router-dom';
 import TemporaryDrawer from './Drawer';
@@ -30,6 +34,7 @@ function Navbar(props: {
         <Button
           component={Link}
           to='/sign-in'
+          startIcon={<LogoutIcon />}
           variant='contained'
           color='secondary'
           onClick={logout}
@@ -42,6 +47,7 @@ function Navbar(props: {
         <Button
           component={Link}
           to='/sign-in'
+          startIcon={<LoginIcon />}
           variant='contained'
           color='secondary'
         >
@@ -71,8 +77,8 @@ function Navbar(props: {
             <></>
           )}
 
-          <Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
-            E-Invoice Manager
+          <Typography variant='h4' fontWeight={"bold"} component='div' sx={{ flexGrow: 1 }}>
+            Invoicify
           </Typography>
           {buttonCreation()}
         </Toolbar>
