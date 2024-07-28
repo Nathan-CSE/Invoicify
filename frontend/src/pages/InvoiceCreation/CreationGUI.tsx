@@ -108,13 +108,84 @@ export default function CreationGUI(props: {
       fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
     );
 
-    const temp_rows = [];
     if (Array.isArray(fields?.InvoiceLine)) {
-      for (const row in fields?.InvoiceLine) {
-        console.log(row);
-      }
+      // console.log(rows);
+      let firstFlag = true;
+
+      fields?.InvoiceLine.forEach((item: any) => {
+        if (firstFlag) {
+          const newRow = {
+            id: 1,
+            quantity: item?.InvoicedQuantity.value,
+            unitCode: item?.InvoicedQuantity.unitCode,
+            item: item?.Item.Name,
+            description: item?.Item.Description,
+            unitPrice: item?.Price.PriceAmount.value,
+            GST:
+              (Number(item?.Price.PriceAmount.value) *
+                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
+              100,
+            totalPrice: item?.LineExtensionAmount.value,
+          };
+          console.log('========== ITER ============');
+          console.log(newRow);
+          console.log('======================');
+          firstFlag = false;
+          setRows([newRow]);
+          setNextId(nextId + 1);
+          console.log(rows);
+        } else {
+          const newRow = {
+            id: nextId,
+            quantity: item?.InvoicedQuantity.value,
+            unitCode: item?.InvoicedQuantity.unitCode,
+            item: item?.Item.Name,
+            description: item?.Item.Description,
+            unitPrice: item?.Price.PriceAmount.value,
+            GST:
+              (Number(item?.Price.PriceAmount.value) *
+                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
+              100,
+            totalPrice: item?.LineExtensionAmount.value,
+          };
+          setRows([...rows, newRow]);
+          setNextId(nextId + 1);
+        }
+      });
     } else {
       console.log('hi');
+      console.log(fields?.InvoiceLine);
+      if (fields?.InvoiceLine) {
+        const newRow = {
+          id: 1,
+          quantity: fields?.InvoiceLine.InvoicedQuantity.value,
+          unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
+          item: fields?.InvoiceLine.Item.Name,
+          description: fields?.InvoiceLine.Item.Description,
+          unitPrice: fields?.InvoiceLine.Price.PriceAmount.value,
+          GST:
+            (Number(fields?.InvoiceLine.Price.PriceAmount.value) *
+              Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
+            100,
+          totalPrice: fields?.InvoiceLine.LineExtensionAmount.value,
+        };
+        setRows([newRow]);
+        // setNextId(nextId + 1);
+      }
+      // const addRow = () => {
+      //   const newRow = {
+      //     id: nextId,
+      //     quantity: 0,
+      //     unitCode: '',
+      //     item: '',
+      //     description: '',
+      //     unitPrice: 0,
+      //     GST: 0,
+      //     totalPrice: 0,
+      //   };
+      //   setRows([...rows, newRow]);
+      //   setNextId(nextId + 1);
+      // };
     }
   }, [fields]);
 
@@ -300,6 +371,7 @@ export default function CreationGUI(props: {
     const updatedRows = rows.map((row) =>
       row.id === newRow.id ? { ...row, ...newRow } : row
     );
+
     setRows(updatedRows);
   };
 
