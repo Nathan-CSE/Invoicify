@@ -5,6 +5,7 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Container,
   Divider,
   Grid,
 } from '@mui/material';
@@ -213,23 +214,14 @@ export default function InvoiceManagement(props: { token: string }) {
 
   return (
     <>
-      <Box
-        sx={{
-          mt: 15,
-          mx: 5,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          width: '90%',
-        }}
-      >
+      <Container maxWidth="lg" sx={{ marginTop: 11, position: 'relative' }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
             width: '100%',
-            mb: 2,
+            mb: 1,
           }}
         >
           <Typography variant='h4'>Invoice Management</Typography>
@@ -242,11 +234,11 @@ export default function InvoiceManagement(props: { token: string }) {
             onCancel={handleCancelFilter}
           />
         </Box>
-        <Divider sx={{ borderColor: 'black', width: '100%' }} />
+        <Divider sx={{  width: '100%' }} />
         <Breadcrumbs
           aria-label='breadcrumb'
           separator={<NavigateNextIcon fontSize='small' />}
-          sx={{ mt: 1 }}
+          sx={{ mt: 1, position: 'absolute' }}
         >
           <Typography component={Link} to='/dashboard'>
             Dashboard
@@ -254,23 +246,24 @@ export default function InvoiceManagement(props: { token: string }) {
 
           <Typography color='text.primary'>Invoice Management</Typography>
         </Breadcrumbs>
+
         <Grid
           container
           spacing={9}
           sx={{
-            mt: 4,
+            mt: 0,
             display: 'flex',
-            justifyContent: 'center',
+            // justifyContent: 'center',
             alignItems: 'center',
           }}
         >
           {generateInvoiceCards()}
         </Grid>
-      </Box>
 
-      <Box sx={{ mt: 10 }}>
-        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-      </Box>
+        <Box sx={{ mt: 10 }}>
+          {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
+        </Box>
+      </Container>
     </>
   );
 }

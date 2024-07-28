@@ -15,6 +15,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import LoadingDialog from '../../components/LoadingDialog';
 import axios from 'axios';
 import { DropzoneArea } from 'mui-file-dropzone';
 import { BsPencilSquare } from "react-icons/bs";
@@ -22,15 +23,10 @@ import { FaFileUpload } from "react-icons/fa";
 
 export default function InvoiceCreation(props: { token: string }) {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
   const [files, setFiles] = React.useState<File[]>([]);
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    navigate('/invoice-creation-confirmation');
-    setOpen(false);
-  };
-
+  const [loading, setLoading] = React.useState(false);
+  
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
@@ -46,7 +42,7 @@ export default function InvoiceCreation(props: { token: string }) {
     }
 
     // console.log('file to be sent: ', file);
-
+    setLoading(true);
     try {
       const response = await axios.post('http://localhost:5000/invoice/uploadCreate', formData, {
         headers: {
@@ -55,6 +51,7 @@ export default function InvoiceCreation(props: { token: string }) {
         },
       });
 
+      setLoading(false);
       if (response.status === 200) {
         console.log(response.data);
         var str = JSON.stringify(response.data, null, 2);
@@ -72,12 +69,14 @@ export default function InvoiceCreation(props: { token: string }) {
       }
     } catch (err) {
       alert(err);
-    }
+
+    } 
   };
 
   return (
     <>
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
+        <LoadingDialog open={loading} message='Creating invoice...' />
         <Typography variant='h4'>Invoice Creation</Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />

@@ -6,6 +6,7 @@ import { Button, Divider, TextField } from '@mui/material';
 import ErrorModal from '../../components/ErrorModal';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import SaveIcon from '@mui/icons-material/Save';
 import axios, { AxiosError } from 'axios';
 
 function SettingsPage(props: { token: string }) {
@@ -95,7 +96,7 @@ function SettingsPage(props: { token: string }) {
             }}
           />
 
-          <Typography variant='subtitle1' gutterBottom sx={{ mt: 5 }}>
+        <Typography variant='subtitle1' gutterBottom sx={{ mt: 5 }}>
             Change Password
           </Typography>
           <Box component='form' onSubmit={changeAccountDetails} noValidate>
@@ -119,7 +120,7 @@ function SettingsPage(props: { token: string }) {
                 autoComplete='new-password'
               />
             </Box>
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
+            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }} startIcon={<SaveIcon />}>
               Save Changes
             </Button>
           </Box>
