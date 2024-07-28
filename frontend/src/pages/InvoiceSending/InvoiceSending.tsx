@@ -90,7 +90,7 @@ export default function InvoiceSending(props: { token: string }) {
       });
     } else {
       invoices.forEach(item => {
-        requestData.append("id", item);
+        // requestData.append("id", item);
 
         // console.log("available invoices: ", availableInvoices);
         // This sends the name of the invoices across
@@ -99,10 +99,9 @@ export default function InvoiceSending(props: { token: string }) {
         
       })
     }
+    requestData.append("target_email", recipientEmail);
 
     console.log("These are the invoice names2: ", invoiceNames);
-
-    requestData.append("target_email", recipientEmail);
 
     console.log('this is requestData: ', requestData);
 
@@ -115,27 +114,19 @@ export default function InvoiceSending(props: { token: string }) {
 
       if (files) {
         // Placeholder until json/pdf send endpoint has been created
-        response = await axios.post(
-          `http://localhost:5000/invoice/uploadValidate`,
-          requestData,
-          {
-            headers: {
-              Authorisation: `${props.token}`,
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        );
+        response = await axios.post(`http://localhost:5000/invoice/send_ubl`, requestData, {
+          headers: {
+            Authorisation: `${props.token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        });
       } else {
 
-        response = await axios.post(
-          `http://localhost:5000/invoice/send_ubl/${invoiceId}`,
-          requestData,
-          {
-            headers: {
-              Authorisation: `${props.token}`,
-            },
-          }
-        );
+        response = await axios.post(`http://localhost:5000/invoice/send_ubl?xml_id=${invoices}`, requestData, {
+          headers: {
+            Authorisation: `${props.token}`,
+          },
+        });
       }
 
       if (response.status === 200) {

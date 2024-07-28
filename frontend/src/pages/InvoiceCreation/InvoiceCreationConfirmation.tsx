@@ -21,6 +21,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const invoiceData = useLocation().state;
   console.log('invoice data: ', invoiceData);
   const { data: invoices, type } = invoiceData.invoice;
+  const invoiceId = invoiceData.invoiceId;
   // const invoiceType = invoiceData.type;
   const [currentIndex, setCurrentIndex] = React.useState(0);
 
@@ -39,15 +40,11 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
     
     event.preventDefault();
     
-    const invoiceInt = invoiceData.invoiceId.data[0]["invoiceId"];
-    console.log('this is invoice int ', invoiceInt);
-    const data = {
-      "article_id": invoiceInt
-    }
+    // const invoiceInt = invoiceData.invoiceId.data[0]["invoiceId"];
 
     try {
       // Placeholder until backend endpoint has been created
-      const response = await axios.post(`http://localhost:5000/invoice/download/` + invoiceInt, {
+      const response = await axios.post(`http://localhost:5000/invoice/download/${invoiceId}`, {
         headers: {
           'Authorisation': `${props.token}`,
         }
@@ -59,7 +56,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
         const link = document.createElement('a');
         link.href = url;
         console.log(response.data[0]["message"])
-        link.setAttribute('download', invoiceData["invoiceId"].data[0]["filename"]);
+        link.setAttribute('download', invoices[currentIndex].filename);
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -69,6 +66,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
         alert("Unable to create invoice");
       }
     } catch (err) {
+      console.error(err);
       alert(err)
     }
 
