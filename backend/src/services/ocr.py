@@ -3,17 +3,41 @@ import requests
 import os
 
 class OCRService():
+    """
+    OCR service for converting PDF into a JSON format
 
+    Attributes:
+        _URL: String
+            - String of the OCR API
+
+    Methods:
+        run(self, content)
+            - Converts a base64 encoded PDF into a JSON string
+    """
     _URL = "https://xtract.upbrains.ai/integration-apis/extract-file"
 
-    def run(self, base64_content):
+    def run(self, content):
+        '''
+        Runs the OCR for a base64 encoded PDF file and converts it into a JSON string
+
+        Arguments:
+            content: string              
+                - A string containing the base-64 encoded contents of the PDF file
+            
+        Raises:
+            - HTTPError: If any HTTP requests fail to execute successfully
+            - KeyError, IndexError: If the PDF passed in doesn't return correct fields
+
+        Return Value:
+            Returns {}
+        '''
         try:
             res = requests.post(
                 self._URL, 
                 data={
                     "service_name": "Xtract-Prebuilt",
                     "model_name": "Invoice - Procurement",
-                    "base64_content": base64_content
+                    "base64_content": content
                 },
                 headers={
                     "Authorization": os.getenv("OCR_AUTH_TOKEN")
@@ -49,5 +73,5 @@ class OCRService():
                 item_fields[field.replace(" ", "")] = item[field]["content"]
         
             fields["InvoiceLine"].append(item_fields)
-            
+
         return json.dumps(fields)
