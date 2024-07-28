@@ -25,16 +25,29 @@ class OCRService():
         
         data = res.json()
         try:
-            data = data["extractor_result"]["documents"][0]["fields"]
+            data_fields = data["extractor_result"]["documents"][0]["fields"]
+            data_items = data["extractor_result"]["documents"][0]["items"]
         except (KeyError, IndexError) as err:
             raise err
 
         fields = {}
-
-        for field in data:
-            if not data[field]["content"]:
+        for field in data_fields:
+            if not data_fields[field]["content"]:
                 continue
 
-            fields[field.replace(" ", "")] = data[field]["content"]
-    
+            fields[field.replace(" ", "")] = data_fields[field]["content"]
+        
+        for item in data_items:
+            if "InvoiceLine" not in fields:
+                fields["InvoiceLine"] = []
+
+            item_fields = {}
+            for field in item:
+                if "content" not in item[field] or not item[field]["content"]:
+                    continue
+                
+                item_fields[field.replace(" ", "")] = item[field]["content"]
+        
+            fields["InvoiceLine"].append(item_fields)
+            
         return json.dumps(fields)
