@@ -1,8 +1,8 @@
+import base64
 import io
 import json
 
-from models import User, Invoice
-from src.services.utils import db_insert, salt_and_hash
+from models import Invoice
 from tests.fixtures import client, user, user_2, invoice, invoice_2
 from tests.data import TEST_DATA
 
@@ -530,6 +530,25 @@ def test_validate_upload_multiple_mixed_result(client, user):
 def test_uploadcreate_json(client, user):
     data = {}
     data['files'] = [(io.BytesIO(TEST_DATA["JSON_STR_1"].encode("utf-8")), 'test.json')]
+
+    res = client.post(
+        INVOICE_UPLOAD_CREATE_PATH,
+        headers={
+            "Authorisation": user.token
+        },
+        data=data,  
+        content_type='multipart/form-data',
+        follow_redirects=True
+    )
+
+    response_body = res.get_json()
+    assert res.status_code == 200
+    assert response_body['message'] == "Invoice(s) created successfully"
+    assert (len(response_body['data']) == 1)
+
+def test_uploadcreate_pdf(client, user):
+    data = {}
+    data['files'] = [(io.BytesIO(base64.b64decode(TEST_DATA["PDF_1"])), 'test.pdf')]
 
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
