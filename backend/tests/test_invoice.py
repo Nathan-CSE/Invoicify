@@ -561,7 +561,6 @@ def test_uploadcreate_pdf(client, user):
     )
 
     response_body = res.get_json()
-    print(res.get_json())
     assert res.status_code == 200
     assert response_body['message'] == "Invoice(s) created successfully"
     assert (len(response_body['data']) == 1)
