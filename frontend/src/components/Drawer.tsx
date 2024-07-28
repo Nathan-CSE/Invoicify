@@ -50,10 +50,10 @@ export default function TemporaryDrawer() {
   const DrawerList = (
     <Box sx={{ width: 250 }} role='presentation' onClick={toggleDrawer(false)}>
       <List>
-        <Typography variant='h6' component='div' sx={{ textAlign: 'center' }}>
-          E-Invoice Manager
+        <Typography variant='h5' fontWeight={"bold"} component='div' sx={{ textAlign: 'center', my: 1 }}>
+          Invoicify
         </Typography>
-        <Divider />
+        <Divider sx={{ mb: 1 }}/>
         {Object.entries(options).map(([name, items], index) => (
           <ListItem
             key={index}

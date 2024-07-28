@@ -434,48 +434,6 @@ export default function CreationGUI(props: {
       extraComments: formData.get('extraComments'),
     };
 
-    const dummyData = {
-      invoiceName: 'string',
-      invoiceNumber: 'string',
-      invoiceIssueDate: 'string',
-      seller: {
-        ABN: 0,
-        companyName: 'string',
-        address: {
-          streetName: 'string',
-          additionalStreetName: 'string',
-          cityName: 'string',
-          postalCode: 0,
-          country: 'string',
-        },
-      },
-      buyer: {
-        ABN: 0,
-        companyName: 'string',
-        address: {
-          streetName: 'string',
-          additionalStreetName: 'string',
-          cityName: 'string',
-          postalCode: 0,
-          country: 'string',
-        },
-      },
-      invoiceItems: [
-        {
-          quantity: 0,
-          unitCode: 0,
-          item: 'string',
-          description: 'string',
-          unitPrice: 0.1,
-          GST: 'string',
-          totalPrice: 0.1,
-        },
-      ],
-      totalGST: 0.1,
-      totalTaxable: 0.1,
-      totalAmount: 0.1,
-    };
-
     if (invoiceData.invoiceIssueDate === '') {
       setOpenError(true);
       setError('Please select an invoice issue date.');
@@ -507,27 +465,37 @@ export default function CreationGUI(props: {
     if (errorCheck) {
       return;
     } else {
-      // Currently this fails, most likely because there are bugs with the backend endpoint
       try {
-        const response = await axios.post(
-          'http://localhost:5000/invoice/create',
-          filteredInvoiceData,
-          {
-            headers: {
-              Authorisation: `${props.token}`,
-            },
-          }
-        );
+        const response = await axios.post('http://localhost:5000/invoice/create', filteredInvoiceData, {
+          headers: {
+            Authorisation: `${props.token}`,
+          },
+        });
 
         if (response.status === 201) {
           // This is the one that should be working, but the api backend does not work
           // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
-          navigate('/invoice-creation-confirmation', {
-            state: {
-              invoice: invoiceData,
-              type: 'GUI',
-              invoiceId: response.data,
+
+          // This is to make the response object consistent betwee invoices create via GUI and upload
+          console.log("this is reponse data: ", response.data);
+          console.log("this is reponse data.data: ", response.data.data);
+          const customResponse = {
+            "invoice": {
+              "data": [
+                {
+                  // NOTE: This method chaining fucking sucks -> wtf is this
+                  "filename": response.data.data[0].filename,
+                  "invoiceId": response.data.data[0].invoiceId
+                }
+              ]
             },
+            "type": "GUI",
+            // This doesn't seem right... but it's how the invoicecreation gui via bulk upload returns
+            "invoiceId": response.data.data[0].invoiceId
+          }
+
+          navigate('/invoice-creation-confirmation', {
+            state: customResponse
           });
         } else {
           console.log(response);

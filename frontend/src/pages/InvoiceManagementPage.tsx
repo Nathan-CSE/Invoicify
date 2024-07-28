@@ -19,6 +19,7 @@ import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
 import SettingsMenu from '../components/SettingsMenu';
 import FilterModal from '../components/FilterModal';
 import PrintableInvoice from '../components/PrintableInvoice';
+import FilterListIcon from '@mui/icons-material/FilterList';
 
 export default function InvoiceManagement(props: { token: string }) {
   const navigate = useNavigate();
@@ -232,7 +233,7 @@ export default function InvoiceManagement(props: { token: string }) {
           }}
         >
           <Typography variant='h4'>Invoice Management</Typography>
-          <Button variant='contained' onClick={handleClickFilter}>
+          <Button variant='contained' onClick={handleClickFilter} startIcon={<FilterListIcon />}>
             FILTER
           </Button>
           <FilterModal

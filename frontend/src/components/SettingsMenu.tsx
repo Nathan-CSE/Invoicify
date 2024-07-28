@@ -7,6 +7,9 @@ import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
 import axios, { AxiosError } from 'axios';
 import ErrorModal from './ErrorModal';
 import { useLocation, useNavigate } from 'react-router-dom';
+import CreateIcon from '@mui/icons-material/Create';
+import SendIcon from '@mui/icons-material/Send';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export default function SettingsMenu(props: { token: string; details: any }) {
   // Error checking
@@ -103,8 +106,9 @@ export default function SettingsMenu(props: { token: string; details: any }) {
             <Box onClick={handleClose}>
               <Button
                 onClick={handleEdit}
+                startIcon={<CreateIcon />}
                 variant='contained'
-                sx={{ minWidth: '6rem' }}
+                sx={{ minWidth: '6rem', maxWidth: '6rem' }}
               >
                 EDIT
               </Button>
@@ -116,8 +120,9 @@ export default function SettingsMenu(props: { token: string; details: any }) {
             <Box onClick={handleClose}>
               <Button
                 onClick={handleSend}
+                startIcon={<SendIcon />}
                 variant='contained'
-                sx={{ minWidth: '6rem' }}
+                sx={{ minWidth: '6rem', maxWidth: '6rem' }}
               >
                 SEND
               </Button>
@@ -129,9 +134,10 @@ export default function SettingsMenu(props: { token: string; details: any }) {
           <Box onClick={handleClose}>
             <Button
               onClick={handleDelete}
+              startIcon={<DeleteIcon sx={{ mr: -0.75 }} />}
               variant='contained'
               color='error'
-              sx={{ minWidth: '6rem' }}
+              sx={{ minWidth: '6rem', maxWidth: '6rem' }}
             >
               DELETE
             </Button>
