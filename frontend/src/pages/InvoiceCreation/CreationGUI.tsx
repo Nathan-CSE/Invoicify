@@ -65,6 +65,7 @@ export default function CreationGUI(props: {
   // Invoice Name State
   const [invName, setInvName] = React.useState<string>('');
   const [invNum, setInvNum] = React.useState<string>('');
+  const [date, setDate] = React.useState<Date>(new Date());
   const [sellerABN, setSellerABN] = React.useState<string>('');
   const [sellerName, setSellerName] = React.useState<string>('');
   // const [sellerAddr, setSellerAddr] = React.useState<string>('');
@@ -100,8 +101,15 @@ export default function CreationGUI(props: {
       totalPrice: 0,
     },
   ]);
+  const handleDateChange = (newDate: any) => {
+    setDate(newDate);
+  };
 
   React.useEffect(() => {
+    const dateString = fields?.IssueDate || '';
+    const [day, month, year] = dateString.split('/');
+    const newDate = `${year}-${month}-${day}`;
+    setDate(new Date(newDate));
     setInvName(fields?.BuyerReference || '');
     setInvNum(fields?.ID || '');
     setSellerABN(
@@ -612,6 +620,8 @@ export default function CreationGUI(props: {
                     name='invoiceIssueDate'
                     format='dd/MM/yyyy'
                     sx={{ width: '100%' }}
+                    value={date}
+                    onChange={handleDateChange}
                   />
                 </DemoContainer>
               </LocalizationProvider>
