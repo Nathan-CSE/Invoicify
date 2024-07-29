@@ -156,11 +156,11 @@ export default function CreationGUI(props: {
         if (firstFlag) {
           const newRow = {
             id: 1,
-            quantity: item?.InvoicedQuantity['@value'],
+            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
             unitCode: item?.InvoicedQuantity.unitCode,
             item: item?.Item.Name,
             description: item?.Item.Description,
-            unitPrice: item?.Price.PriceAmount['@value'],
+            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
             GST: 0,
             totalPrice: 0,
           };
@@ -172,11 +172,11 @@ export default function CreationGUI(props: {
         } else {
           const newRow = {
             id: nextId,
-            quantity: item?.InvoicedQuantity['@value'],
+            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
             unitCode: item?.InvoicedQuantity.unitCode,
             item: item?.Item.Name,
             description: item?.Item.Description,
-            unitPrice: item?.Price.PriceAmount['@value'],
+            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
             GST: 0,
             totalPrice: 0,
           };
@@ -190,11 +190,17 @@ export default function CreationGUI(props: {
       if (fields?.InvoiceLine) {
         const newRow = {
           id: 1,
-          quantity: fields?.InvoiceLine.InvoicedQuantity['@value'],
+          quantity: parseInt(
+            fields?.InvoiceLine.InvoicedQuantity['@value'],
+            10
+          ),
           unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
           item: fields?.InvoiceLine.Item.Name,
           description: fields?.InvoiceLine.Item.Description,
-          unitPrice: fields?.InvoiceLine.Price.PriceAmount['@value'],
+          unitPrice: parseInt(
+            fields?.InvoiceLine.Price.PriceAmount['@value'],
+            10
+          ),
           GST: 0,
           totalPrice: 0,
         };
@@ -440,9 +446,15 @@ export default function CreationGUI(props: {
       return;
     } else {
       if (props.editFlag) {
+        console.log(filteredInvoiceData);
         const response = await axios.put(
           `http://localhost:5000/invoice/edit/${props.id}`,
-          filteredInvoiceData,
+          {
+            name: formData.get('invoiceName'),
+            fields: filteredInvoiceData,
+            rule: 'AUNZ_PEPPOL_1_0_10',
+          },
+
           {
             headers: {
               Authorisation: `${props.token}`,
@@ -456,6 +468,8 @@ export default function CreationGUI(props: {
           console.log(response);
           alert('Unable to edit invoice');
         }
+
+        navigate('/invoice-management');
       } else {
         try {
           const response = await axios.post(
@@ -510,24 +524,47 @@ export default function CreationGUI(props: {
   return (
     <>
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>Invoice Creation - GUI</Typography>
+        {props.editFlag ? (
+          <>
+            <Typography variant='h4'>Invoice Edit</Typography>
+            <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
+            <Breadcrumbs
+              aria-label='breadcrumb'
+              separator={<NavigateNextIcon fontSize='small' />}
+            >
+              <Typography component={Link} to='/dashboard'>
+                Dashboard
+              </Typography>
 
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
+              <Typography component={Link} to='/invoice-management'>
+                Invoice Management
+              </Typography>
 
-        <Breadcrumbs
-          aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize='small' />}
-        >
-          <Typography component={Link} to='/dashboard'>
-            Dashboard
-          </Typography>
+              <Typography color='text.primary'>Invoice Edit</Typography>
+            </Breadcrumbs>
+          </>
+        ) : (
+          <>
+            <Typography variant='h4'>Invoice Creation - GUI</Typography>
+            <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
+            <Breadcrumbs
+              aria-label='breadcrumb'
+              separator={<NavigateNextIcon fontSize='small' />}
+            >
+              <Typography component={Link} to='/dashboard'>
+                Dashboard
+              </Typography>
 
-          <Typography component={Link} to='/invoice-creation'>
-            Invoice Creation
-          </Typography>
+              <Typography component={Link} to='/invoice-creation'>
+                Invoice Creation
+              </Typography>
 
-          <Typography color='text.primary'>Invoice Creation - GUI</Typography>
-        </Breadcrumbs>
+              <Typography color='text.primary'>
+                Invoice Creation - GUI
+              </Typography>
+            </Breadcrumbs>
+          </>
+        )}
 
         <form onSubmit={handleSubmit}>
           {/* INVOICE HEADER */}
