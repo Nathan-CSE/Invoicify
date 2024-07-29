@@ -3,7 +3,7 @@ import io
 import json
 
 from models import Invoice
-from tests.fixtures import client, user, user_2, invoice, invoice_2
+from tests.fixtures import client, user, user_2, invoice, invoice_2, gui_invoice, gui_invoice_2
 from tests.data import TEST_DATA
 
 test_json = {
@@ -191,17 +191,15 @@ def test_invoice_save_invalid_name_type(client, user):
 
     assert res.status_code == 400
 
-def test_invoice_edit_successful(client, user, invoice):
+def test_invoice_edit_successful(client, user, gui_invoice):
     data = {
         "name": "Testing123",
-        "fields": {
-            "field 1": "hi"
-        },
+        "fields": test_json,
         "rule": "AUNZ_PEPPOL_SB_1_0_10"
     }
 
     res = client.put(
-        f"{INVOICE_EDIT_PATH}/{invoice.id}",
+        f"{INVOICE_EDIT_PATH}/{gui_invoice.id}",
         data=json.dumps(data),
         headers={
             "Authorisation": user.token,
@@ -210,13 +208,154 @@ def test_invoice_edit_successful(client, user, invoice):
     )
 
     assert res.status_code == 204
-    assert invoice.name == "Testing123"
-    assert invoice.fields == {
-        "field 1": "hi"
+    assert gui_invoice.name == "Testing123"
+    assert gui_invoice.fields == {
+        "AccountingCustomerParty": {
+        "Party": {
+          "EndpointID": {
+            "@value": "47555222000",
+            "schemeID": "0151"
+          },
+          "PartyLegalEntity": {
+            "CompanyID": {
+              "@value": "47555222000",
+              "schemeID": "0151"
+            },
+            "RegistrationName": "Henry Averies"
+          },
+          "PartyName": {
+            "Name": "Henry Averies"
+          },
+          "PartyTaxScheme": {
+            "TaxScheme": {
+              "CompanyID": "47555222000",
+              "ID": "GST"
+            }
+          },
+          "PostalAddress": {
+            "AdditionalStreetName": "a man",
+            "CityName": "of fortune",
+            "Country": {
+              "IdentificationCode": "AU"
+            },
+            "PostalZone": "1994",
+            "StreetName": "Jam"
+          }
+        }
+      },
+      "AccountingSupplierParty": {
+        "Party": {
+          "EndpointID": {
+            "@value": "47555222000",
+            "schemeID": "0151"
+          },
+          "PartyLegalEntity": {
+            "CompanyID": {
+              "@value": "47555222000",
+              "schemeID": "0151"
+            },
+            "RegistrationName": "Windows to Fit Pty Ltd"
+          },
+          "PartyName": {
+            "Name": "Windows to Fit Pty Ltd"
+          },
+          "PartyTaxScheme": {
+            "CompanyID": "47555222000",
+            "TaxScheme": {
+              "ID": "GST"
+            }
+          },
+          "PostalAddress": {
+            "AdditionalStreetName": "test",
+            "CityName": "test",
+            "Country": {
+              "IdentificationCode": "AU"
+            },
+            "PostalZone": "2912",
+            "StreetName": "Test"
+          }
+        }
+      },
+      "BuyerReference": "test",
+      "DocumentCurrencyCode": "AUD",
+      "ID": "Invoice01",
+      "InvoiceLine": {
+        "ID": "0",
+        "InvoicedQuantity": {
+          "@value": "10",
+          "unitCode": "X01"
+        },
+        "Item": {
+          "ClassifiedTaxCategory": {
+            "ID": "GST",
+            "Percent": "10",
+            "TaxScheme": {
+              "ID": "GST"
+            }
+          },
+          "Description": "Pirate",
+          "Name": "Booty"
+        },
+        "LineExtensionAmount": {
+          "@value": "1000.0",
+          "currencyID": "AUD"
+        },
+        "Price": {
+          "PriceAmount": {
+            "@value": "100.0",
+            "currencyID": "AUD"
+          }
+        }
+      },
+      "InvoiceTypeCode": "380",
+      "IssueDate": "2024-06-25",
+      "LegalMonetaryTotal": {
+        "LineExtensionAmount": {
+          "@value": "900.0",
+          "currencyID": "AUD"
+        },
+        "PayableAmount": {
+          "@value": "1000.0",
+          "currencyID": "AUD"
+        },
+        "TaxExclusiveAmount": {
+          "@value": "900.0",
+          "currencyID": "AUD"
+        },
+        "TaxInclusiveAmount": {
+          "@value": "1000.0",
+          "currencyID": "AUD"
+        }
+      },
+      "Note": "Taxinvoice",
+      "TaxTotal": {
+        "TaxAmount": {
+          "@value": "10",
+          "currencyID": "AUD"
+        },
+        "TaxSubtotal": {
+          "TaxAmount": {
+            "@value": "10",
+            "currencyID": "AUD"
+          },
+          "TaxCategory": {
+            "ID": "S",
+            "Percent": "10",
+            "TaxScheme": {
+              "ID": "GST"
+            }
+          },
+          "TaxableAmount": {
+            "@value": "100.0",
+            "currencyID": "AUD"
+          }
+        }
+      }
     }
-    assert invoice.rule == "AUNZ_PEPPOL_SB_1_0_10"
-    assert invoice.completed_ubl == None
-    assert invoice.is_ready == False
+    assert gui_invoice.rule == "AUNZ_PEPPOL_SB_1_0_10"
+    assert gui_invoice.completed_ubl == None
+    assert gui_invoice.is_gui == True
+    assert gui_invoice.is_ready == False
 
 def test_invoice_edit_invoice_does_not_exist(client, user):
     data = {
@@ -258,17 +397,18 @@ def test_invoice_edit_invoice_does_not_belong_to_user(client, user_2, invoice):
 
     assert res.status_code == 404
 
-def test_invoice_edit_invoice_resets_is_ready_and_completed_ubl_if_fields_or_rule_changes(client, user, invoice_2):
+def test_invoice_edit_invoice_resets_is_ready_and_completed_ubl_if_fields_or_rule_changes(client, user, gui_invoice_2):
+    test_json_2 = test_json
+    test_json_2["invoiceName"] = "Test invoice 2"
+
     data = {
         "name": "test-invoice",
-        "fields": {
-            "field 1": "hi"
-        },
+        "fields": test_json,
         "rule": "AUNZ_PEPPOL_1_0_10"
     }
 
     res = client.put(
-        f"{INVOICE_EDIT_PATH}/{invoice_2.id}",
+        f"{INVOICE_EDIT_PATH}/{gui_invoice_2.id}",
         data=json.dumps(data),
         headers={
             "Authorisation": user.token,
@@ -277,19 +417,17 @@ def test_invoice_edit_invoice_resets_is_ready_and_completed_ubl_if_fields_or_rul
     )
 
     assert res.status_code == 204
-    assert invoice_2.completed_ubl == None
-    assert invoice_2.is_ready == False
+    assert gui_invoice_2.completed_ubl == None
+    assert gui_invoice_2.is_ready == False
 
     data = {
         "name": "test-invoice",
-        "fields": {
-            "yo": "Yo"
-        },
+        "fields": test_json_2,
         "rule": "AUNZ_PEPPOL_SB_1_0_10"
     }
 
     res = client.put(
-        f"{INVOICE_EDIT_PATH}/{invoice_2.id}",
+        f"{INVOICE_EDIT_PATH}/{gui_invoice_2.id}",
         data=json.dumps(data),
         headers={
             "Authorisation": user.token,
@@ -298,8 +436,8 @@ def test_invoice_edit_invoice_resets_is_ready_and_completed_ubl_if_fields_or_rul
     )
 
     assert res.status_code == 204
-    assert invoice_2.completed_ubl == None
-    assert invoice_2.is_ready == False
+    assert gui_invoice_2.completed_ubl == None
+    assert gui_invoice_2.is_ready == False
 
 def test_invoice_delete_successful(client, user, invoice):
     res = client.delete(
