@@ -19,7 +19,6 @@ import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
 import SettingsMenu from '../components/SettingsMenu';
 import FilterModal from '../components/FilterModal';
 import PrintableInvoice from '../components/PrintableInvoice';
-import FilterListIcon from '@mui/icons-material/FilterList';
 
 export default function InvoiceManagement(props: { token: string }) {
   const navigate = useNavigate();
@@ -151,11 +150,7 @@ export default function InvoiceManagement(props: { token: string }) {
             position: 'relative',
           }}
         >
-          <SettingsMenu
-            id={items.id}
-            token={props.token}
-            status={items.is_ready}
-          ></SettingsMenu>
+          <SettingsMenu id={items.id} token={props.token}></SettingsMenu>
           <CardActionArea onClick={handleCardClick(items.id)}>
             <CardContent
               sx={{
@@ -233,7 +228,7 @@ export default function InvoiceManagement(props: { token: string }) {
           }}
         >
           <Typography variant='h4'>Invoice Management</Typography>
-          <Button variant='contained' onClick={handleClickFilter} startIcon={<FilterListIcon />}>
+          <Button variant='contained' onClick={handleClickFilter}>
             FILTER
           </Button>
           <FilterModal

@@ -37,7 +37,7 @@ class InvoiceNamespace(Namespace):
             "totalTaxable": fields.Float(default=0.1),
             "totalAmount": fields.Float(default=0.1)
         })
-    
+        
     def get_upload_validation_fields(self):
         upload_validate_parser = reqparse.RequestParser()
         upload_validate_parser.add_argument('files', location='files', type=FileStorage, required=True)
@@ -54,14 +54,11 @@ class InvoiceNamespace(Namespace):
     def get_history_fields(self):
         history_fields = reqparse.RequestParser()
         history_fields.add_argument('is_ready', type=bool, choices=["true", "false"], required=False, help='Optional flag to filter by invoices.\n If no value is provided, all invoices will be returned')
-        history_fields.add_argument('is_gui', type=bool, choices=["true", "false"], required=False, help='Optional flag to filter by type of invoice.\n If no value is provided, all invoices will be returned')
 
         return history_fields
     
     def get_send_mail_fields(self):
         send_mail_fields = reqparse.RequestParser()
-        send_mail_fields.add_argument('xml_id', type=int, required=False, action='split')
-        send_mail_fields.add_argument('files', location='files', type=FileStorage, required=False)
         send_mail_fields.add_argument('target_email', type=str, required=True)
         return send_mail_fields
 
@@ -70,7 +67,7 @@ class InvoiceNamespace(Namespace):
     def get_id_validation_fields(self):
         validate_parser = reqparse.RequestParser()
         validate_parser.add_argument('rules', type=str, help='Rules for validation', required=True)
-        validate_parser.add_argument('id', type=str, help='Id for validation', action='split')
+
         return validate_parser
 
     def get_save_ubl_fields(self):
@@ -97,6 +94,183 @@ class InvoiceNamespace(Namespace):
     def get_edit_fields(self):
         return self.model("EditUBLFields", {
             "name": fields.String(default="Invoice 1"),
-            "fields": fields.Nested(self.get_create_ubl_fields()),
+            "fields": fields.Raw(default={
+                "ID": "Invoice03",
+                "IssueDate": "2022-07-31",
+                "InvoiceTypeCode": "380",
+                "Note": "Adjustment note to reverse prior bill Invoice01. Free text field can bring attention to reason for credit etc.",
+                "DocumentCurrencyCode": "AUD",
+                "BuyerReference": "Simple solar plan",
+                "InvoicePeriod": {
+                    "StartDate": "2022-06-15",
+                    "EndDate":"2022-07-15"
+                },
+                "BillingReference": {
+                    "InvoiceDocumentReference": {
+                    "ID": "Invoice01",
+                    "IssueDate": "2022-07-29"
+                    }
+                },
+                "AdditionalDocumentReference": {
+                    "ID": "Invoice03.pdf",
+                    "Attachment": {
+                        "EmbeddedDocumentBinaryObject": {
+                            "mimeCode": "application/pdf",
+                            "filename": "Invoice03.pdf",
+                            "value": "UGxhaW4gdGV4dCBpbiBwbGFjZSBvZiBwZGYgYXR0YWNobWVudCBmb3Igc2FtcGxlIGludm9pY2Vz"
+                        }
+                    }
+                },
+                "AccountingSupplierParty": {
+                    "Party": {
+                        "EndpointID": {
+                                "schemeID": "0151",
+                                "value": "47555222000"
+                            },
+                        "PostalAddress": {
+                            "CityName": "Harrison",
+                            "PostalZone": "2912",
+                            "CountrySubentity": "NSW",
+                            "Country": {
+                            "IdentificationCode": "AU"
+                            }
+                        },
+                        "PartyLegalEntity": {
+                            "RegistrationName": "Grey Roo Energy",
+                            "CompanyID": {
+                            "schemeID": "0151",
+                            "value": "47555222000"
+                            }
+                        }
+                    }
+                },
+                "AccountingCustomerParty": {
+                    "Party": {
+                        "EndpointID": {
+                            "schemeID": "0151",
+                            "value": "47555222000"
+                        },
+                        "PartyIdentification": {
+                            "ID": "AccountNumber123"
+                        },
+                        "PostalAddress": {
+                            "StreetName": "100 Queen Street",
+                            "CityName": "Sydney",
+                            "PostalZone": "2000",
+                            "CountrySubentity": "NSW",
+                            "Country": {
+                            "IdentificationCode": "AU"
+                            }
+                        },
+                        "PartyLegalEntity": {
+                            "RegistrationName": "Trotters Incorporated",
+                            "CompanyID": {
+                            "schemeID": "0151",
+                            "value": "91888222000"
+                            }
+                        },
+                        "Contact": {
+                            "Name": "Lisa Johnson"
+                        }
+                    }
+                },
+                "TaxTotal": {
+                    "TaxAmount": {
+                        "currencyID": "AUD",
+                        "value": "-15.94"
+                    },
+                    "TaxSubtotal": {
+                        "TaxableAmount": {
+                            "currencyID": "AUD",
+                            "value": "-159.43"
+                        },
+                        "TaxAmount": {
+                            "currencyID": "AUD",
+                            "value": "-15.94"
+                        },
+                        "TaxCategory": {
+                            "ID": "S",
+                            "Percent": "10",
+                            "TaxScheme": {
+                                "ID": "GST"
+                            }
+                        }
+                    }
+                },
+                "LegalMonetaryTotal": {
+                    "LineExtensionAmount": {
+                        "currencyID": "AUD",
+                        "value": "-159.43"
+                    },
+                    "TaxExclusiveAmount": {
+                        "currencyID": "AUD",
+                        "value": "-159.43"
+                    },
+                    "TaxInclusiveAmount": {
+                        "currencyID": "AUD",
+                        "value": "-175.37"
+                    },
+                    "PayableAmount": {
+                        "currencyID": "AUD",
+                        "value": "-175.37"
+                    }
+                },
+                "InvoiceLine": [
+                    {
+                        "ID": "1",
+                        "InvoicedQuantity": {
+                            "unitCode": "KWH",
+                            "value": "-325.2"
+                        },
+                        "LineExtensionAmount": {
+                            "currencyID": "AUD",
+                            "value": "-129.04"
+                        },
+                        "Item": {
+                            "Name": "Adjustment - reverse prior Electricity charges - all day rate NMI 9000074677",
+                            "ClassifiedTaxCategory": {
+                                "ID": "S",
+                                "Percent": "10",
+                                "TaxScheme": {
+                                    "ID": "GST"
+                                }
+                            }
+                        },
+                        "Price": {
+                            "PriceAmount": {
+                            "currencyID": "AUD",
+                            "value": "0.3968"
+                            }
+                        }
+                    },
+                    {
+                        "ID": "2",
+                        "InvoicedQuantity": {
+                            "unitCode": "DAY",
+                            "value": "-31"
+                        },
+                        "LineExtensionAmount": {
+                            "currencyID": "AUD",
+                            "value": "-30.39"
+                        },
+                        "Item": {
+                            "Name": "Adjustment - reverse prior Supply charge",
+                                "ClassifiedTaxCategory": {
+                                "ID": "S",
+                                "Percent": "10",
+                                "TaxScheme": {
+                                    "ID": "GST"
+                                }
+                            }
+                        },
+                        "Price": {
+                            "PriceAmount": {
+                            "currencyID": "AUD",
+                            "value": "0.9803"
+                            }
+                        }
+                    }
+                ]
+            }, required=True),
             "rule": fields.String(required=True, default="AUNZ_PEPPOL_1_0_10")
         })

@@ -62,6 +62,7 @@ class ConversionService():
             Returns a string containing the converted XML
         '''
         try:
+            print(json_str)
             data = json.loads(json_str)
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON: {str(e)}")
@@ -161,7 +162,7 @@ class ConversionService():
         else:
             # Has attributes and a value 
             if isinstance(fields[element_tag], dict):
-                fields[element_tag]["@value"] = element.text
+                fields[element_tag]["value"] = element.text
             # Has only a value
             else:
                 fields[element_tag] = element.text
@@ -191,33 +192,25 @@ class ConversionService():
         is_xml_tag = key[0].isupper()
 
         namespace = "cbc"
-        # Sub-element is an XML-tag
-        if is_xml_tag:
-            # Contains attributes OR child elements
-            if isinstance(value, dict):
-                # Sub-element contains no attributes BUT has more child elements
-                if not value.get("@value"):
-                    namespace = "cac"
+        # Sub-element is an XML-tag AND contains attributes OR child elements
+        if is_xml_tag and isinstance(value, dict):
+            # Sub-element contains no attributes BUT has more child elements
+            if not value.get("value"):
+                namespace = "cac"
 
-                # Set the sub-element as a child of the element and recurses down the dictionary   
-                subelement = SubElement(element, f"{namespace}:{key}")
-                self._build_xml_from_json(subelement, value)
-            # Contains no attributes or child elements
-            elif isinstance(value, str):
-                subelement = SubElement(element, f"{namespace}:{key}")
-                subelement.text = value
-            else:
-                raise TypeError(f"{key}'s value is not of type string")
+            # Set the sub-element as a child of the element and recurses down the dictionary   
+            subelement = SubElement(element, f"{namespace}:{key}")
+            self._build_xml_from_json(subelement, value)
+        # Sub-element is an XML-tag AND contains no attributes or child elements
+        elif is_xml_tag and isinstance(value, str):
+            subelement = SubElement(element, f"{namespace}:{key}")
+            subelement.text = value
         # Set the element's value
-        elif key == "@value":
+        elif key == "value":
             element.text = value
         # Set the element attributes
-        elif key.isalpha():
-            if not isinstance(value, str):
-                raise TypeError(f"{key} is not of type string")
-            element.set(key, value)
         else:
-            raise ValueError(f"{key} contains invalid characters")
+            element.set(key, value)
 
     def _build_xml_from_json(self, element, data):
         '''

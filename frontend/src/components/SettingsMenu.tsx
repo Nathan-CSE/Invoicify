@@ -6,16 +6,8 @@ import { Box, Stack, Typography } from '@mui/material';
 import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
 import axios, { AxiosError } from 'axios';
 import ErrorModal from './ErrorModal';
-import { useLocation, useNavigate } from 'react-router-dom';
-import CreateIcon from '@mui/icons-material/Create';
-import SendIcon from '@mui/icons-material/Send';
-import DeleteIcon from '@mui/icons-material/Delete';
 
-export default function SettingsMenu(props: {
-  id: number;
-  token: string;
-  status: boolean;
-}) {
+export default function SettingsMenu(props: { id: number; token: string }) {
   // Error checking
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -32,18 +24,13 @@ export default function SettingsMenu(props: {
     setAnchorEl(null);
   };
 
-  const navigate = useNavigate();
-
   // Three functions to handle the settings option
   const handleEdit = () => {
     console.log('1');
   };
 
   const handleSend = () => {
-    console.log(props.id);
-    navigate('/invoice-sending', {
-      state: { cardID: props.id },
-    });
+    console.log('1');
   };
 
   const handleDelete = async () => {
@@ -108,35 +95,27 @@ export default function SettingsMenu(props: {
           <Box onClick={handleClose}>
             <Button
               onClick={handleEdit}
-              startIcon={<CreateIcon />}
               variant='contained'
-              sx={{ minWidth: '6rem', maxWidth: '6rem' }}
+              sx={{ minWidth: '6rem' }}
             >
               EDIT
             </Button>
           </Box>
-          {props.status ? (
-            <Box onClick={handleClose}>
-              <Button
-                onClick={handleSend}
-                startIcon={<SendIcon />}
-                variant='contained'
-                sx={{ minWidth: '6rem', maxWidth: '6rem' }}
-              >
-                SEND
-              </Button>
-            </Box>
-          ) : (
-            <></>
-          )}
-
+          <Box onClick={handleClose}>
+            <Button
+              onClick={handleSend}
+              variant='contained'
+              sx={{ minWidth: '6rem' }}
+            >
+              SEND
+            </Button>
+          </Box>
           <Box onClick={handleClose}>
             <Button
               onClick={handleDelete}
-              startIcon={<DeleteIcon sx={{ mr: -0.75 }} />}
               variant='contained'
               color='error'
-              sx={{ minWidth: '6rem', maxWidth: '6rem' }}
+              sx={{ minWidth: '6rem' }}
             >
               DELETE
             </Button>

@@ -4,146 +4,118 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { DropzoneArea } from 'mui-file-dropzone';
+import { DropzoneArea } from "mui-file-dropzone";
 import axios from 'axios';
 import { TextField } from '@mui/material';
-import MultipleSelect from '../../components/MultipleSelect';
-import SendIcon from '@mui/icons-material/Send';
+import { request } from 'http';
 
-export default function InvoiceSending(props: { token: string }) {
+export default function InvoiceSending(props: { token: string; }) {
   // console.log('user token: ', props.token);
   const navigate = useNavigate();
-  const [invoices, setInvoices] = React.useState<string[]>([]);
-  const [files, setFiles] = React.useState<File[] | null>([]);
+  const [open, setOpen] = React.useState(false);
+  const [invoice, setInvoice] = React.useState('');
+  const [file, setFile] = React.useState<File | null>(null);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
 
-  // How we preload data from another page
-  const location = useLocation();
-  React.useEffect(() => {
-    // Checks if we have some props from another page otherwise it will be null
-    if (location && location.state) {
-      // Type cast id to string, since allInvoices contains a list of ID strings
-      const id: string = location.state.cardID.toString();
-      setInvoices([id]);
-    }
-  }, []);
 
-  const handleChange = (event: SelectChangeEvent<string[]>) => {
+  const handleChange = (event: SelectChangeEvent) => {
     console.log('this is event.target: ', event.target);
 
-    const { name, value } = event.target;
-
-    setInvoices( typeof value === 'string' ? value.split(',') : value);
-
-    console.log("this is invoices: ", invoices);
+    setInvoice(event.target.value);
 
     if (event.target.value) {
-      setFiles(null); // Clear file selection if an invoice is selected
+      setFile(null); // Clear file selection if an invoice is selected
 
     }
+
   };
 
   const handleFileChange = (loadedFiles: File[]) => {
     console.log('Currently loaded:', loadedFiles);
     if (loadedFiles.length > 0) {
-      console.log("these are the files that have currently been loaded: ", loadedFiles);
-      setFiles(loadedFiles);
-      setInvoices([]); // Clear invoice selection if a file is uploaded
+      setFile(loadedFiles[0]);
+      setInvoice(''); // Clear invoice selection if a file is uploaded
     } else {
-      setFiles(null);
+      setFile(null);
     }
   };
 
-  const handleSubmit = async (event: {
-    preventDefault: () => void;
-    currentTarget: HTMLFormElement | undefined;
-  }) => {
+  const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
     event.preventDefault();
 
-    if (files === null && invoices.length === 0) {
+    if (file === null && invoice === '') {
       alert("You must either upload a JSON/PDF file or select a UBL invoice to send.");
       return;
     }
 
     const formData = new FormData(event.currentTarget);
-    const recipientEmail = formData.get('recipientEmail') || '';
-    const invoiceId = formData.get('select-invoice') || '';
+    const recipientEmail = formData.get("recipientEmail") || '';
+    const invoiceId = formData.get("select-invoice") || '';
 
-    console.log('recipient email: ', recipientEmail);
-    // console.log('invoice id: ', invoiceId);
+    console.log("recipient email: ", recipientEmail);
+    console.log("invoice id: ", invoiceId);
 
     const requestData = new FormData();
-    let invoiceNames: string[] = [];
 
-    if (files) {
-      files.forEach(item => {
-        requestData.append("files", item);
-        invoiceNames.push(item.name);
-      });
+    if (file) {
+      requestData.append("files", file);
     } else {
-      invoices.forEach(item => {
-        // requestData.append("id", item);
-
-        // console.log("available invoices: ", availableInvoices);
-        // This sends the name of the invoices across
-        const specificInvoice = availableInvoices.find(invoice => invoice.invoiceId === Number(item));
-        invoiceNames.push(specificInvoice.name);
-        
-      })
+      requestData.append("target_email", recipientEmail);
+      // requestData.append("id", invoiceId);
     }
-    requestData.append("target_email", recipientEmail);
-
-    console.log("These are the invoice names2: ", invoiceNames);
 
     console.log('this is requestData: ', requestData);
+    navigate('/invoice-sending-confirmation');
 
-    // navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames, recipientEmail: recipientEmail } });
-
-    // FIXME: Commented this out until the endpoint supports multiple send
     try {
       // Placeholder until sending endpoint has been created
       var response;
 
-      if (files) {
+      if (file) {
         // Placeholder until json/pdf send endpoint has been created
-        response = await axios.post(`http://localhost:5000/invoice/send_ubl`, requestData, {
+        response = await axios.post(`http://localhost:5000/invoice/uploadValidate`, requestData, {
           headers: {
-            Authorisation: `${props.token}`,
-            'Content-Type': 'multipart/form-data',
-          },
+            'Authorisation': `${props.token}`,
+            'Content-Type': 'multipart/form-data'
+          }
         });
       } else {
+        // console.log(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`);
+        // response = await axios.post(`http://localhost:5000/invoice/send_ubl/${invoiceId}?target_email=${recipientEmail}`, {
+        //   headers: {
+        //     'Authorisation': `${props.token}`,
+        //   }
+        // });
 
-        response = await axios.post(`http://localhost:5000/invoice/send_ubl?xml_id=${invoices}`, requestData, {
+        response = await axios.post(`http://localhost:5000/invoice/send_ubl/${invoiceId}`, requestData, {
           headers: {
-            Authorisation: `${props.token}`,
-          },
+            'Authorisation': `${props.token}`,
+          }
         });
-      }
 
+      }
+      
       if (response.status === 200) {
         console.log(response.data);
-        navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames, recipientEmail: recipientEmail } });
+        navigate('/invoice-sending-confirmation');
+        
       } else {
-        // console.log(response.data);
-        // navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
-        alert("Unable to send invoice");
+        console.log(response.data);
+        navigate('/invoice-sending-confirmation');
+        // alert("Unable to send invoice");
       }
     } catch (err) {
-      // FIXME:
-      // Here temporarily until endpoint has been created for bulk sending
-      alert("Unable to send invoice");
-      // navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
       // console.log(err);
-      // alert(err);
+      alert(err);
     }
+
   };
 
   React.useEffect(() => {
@@ -155,68 +127,75 @@ export default function InvoiceSending(props: { token: string }) {
         //     'Authorisation': `${props.token}`,
         //   }
         // });
-        const response = await axios.get(
-          'http://localhost:5000/invoice/history?is_ready=true',
-          {
-            headers: {
-              Authorisation: `${props.token}`,
-            },
+        const response = await axios.get('http://localhost:5000/invoice/history?is_ready=true', {
+          headers: {
+            'Authorisation': `${props.token}`,
           }
-        );
-
+        });
+        
         var allInvoices = [];
-
+        
         if (response.status === 200) {
           for (let i = 0; i < response.data.length; i++) {
             var invoiceInfo = {
               name: response.data[i].name,
-              invoiceId: response.data[i].id,
-            };
-
+              invoiceId: response.data[i].id
+            }
+           
             allInvoices.push(invoiceInfo);
-          }
-          // console.log(response.data);
+          } 
+          console.log(response.data);
           setAvailableInvoices(allInvoices);
           // console.log("all invoices: ", allInvoices);
           // navigate('/invoice-creation-confirmation', { state: invoiceData });
         } else {
           console.log(response);
-          alert('Unable to retrieve valid invoices');
+          alert("Unable to retrieve valid invoices");
         }
       } catch (err) {
         alert(err);
       }
     };
-
+  
     fetchData();
   }, []);
 
+
   return (
     <>
-      <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>Invoice Sending</Typography>
+     
+      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
+        <Typography variant='h4'>
+          Invoice Sending
+        </Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
 
         <Breadcrumbs
           aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize='small' />}
+          separator={<NavigateNextIcon fontSize="small" />}
         >
-          <Typography component={Link} to='/dashboard'>
+          <Typography
+            component={Link}
+            to='/dashboard'
+          >
             Dashboard
           </Typography>
 
-          <Typography color='text.primary'>Invoice Sending</Typography>
+          <Typography color='text.primary'>
+            Invoice Sending
+          </Typography>
         </Breadcrumbs>
 
         <form onSubmit={handleSubmit}>
+
           <Box sx={{ my: 5 }}>
             <DropzoneArea
               acceptedFiles={['.json', '.pdf']}
-              fileObjects={files}
+              fileObjects={file}
               onChange={handleFileChange}
               dropzoneText={'Upload an Invoice: JSON, PDF'}
-              filesLimit={10}
+              filesLimit={1}
             />
           </Box>
 
@@ -224,17 +203,34 @@ export default function InvoiceSending(props: { token: string }) {
             OR
           </Typography>
 
-          <MultipleSelect invoices={invoices} availableInvoices={availableInvoices} file={files} handleChange={handleChange} />
+          <Box sx={{ minWidth: 120 }}>
+            <FormControl variant="standard" fullWidth>
+              <InputLabel id="select-invoice-label">Select Invoice</InputLabel>
+              <Select
+                labelId="select-invoice-label"
+                id="select-invoice"
+                name='select-invoice'
+                value={invoice}
+                label="Select Invoice"
+                onChange={handleChange}
+                disabled={Boolean(file)}
+              >
+                {availableInvoices.map((invoice) => (
+                  <MenuItem value={invoice.invoiceId}>{invoice.name}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
 
           <Box sx={{ minWidth: 120, mb: 5 }}>
-            <FormControl variant='standard' fullWidth>
+            <FormControl variant="standard" fullWidth>
               <TextField
-                margin='normal'
+                margin="normal"
                 required
-                id='recipientEmail'
-                label='Recipient Email'
-                name='recipientEmail'
-                variant='standard'
+                id="recipientEmail"
+                label="Recipient Email"
+                name="recipientEmail"
+                variant="standard"
                 sx={{ width: '100%' }}
               />
             </FormControl>
@@ -242,19 +238,19 @@ export default function InvoiceSending(props: { token: string }) {
 
           <Box textAlign='center'>
             <Button
-              type='submit'
+              type="submit"
               variant='contained'
-              startIcon={<SendIcon style={{ marginTop: 2 }} />}
               sx={{
                 height: '50px',
                 padding: '25px',
               }}
             >
-              Send Invoice(s)
+              Continue
             </Button>
           </Box>
         </form>
       </Container>
+      
     </>
   );
 }

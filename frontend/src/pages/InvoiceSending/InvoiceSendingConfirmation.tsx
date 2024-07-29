@@ -4,18 +4,92 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Card, CardContent, Grid } from '@mui/material';
-import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
-import ReplayIcon from '@mui/icons-material/Replay';
-import SendIcon from '@mui/icons-material/Send';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { DropzoneArea } from "mui-file-dropzone";
+import axios from 'axios';
+import { Grid, TextField } from '@mui/material';
 
 export default function InvoiceSending(props: { token: string; }) {
   console.log('user token: ', props.token);
-  console.log("location state: ", useLocation().state);
-  const { invoiceNames, recipientEmail } = useLocation().state;
+  const navigate = useNavigate();
+  const [open, setOpen] = React.useState(false);
+  const [invoice, setInvoice] = React.useState('');
+  const [file, setFile] = React.useState<File | null>(null);
+  const [email, setEmail] = React.useState('');
+  const [showOverlay, setShowOverlay] = React.useState(false);
+
+  const handleChange = (event: SelectChangeEvent) => {
+    console.log('this is event.target: ', event.target);
+
+    setInvoice(event.target.value);
+
+    if (event.target.value) {
+      setFile(null); // Clear file selection if an invoice is selected
+
+    } else {
+      setShowOverlay(false);
+    }
+
+  };
+
+  const handleFileChange = (loadedFiles: File[]) => {
+    console.log('Currently loaded:', loadedFiles);
+    if (loadedFiles.length > 0) {
+      setFile(loadedFiles[0]);
+      setInvoice(''); // Clear invoice selection if a file is uploaded
+      setShowOverlay(false);
+    } else {
+      setFile(null);
+    }
+  };
+
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+
+    if (file) {
+      formData.append("files", file);
+    }
+
+    if (invoice) {
+      formData.append("invoice", invoice);
+    }
+
+    formData.append("email", email);
+
+    console.log('this is formData: ', formData);
+
+    try {
+      // Placeholder until sending endpoint has been created
+      const response = await axios.post(`http://localhost:5000/invoice/uploadValidate`, formData, {
+        headers: {
+          'Authorisation': `${props.token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      
+      if (response.status === 200) {
+        console.log(response.data);
+        // navigate('/invoice-validation-report-valid', { state: { fileName: file?.name, ruleSet: ruleSet } });
+        
+      } else {
+        console.log(response.data);
+        // navigate('/invoice-validation-report-invalid', { state: { response: response.data, ruleSet: ruleSet } });
+        // alert("Unable to create invoice");
+      }
+    } catch (err) {
+      // console.log(err);
+      alert(err);
+    }
+
+  };
 
   return (
     <>
@@ -50,54 +124,46 @@ export default function InvoiceSending(props: { token: string; }) {
           </Typography>
         </Breadcrumbs>
 
-        <Box textAlign='center' sx={{ mt: 5 }}>
-          <Typography variant='h4' sx={{ mb: 1 }}>
-            Your file(s) have been sent!
-          </Typography>
-          <Typography variant='h6'>
-            <SendIcon style={{ marginBottom: -5, marginRight: 10 }}/>{recipientEmail}
-          </Typography>
-        </Box>
-
-        <Grid container spacing={4} sx={{ mt: 1, mb: 5 }} justifyContent="center">
-          {invoiceNames.map((invoice: string, index: number) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card
-                sx={{
-                  border: 1,
-                  borderRadius: '16px',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                }}
-              >
-                <CardContent>
-                  <InvoiceSvg style={{ width: '100px', height: '100px', marginBottom: '16px' }} />
-                  <Typography variant='h6' component='div'>
-                    {invoice}
-                  </Typography>
-                </CardContent> 
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-
-        <Divider 
-          sx={{ 
-            mt: 6,
-            mb: 4,
-            borderBottomWidth: 2,
+        <Box
+          sx={{
+            my: 10,
+            padding: 5,
+            height: '25vh',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: 'solid 0.5px',
+            borderRadius: 4
           }}
-        />
+        >
+          <Box sx={{ mt: 1 }}>
+            <Typography textAlign='center'>
+              File sent successfully!
+            </Typography>
+          </Box>
+        
+        </Box>
 
         <Grid container justifyContent="center" spacing={6}>
           <Grid item>
             <Button
               component={Link}
+              to='/dashboard'
+              variant='contained'
+              sx={{
+                height: '50px',
+                padding: '25px',
+              }}
+            >
+              Back to Dashboard
+            </Button>
+          </Grid>
+
+          <Grid item>
+            <Button
+              component={Link}
               to='/invoice-sending'
-              startIcon={<ReplayIcon />}
               variant='contained'
               sx={{
                 height: '50px',
