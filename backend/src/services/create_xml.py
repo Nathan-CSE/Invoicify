@@ -16,6 +16,16 @@ def fix_optional(name, value):
         return f"<cbc:{name}>{value}</cbc:{name}>"
     
 def create_xml(file, user):
+    json_val = format_xml(file)
+
+    invoice_name = file["invoiceName"] + ".xml"
+    invoice = Invoice(name=invoice_name, fields=json.loads(json_val),  rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False, is_gui=True)
+
+    db_insert(invoice)
+    
+    return {"filename": invoice.name, "invoiceId": invoice.id} 
+ 
+def format_xml(file):
     products = ""
     for no, item in enumerate(file["invoiceItems"]):
         description = fix_optional("Description", item["description"])
@@ -64,12 +74,8 @@ def create_xml(file, user):
         json_val = cs.xml_to_json(content)
     except Exception as e:
         print(f"ERROR: {e}")
-    invoice_name = file["invoiceName"] + ".xml"
-    invoice = Invoice(name=invoice_name, fields=json.loads(json_val),  rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False, is_gui=True)
-
-    db_insert(invoice)
     
-    return {"filename": invoice.name, "invoiceId": invoice.id} 
- 
+    return json_val
+
 if __name__ == "__main__":
     create_xml("test")

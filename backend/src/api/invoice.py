@@ -7,7 +7,7 @@ from flask_restx import Resource
 
 from models import db, Invoice
 from src.namespaces.invoice import InvoiceNamespace
-from src.services.create_xml import create_xml
+from src.services.create_xml import create_xml, format_xml
 from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.conversion import ConversionService
@@ -132,17 +132,19 @@ class EditAPI(Resource):
     def put(self, id, user):
         data = request.json
 
-        if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
+        if not (invoice := Invoice.query.filter(Invoice.id == id).filter(Invoice.is_gui == True).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 404)
 
+        json_str = format_xml(data["fields"])
+
         # Fields or rule has been changed
-        if invoice.fields != data["fields"] or invoice.rule != data["rule"]:
+        if invoice.fields != json_str or invoice.rule != data["rule"]:
             invoice.completed_ubl = None
             invoice.is_ready = False
 
         invoice.name = data["name"]
         invoice.rule = data["rule"]
-        invoice.fields = data["fields"] 
+        invoice.fields = json.loads(json_str)
 
         db.session.commit()
 
