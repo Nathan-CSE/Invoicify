@@ -44,7 +44,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   const openPopover = Boolean(anchorEl);
   const id = openPopover ? 'simple-popover' : undefined;
   const [dataFields, setDataFields] = React.useState(location.state.fields);
-
+  console.log(dataFields);
   const [invoiceType, setInvoiceType] = React.useState('JSON');
   React.useEffect(() => {
     console.log(location.state);
@@ -65,20 +65,24 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   const formatJSON = (dataFields: any, indentLevel = 0) => {
     let formattedString = '';
     const indent = ' '.repeat(indentLevel * 2); // Use two spaces for each indent level
+    console.log(dataFields);
 
     // Checks if its an object and has children to loop through so we recurse
     // Else we just display the value
-    for (const [key, value] of Object.entries(dataFields)) {
-      if (typeof value === 'object') {
-        formattedString += `${indent}${key}:\n${formatJSON(
-          value,
-          indentLevel + 1
-        )}`;
-      } else {
-        formattedString += `${indent}${key}: ${value}\n`;
+    if (dataFields) {
+      for (const [key, value] of Object.entries(dataFields)) {
+        if (typeof value === 'object') {
+          formattedString += `${indent}${key}:\n${formatJSON(
+            value,
+            indentLevel + 1
+          )}`;
+        } else {
+          const val = value ? value : '';
+          console.log(val);
+          formattedString += `${indent}${key}: ${val}\n`;
+        }
       }
     }
-
     return formattedString;
   };
 
@@ -351,8 +355,8 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                           <TableCell>
                             {item.InvoicedQuantity.unitCode}
                           </TableCell>
-                          <TableCell>{item.Item.Name}</TableCell>
-                          <TableCell>{item.Item.Description}</TableCell>
+                          <TableCell>{item?.Item.Name || ''}</TableCell>
+                          <TableCell>{item?.Item.Description || ''}</TableCell>
                           <TableCell>
                             {item.Price.PriceAmount['@value']}
                           </TableCell>
@@ -380,10 +384,10 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                           {dataFields.InvoiceLine.InvoicedQuantity.unitCode}
                         </TableCell>
                         <TableCell>
-                          {dataFields.InvoiceLine.Item.Name}
+                          {dataFields?.InvoiceLine.Item.Name || ''}
                         </TableCell>
                         <TableCell>
-                          {dataFields.InvoiceLine.Item.Description}
+                          {dataFields?.InvoiceLine.Item.Description || ''}
                         </TableCell>
                         <TableCell>
                           {dataFields.InvoiceLine.Price.PriceAmount['@value']}

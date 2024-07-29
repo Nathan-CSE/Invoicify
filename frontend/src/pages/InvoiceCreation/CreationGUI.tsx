@@ -64,6 +64,7 @@ export default function CreationGUI(props: {
 
   // Invoice Name State
   const [invName, setInvName] = React.useState<string>('');
+  const [invNum, setInvNum] = React.useState<string>('');
   const [sellerABN, setSellerABN] = React.useState<string>('');
   const [sellerName, setSellerName] = React.useState<string>('');
   // const [sellerAddr, setSellerAddr] = React.useState<string>('');
@@ -102,6 +103,7 @@ export default function CreationGUI(props: {
 
   React.useEffect(() => {
     setInvName(fields?.BuyerReference || '');
+    setInvNum(fields?.ID || '');
     setSellerABN(
       fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID[
         '@value'
@@ -116,7 +118,7 @@ export default function CreationGUI(props: {
     );
     setSellerAddStreetName(
       fields?.AccountingSupplierParty.Party.PostalAddress
-        .additionalStreetName || ''
+        .AdditionalStreetName || ''
     );
     setSellerCityName(
       fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
@@ -158,8 +160,8 @@ export default function CreationGUI(props: {
             id: 1,
             quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
             unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name,
-            description: item?.Item.Description,
+            item: item?.Item.Name || '',
+            description: item?.Item.Description || '',
             unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
             GST: 0,
             totalPrice: 0,
@@ -174,8 +176,8 @@ export default function CreationGUI(props: {
             id: nextId,
             quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
             unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name,
-            description: item?.Item.Description,
+            item: item?.Item.Name || '',
+            description: item?.Item.Description || '',
             unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
             GST: 0,
             totalPrice: 0,
@@ -195,8 +197,8 @@ export default function CreationGUI(props: {
             10
           ),
           unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
-          item: fields?.InvoiceLine.Item.Name,
-          description: fields?.InvoiceLine.Item.Description,
+          item: fields?.InvoiceLine.Item.Name || '',
+          description: fields?.InvoiceLine.Item.Description || '',
           unitPrice: parseInt(
             fields?.InvoiceLine.Price.PriceAmount['@value'],
             10
@@ -597,6 +599,8 @@ export default function CreationGUI(props: {
                 autoFocus
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={invNum}
+                onChange={(e) => setInvNum(e.target.value)}
               />
             </Grid>
 
