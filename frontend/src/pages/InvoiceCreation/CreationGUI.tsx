@@ -950,9 +950,11 @@ export default function CreationGUI(props: {
           </Box>
         </form>
 
-        <Box sx={{ mb: 6 }}>
-          {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-        </Box>
+        {openError && (
+          <ErrorModal open={openError} setOpen={setOpenError}>
+            {error}
+          </ErrorModal>
+        )}
       </Container>
     </>
   );

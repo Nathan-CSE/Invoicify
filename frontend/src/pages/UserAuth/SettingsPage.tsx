@@ -124,10 +124,12 @@ function SettingsPage(props: { token: string }) {
             </Button>
           </Box>
         </Box>
-        <Box sx={{ mt: 10 }}>
-          {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-        </Box>
       </Box>
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
     </>
   );
 }

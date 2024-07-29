@@ -272,10 +272,11 @@ export default function InvoiceManagement(props: { token: string }) {
           {generateInvoiceCards()}
         </Grid>
       </Box>
-
-      <Box sx={{ mt: 10 }}>
-        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-      </Box>
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
     </>
   );
 }
