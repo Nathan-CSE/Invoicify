@@ -8,15 +8,13 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 // This is vaulted to the other sprint
-export default function FormDialog() {
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
+export default function ConfirmDialog(props: {
+  open: boolean;
+  function: any;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const handleClose = () => {
-    setOpen(false);
+    props.setOpen(false);
   };
 
   return (
@@ -24,17 +22,16 @@ export default function FormDialog() {
       {/* <Button variant='outlined' onClick={handleClickOpen}>
         Open form dialog
       </Button> */}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Subscribe</DialogTitle>
+      <Dialog open={props.open} onClose={handleClose}>
+        <DialogTitle>CAUTION</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            To subscribe to this website, please enter your email address here.
-            We will send updates occasionally.
+            Do you wish to proceed with this action?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button type='submit'>Confirm</Button>
+          <Button onClick={props.function}>Confirm</Button>
         </DialogActions>
       </Dialog>
     </>

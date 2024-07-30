@@ -24,7 +24,7 @@ import PrintableInvoice from '../components/PrintableInvoice';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import LoadingDialog from '../components/LoadingDialog';
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import { AiOutlineFieldNumber } from "react-icons/ai";
+import { AiOutlineFieldNumber } from 'react-icons/ai';
 import NumbersIcon from '@mui/icons-material/Numbers';
 import TagIcon from '@mui/icons-material/Tag';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -33,7 +33,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import useAuth from './useAuth';
 
 export default function InvoiceManagement(props: { token: string }) {
-  useAuth(props.token);
+  // useAuth(props.token);
 
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
@@ -185,15 +185,27 @@ export default function InvoiceManagement(props: { token: string }) {
               }}
             >
               <InvoiceSvg />
-              <Box sx={{ display: 'flex', ml: 1, flexDirection: 'column', textAlign: 'left' }}>
-                <Stack direction='row' spacing={1} sx={{ mt: 3 }} alignItems="center">
+              <Box
+                sx={{
+                  display: 'flex',
+                  ml: 1,
+                  flexDirection: 'column',
+                  textAlign: 'left',
+                }}
+              >
+                <Stack
+                  direction='row'
+                  spacing={1}
+                  sx={{ mt: 3 }}
+                  alignItems='center'
+                >
                   <ReceiptIcon />
                   <Typography variant='h6' component='div'>
                     {items.name}
                   </Typography>
                 </Stack>
 
-                <Stack direction='row' spacing={1.25} alignItems="center">
+                <Stack direction='row' spacing={1.25} alignItems='center'>
                   <TagIcon style={{ fontSize: 20, marginLeft: 2 }} />
                   <Typography variant='h6' component='div'>
                     ID: {items.id}
@@ -202,14 +214,24 @@ export default function InvoiceManagement(props: { token: string }) {
 
                 {items.is_ready ? (
                   <>
-                    <Stack direction='row' spacing={1} sx={{ my: 1 }} alignItems="center">
+                    <Stack
+                      direction='row'
+                      spacing={1}
+                      sx={{ my: 1 }}
+                      alignItems='center'
+                    >
                       <CheckCircleIcon />
                       <Typography variant='subtitle1' gutterBottom>
                         Status: Validated
                       </Typography>
                     </Stack>
 
-                    <Stack direction='row' spacing={1} sx={{ mb: 1 }} alignItems="center">
+                    <Stack
+                      direction='row'
+                      spacing={1}
+                      sx={{ mb: 1 }}
+                      alignItems='center'
+                    >
                       <RuleIcon />
                       <Typography variant='subtitle1' gutterBottom>
                         Rule: {items.rule}
@@ -218,7 +240,12 @@ export default function InvoiceManagement(props: { token: string }) {
                   </>
                 ) : (
                   <>
-                    <Stack direction='row' spacing={1} sx={{ mb: 1 }} alignItems="center">
+                    <Stack
+                      direction='row'
+                      spacing={1}
+                      sx={{ mb: 1 }}
+                      alignItems='center'
+                    >
                       <CancelIcon />
                       <Typography variant='subtitle1' gutterBottom>
                         Status: Unvalidated
@@ -227,7 +254,6 @@ export default function InvoiceManagement(props: { token: string }) {
                   </>
                 )}
               </Box>
-
             </CardContent>
           </CardActionArea>
         </Card>
@@ -254,7 +280,7 @@ export default function InvoiceManagement(props: { token: string }) {
   return (
     <>
       <LoadingDialog open={loading} message='Retrieving invoices...' />
-      <Container maxWidth="lg" sx={{ marginTop: 11, position: 'relative' }}>
+      <Container maxWidth='lg' sx={{ marginTop: 11, position: 'relative' }}>
         <Box
           sx={{
             display: 'flex',
@@ -278,7 +304,7 @@ export default function InvoiceManagement(props: { token: string }) {
             onCancel={handleCancelFilter}
           />
         </Box>
-        <Divider sx={{  width: '100%' }} />
+        <Divider sx={{ width: '100%' }} />
         <Breadcrumbs
           aria-label='breadcrumb'
           separator={<NavigateNextIcon fontSize='small' />}
