@@ -17,9 +17,7 @@ import CircleIcon from '@mui/icons-material/Circle';
 function DocPage(props: { token: string }) {
   return (
     <Container maxWidth='lg' sx={{ mt: 11 }}>
-      <Typography variant='h4' gutterBottom>
-        Documentation
-      </Typography>
+      <Typography variant='h4'>Documentation</Typography>
       {/* <Divider sx={{ borderColor: 'black' }} />
        */}
       <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
