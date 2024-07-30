@@ -209,7 +209,6 @@ def test_send_fail(client, user):
     assert res.status_code == 400
 
 def test_send_suc(client, user, invoice_2):
-    print(invoice_2.is_ready)
     res = client.post(
         f"{INVOICE_SEND_PATH}?xml_id={invoice_2.id}&target_email=",
         headers={
