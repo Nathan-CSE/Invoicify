@@ -11,7 +11,7 @@ import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-
+import checkAuth from './useAuth';
 
 import { ReactComponent as ManageSvg } from '../assets/manage.svg';
 import { ReactComponent as CogSvg } from '../assets/settings.svg';
@@ -28,6 +28,7 @@ function DashboardPage(props: {
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
   console.log(props.token);
+  checkAuth(props.token);
 
   interface dashboardCardInfo {
     svg: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;

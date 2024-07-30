@@ -16,10 +16,15 @@ import axios from 'axios';
 import { TextField } from '@mui/material';
 import MultipleSelect from '../../components/MultipleSelect';
 import SendIcon from '@mui/icons-material/Send';
+import LoadingDialog from '../../components/LoadingDialog';
+import useAuth from '../useAuth';
 
 export default function InvoiceSending(props: { token: string }) {
   // console.log('user token: ', props.token);
+  useAuth(props.token);
   const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
+  const [loadingMsg, setLoadingMsg] = React.useState<string>('');
   const [invoices, setInvoices] = React.useState<string[]>([]);
   const [files, setFiles] = React.useState<File[] | null>([]);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
@@ -110,9 +115,12 @@ export default function InvoiceSending(props: { token: string }) {
     try {
       // Placeholder until sending endpoint has been created
       var response;
+      
+      setLoading(true);
 
       if (files) {
         // Placeholder until json/pdf send endpoint has been created
+        setLoadingMsg('Sending file(s)...');
         response = await axios.post(`http://localhost:5000/invoice/send_ubl`, requestData, {
           headers: {
             Authorisation: `${props.token}`,
@@ -120,7 +128,7 @@ export default function InvoiceSending(props: { token: string }) {
           },
         });
       } else {
-
+        setLoadingMsg('Sending invoice(s)...');
         response = await axios.post(`http://localhost:5000/invoice/send_ubl?xml_id=${invoices}`, requestData, {
           headers: {
             Authorisation: `${props.token}`,
@@ -128,6 +136,7 @@ export default function InvoiceSending(props: { token: string }) {
         });
       }
 
+      setLoading(false);
       if (response.status === 200) {
         console.log(response.data);
         navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames, recipientEmail: recipientEmail } });
@@ -193,6 +202,7 @@ export default function InvoiceSending(props: { token: string }) {
 
   return (
     <>
+      <LoadingDialog open={loading} message={loadingMsg} />
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
         <Typography variant='h4'>Invoice Sending</Typography>
 

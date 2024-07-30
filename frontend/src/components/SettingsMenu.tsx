@@ -10,15 +10,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import CreateIcon from '@mui/icons-material/Create';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LoadingDialog from './LoadingDialog';
 
-export default function SettingsMenu(props: {
-  id: number;
-  token: string;
-  status: boolean;
-}) {
+export default function SettingsMenu(props: { token: string; details: any }) {
   // Error checking
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   // Open state for the menu
   const [anchorEl, setAnchorEl] = React.useState<null | SVGElement>(null);
@@ -36,26 +34,30 @@ export default function SettingsMenu(props: {
 
   // Three functions to handle the settings option
   const handleEdit = () => {
-    console.log('1');
+    navigate('/invoice-edit', {
+      state: { details: props.details },
+    });
   };
 
   const handleSend = () => {
-    console.log(props.id);
     navigate('/invoice-sending', {
-      state: { cardID: props.id },
+      state: { cardID: props.details.id },
     });
   };
 
   const handleDelete = async () => {
+    setLoading(true);
     try {
       const response = await axios.delete(
-        `http://localhost:5000/invoice/delete/${props.id}`,
+        `http://localhost:5000/invoice/delete/${props.details.id}`,
         {
           headers: {
             Authorisation: `${props.token}`,
           },
         }
       );
+
+      setLoading(false);
 
       if (response.status === 200) {
         alert('Delete confirmed');
@@ -78,13 +80,16 @@ export default function SettingsMenu(props: {
 
   return (
     <div>
+      <LoadingDialog open={loading} message='Deleting invoice...' />
       <Box
         sx={{
           position: 'absolute',
           zIndex: 1000,
           cursor: 'pointer',
-          pl: 1,
-          pt: 1,
+          right: 0,
+          top: 0,
+          pr: 1.5,
+          pt: 1.5,
         }}
       >
         <InvoiceSettings onClick={handleClick}></InvoiceSettings>
@@ -94,6 +99,14 @@ export default function SettingsMenu(props: {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         MenuListProps={{
           'aria-labelledby': 'basic-button',
         }}
@@ -105,17 +118,21 @@ export default function SettingsMenu(props: {
           Settings
         </Typography>
         <Stack spacing={2} sx={{ mt: 1 }}>
-          <Box onClick={handleClose}>
-            <Button
-              onClick={handleEdit}
-              startIcon={<CreateIcon />}
-              variant='contained'
-              sx={{ minWidth: '6rem', maxWidth: '6rem' }}
-            >
-              EDIT
-            </Button>
-          </Box>
-          {props.status ? (
+          {props.details.is_gui ? (
+            <Box onClick={handleClose}>
+              <Button
+                onClick={handleEdit}
+                startIcon={<CreateIcon />}
+                variant='contained'
+                sx={{ minWidth: '6rem', maxWidth: '6rem' }}
+              >
+                EDIT
+              </Button>
+            </Box>
+          ) : (
+            <></>
+          )}
+          {props.details.is_ready ? (
             <Box onClick={handleClose}>
               <Button
                 onClick={handleSend}
@@ -143,9 +160,9 @@ export default function SettingsMenu(props: {
           </Box>
         </Stack>
       </Menu>
-      <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
+      {/* <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
         {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-      </Box>
+      </Box> */}
     </div>
   );
 }

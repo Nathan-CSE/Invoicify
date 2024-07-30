@@ -10,9 +10,11 @@ import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
 import { Container } from '@mui/material';
+import checkAuth from './useAuth';
 
 function HomePage(props: { token: string }) {
   const navigate = useNavigate();
+  checkAuth(props.token);
 
   React.useEffect(() => {
     console.log('HOME');

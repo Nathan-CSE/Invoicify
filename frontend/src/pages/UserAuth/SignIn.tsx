@@ -12,6 +12,7 @@ import ErrorModal from '../../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
 import LoginIcon from '@mui/icons-material/Login';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
+import LoadingDialog from '../../components/LoadingDialog';
 
 export default function SignIn(props: {
   token: string;
@@ -20,6 +21,7 @@ export default function SignIn(props: {
   const navigate = useNavigate();
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   if (props.token) {
     navigate('/dashboard');
@@ -36,10 +38,13 @@ export default function SignIn(props: {
       setError('Fill out all required fields');
     } else {
       try {
+        setLoading(true);
         const response = await axios.post('http://localhost:5000/auth/login', {
           email,
           password,
         });
+
+        setLoading(false);
 
         if (response.status === 200) {
           props.setToken(response.data.token);
@@ -68,6 +73,7 @@ export default function SignIn(props: {
 
   return (
     <>
+      <LoadingDialog open={loading} message='Signing in...' />
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
@@ -141,9 +147,14 @@ export default function SignIn(props: {
           </Box>
         </Box>
       </Container>
-      <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
+      {/* <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
         {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-      </Box>
+      </Box> */}
     </>
   );
 }

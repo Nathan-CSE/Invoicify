@@ -82,7 +82,7 @@ function Navbar(props: {
         width: '100%',
         top: 0,
         position: 'fixed',
-        zIndex: 'tooltip',
+        zIndex: 'modal',
       }}
     >
       <AppBar>

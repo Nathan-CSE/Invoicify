@@ -20,8 +20,10 @@ import axios from 'axios';
 import { DropzoneArea } from 'mui-file-dropzone';
 import { BsPencilSquare } from "react-icons/bs";
 import { FaFileUpload } from "react-icons/fa";
+import useAuth from '../useAuth';
 
 export default function InvoiceCreation(props: { token: string }) {
+  useAuth(props.token);
   const navigate = useNavigate();
   const [files, setFiles] = React.useState<File[]>([]);
 
@@ -75,8 +77,8 @@ export default function InvoiceCreation(props: { token: string }) {
 
   return (
     <>
+      <LoadingDialog open={loading} message='Creating invoice(s)...' />
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-        <LoadingDialog open={loading} message='Creating invoice...' />
         <Typography variant='h4'>Invoice Creation</Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
