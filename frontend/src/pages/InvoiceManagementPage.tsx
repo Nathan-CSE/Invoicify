@@ -31,6 +31,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import RuleIcon from '@mui/icons-material/Rule';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import useAuth from './useAuth';
+import AbcIcon from '@mui/icons-material/Abc';
 
 export default function InvoiceManagement(props: { token: string }) {
   useAuth(props.token);
@@ -187,7 +188,8 @@ export default function InvoiceManagement(props: { token: string }) {
               <InvoiceSvg />
               <Box sx={{ display: 'flex', ml: 1, flexDirection: 'column', textAlign: 'left' }}>
                 <Stack direction='row' spacing={1} sx={{ mt: 3 }} alignItems="center">
-                  <ReceiptIcon />
+                  {/* <ReceiptIcon /> */}
+                  <AbcIcon />
                   <Typography variant='h6' component='div'>
                     {items.name}
                   </Typography>
