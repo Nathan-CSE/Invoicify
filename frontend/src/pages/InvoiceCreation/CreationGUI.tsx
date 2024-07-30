@@ -36,6 +36,7 @@ import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../useAuth';
+import SuccessDialog from '../../components/SuccessDialog';
 
 interface FileObject {
   file: File;
@@ -50,7 +51,7 @@ export default function CreationGUI(props: {
   id: number;
 }) {
   useAuth(props.token);
-
+  const [openDialog, setDialog] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [loadingMsg, setLoadingMsg] = React.useState<string>('');
   const navigate = useNavigate();
@@ -449,11 +450,8 @@ export default function CreationGUI(props: {
       }
     }
 
-    const {
-      additionalDocuments,
-      extraComments,
-      ...filteredInvoiceData
-    } = invoiceData;
+    const { additionalDocuments, extraComments, ...filteredInvoiceData } =
+      invoiceData;
     var str = JSON.stringify(filteredInvoiceData, null, 2);
     console.log('filtered: ', str);
 
@@ -482,13 +480,12 @@ export default function CreationGUI(props: {
         setLoading(false);
 
         if (response.status === 204) {
-          alert('Edit Successful');
+          setDialog(true);
         } else {
           console.log(response);
           alert('Unable to edit invoice');
+          navigate('/invoice-management');
         }
-
-        navigate('/invoice-management');
       } else {
         setLoadingMsg('Creating invoice...');
         setLoading(true);
@@ -546,6 +543,11 @@ export default function CreationGUI(props: {
 
   return (
     <>
+      <SuccessDialog
+        open={openDialog}
+        message={'Edit Successful'}
+        setOpen={setDialog}
+      />
       <LoadingDialog open={loading} message={loadingMsg} />
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
         {props.editFlag ? (
@@ -793,7 +795,7 @@ export default function CreationGUI(props: {
                 id='buyerAdditionalStreetName'
                 label='Additional Street Name'
                 name='buyerAdditionalStreetName'
-                sx={{ width: '100%' }}  
+                sx={{ width: '100%' }}
                 value={buyerAddStreetName}
                 onChange={(e) => setBuyerAddStreetName(e.target.value)}
               />
