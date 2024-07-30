@@ -116,10 +116,13 @@ function DocPage(props: { token: string }) {
           system, it is essential that the invoices are validated based on the
           rules employed by a governing entity. The rules can be found in the
           official ATO github repository:
-          https://github.com/A-NZ-PEPPOL/A-NZ-PEPPOL-BIS-3.0/tree/master/Specifications
-          Latest Details of Validation rules can be found in Appendix A and B of
-          the document “Specifications/A-NZ_Invoice_Extension_versionX.docx” in
-          the ATO GitHub repository.
+          <a href='https://github.com/A-NZ-PEPPOL/A-NZ-PEPPOL-BIS-3.0/tree/master/Specifications'>
+            {' '}
+            Here{' '}
+          </a>
+          . Latest Details of Validation rules can be found in Appendix A and B
+          of the document “Specifications/A-NZ_Invoice_Extension_versionX.docx”
+          in the ATO GitHub repository.
           <Typography variant='body1' gutterBottom sx={{ mt: 3 }}>
             This service offers the validation process via uploading their own
             UBL2.1 XMLs or choosing to validate an existing invoice in the
