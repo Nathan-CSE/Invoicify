@@ -67,6 +67,7 @@ export default function SettingsMenu(props: { token: string; details: any }) {
         setError(response.data.message);
       }
     } catch (error) {
+      setLoading(false);
       const err = error as AxiosError<{ message: string }>;
       if (err.response) {
         setOpenError(true);

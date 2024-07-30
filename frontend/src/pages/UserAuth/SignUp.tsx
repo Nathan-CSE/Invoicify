@@ -79,6 +79,7 @@ export default function SignUp(props: {
             setError(response.data.message);
           }
         } catch (error) {
+          setLoading(false);
           const err = error as AxiosError<{ message: string }>;
           if (err.response) {
             setOpenError(true);

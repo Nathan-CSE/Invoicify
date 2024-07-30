@@ -71,6 +71,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
         alert("Unable to create invoice");
       }
     } catch (err) {
+      setLoading(false);
       console.error(err);
       alert(err)
     }

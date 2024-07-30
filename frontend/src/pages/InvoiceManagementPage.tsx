@@ -34,7 +34,7 @@ import useAuth from './useAuth';
 
 export default function InvoiceManagement(props: { token: string }) {
   useAuth(props.token);
-  
+
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
 
@@ -143,6 +143,7 @@ export default function InvoiceManagement(props: { token: string }) {
         setError(response.data.message);
       }
     } catch (error) {
+      setLoading(false);
       if (error instanceof AxiosError) {
         if (error.response) {
           if (error.response.status !== 403) {

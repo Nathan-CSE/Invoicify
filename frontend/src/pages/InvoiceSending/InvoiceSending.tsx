@@ -146,6 +146,7 @@ export default function InvoiceSending(props: { token: string }) {
         alert("Unable to send invoice");
       }
     } catch (err) {
+      setLoading(false);
       // FIXME:
       // Here temporarily until endpoint has been created for bulk sending
       alert("Unable to send invoice");
@@ -193,6 +194,7 @@ export default function InvoiceSending(props: { token: string }) {
           alert('Unable to retrieve valid invoices');
         }
       } catch (err) {
+        
         alert(err);
       }
     };

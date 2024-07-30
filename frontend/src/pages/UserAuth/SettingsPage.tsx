@@ -53,6 +53,7 @@ function SettingsPage(props: { token: string }) {
           setError(response.data.message);
         }
       } catch (error) {
+        setLoading(false);
         const err = error as AxiosError<{ message: string }>;
         if (err.response) {
           setOpenError(true);
@@ -69,7 +70,7 @@ function SettingsPage(props: { token: string }) {
       <LoadingDialog open={loading} message='Changing password...' />
       <Box
         sx={{
-          mt: 15,
+          mt: 11,
           mx: 5,
           display: 'flex',
           flexDirection: 'column',

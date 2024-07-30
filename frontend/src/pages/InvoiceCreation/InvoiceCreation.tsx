@@ -70,6 +70,7 @@ export default function InvoiceCreation(props: { token: string }) {
         alert('Unable to create invoice');
       }
     } catch (err) {
+      setLoading(false);
       alert(err);
 
     } 

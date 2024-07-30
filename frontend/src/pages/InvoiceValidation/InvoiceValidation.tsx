@@ -99,6 +99,7 @@ export default function InvoiceValidation(props: { token: string; }) {
         navigate('/invoice-validation-report', { state: { response: response.data, ruleSet: ruleSet } });
       }
     } catch (err) {
+      setLoading(false);
       console.error(err);
       alert("Unable to validate invoice. Make sure the XML file itself is complete and has no syntactic errors.");
     }
@@ -144,6 +145,7 @@ export default function InvoiceValidation(props: { token: string; }) {
           alert("Unable to retrieve valid invoices");
         }
       } catch (err) {
+        setLoading(false);
         alert(err);
       }
     };

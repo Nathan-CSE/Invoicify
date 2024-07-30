@@ -535,6 +535,7 @@ export default function CreationGUI(props: {
             alert('Unable to create invoice');
           }
         } catch (err) {
+          setLoading(false);
           console.error(err);
           alert(err);
         }
@@ -933,15 +934,16 @@ export default function CreationGUI(props: {
 
           {/* ADDITIONAL OPTIONS */}
           <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>
-            Additional Options
+            Extra Comments
           </Typography>
-          <Button
+          {/* Commented out because backend does not store it */}
+          {/* <Button
             variant='contained'
             color='primary'
             onClick={() => setOpenFileUpload(true)}
           >
             Upload Additional Documents
-          </Button>
+          </Button> */}
           <DropzoneDialogBase
             dialogTitle={'Upload file'}
             acceptedFiles={['image/*']}
@@ -972,9 +974,9 @@ export default function CreationGUI(props: {
             showFileNamesInPreview={true}
           />
 
-          <Typography variant='h6' sx={{ mt: 4 }}>
+          {/* <Typography variant='h6' sx={{ mt: 4 }}>
             Extra Comments
-          </Typography>
+          </Typography> */}
           <TextField
             multiline
             rows={5}
