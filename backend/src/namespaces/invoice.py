@@ -22,7 +22,7 @@ class InvoiceNamespace(Namespace):
             "item": fields.String(),
             "description": fields.String(),
             "unitPrice": fields.Float(default=0.1),
-            "GST": fields.Integer(),
+            "GST": fields.Float(default=0.1),
             "totalPrice": fields.Float(default=0.1)
         })
         
@@ -35,7 +35,8 @@ class InvoiceNamespace(Namespace):
             "invoiceItems": fields.List(fields.Nested(invoice_item_fields)),
             "totalGST": fields.Float(default=0.1),
             "totalTaxable": fields.Float(default=0.1),
-            "totalAmount": fields.Float(default=0.1)
+            "totalAmount": fields.Float(default=0.1),
+            "buyerVatRate": fields.Integer(),
         })
     
     def get_upload_validation_fields(self):
