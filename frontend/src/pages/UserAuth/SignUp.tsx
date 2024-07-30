@@ -179,9 +179,11 @@ export default function SignUp(props: {
           </Box>
         </Box>
       </Container>
-      <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
-        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-      </Box>
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
     </>
   );
 }

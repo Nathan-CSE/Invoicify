@@ -44,13 +44,20 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   const openPopover = Boolean(anchorEl);
   const id = openPopover ? 'simple-popover' : undefined;
   const [dataFields, setDataFields] = React.useState(location.state.fields);
+  console.log(dataFields);
   const [invoiceType, setInvoiceType] = React.useState('JSON');
   React.useEffect(() => {
-    if (typeof location.state.fields === 'string') {
-      const data = JSON.parse(location.state.fields);
+    console.log(location.state);
+    if (location.state.status) {
+      const data = location.state.fields;
       setDataFields(data);
       setInvoiceType('GUI');
     } else {
+      // When validating theres a chance the JSON is double stringed so we
+      // Have this check in place to parse it correctly
+      if (typeof location.state.fields === 'string') {
+        setDataFields(JSON.parse(JSON.parse(location.state.fields)));
+      }
       setInvoiceType('JSON');
     }
   }, []);
@@ -58,26 +65,29 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   const formatJSON = (dataFields: any, indentLevel = 0) => {
     let formattedString = '';
     const indent = ' '.repeat(indentLevel * 2); // Use two spaces for each indent level
+    console.log(dataFields);
 
     // Checks if its an object and has children to loop through so we recurse
     // Else we just display the value
-    for (const [key, value] of Object.entries(dataFields)) {
-      if (typeof value === 'object') {
-        formattedString += `${indent}${key}:\n${formatJSON(
-          value,
-          indentLevel + 1
-        )}`;
-      } else {
-        formattedString += `${indent}${key}: ${value}\n`;
+    if (dataFields) {
+      for (const [key, value] of Object.entries(dataFields)) {
+        if (typeof value === 'object') {
+          formattedString += `${indent}${key}:\n${formatJSON(
+            value,
+            indentLevel + 1
+          )}`;
+        } else {
+          const val = value ? value : '';
+          console.log(val);
+          formattedString += `${indent}${key}: ${val}\n`;
+        }
       }
     }
-
     return formattedString;
   };
 
   const formatGUI = (dataFields: any) => {
     console.log(dataFields);
-
     return (
       <>
         <Box>
@@ -120,7 +130,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                 ABN:{' '}
                 {
                   dataFields.AccountingSupplierParty.Party.PartyLegalEntity
-                    .CompanyID?.value
+                    .CompanyID['@value']
                 }
               </Typography>
 
@@ -226,7 +236,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                 ABN:{' '}
                 {
                   dataFields.AccountingCustomerParty.Party.PartyLegalEntity
-                    .CompanyID?.value
+                    .CompanyID['@value']
                 }
               </Typography>
 
@@ -339,15 +349,19 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                     dataFields.InvoiceLine.map((item: any, index: number) => {
                       return (
                         <TableRow key={index}>
-                          <TableCell>{item.InvoicedQuantity.value}</TableCell>
+                          <TableCell>
+                            {item.InvoicedQuantity['@value']}
+                          </TableCell>
                           <TableCell>
                             {item.InvoicedQuantity.unitCode}
                           </TableCell>
-                          <TableCell>{item.Item.Name}</TableCell>
-                          <TableCell>{item.Item.Description}</TableCell>
-                          <TableCell>{item.Price.PriceAmount.value}</TableCell>
+                          <TableCell>{item?.Item.Name || ''}</TableCell>
+                          <TableCell>{item?.Item.Description || ''}</TableCell>
                           <TableCell>
-                            {(Number(item.Price.PriceAmount.value) *
+                            {item.Price.PriceAmount['@value']}
+                          </TableCell>
+                          <TableCell>
+                            {(Number(item.Price.PriceAmount['@value']) *
                               Number(
                                 dataFields.TaxTotal.TaxSubtotal.TaxCategory
                                   .Percent
@@ -355,7 +369,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                               100}
                           </TableCell>
                           <TableCell>
-                            {item.LineExtensionAmount.value}
+                            {item.LineExtensionAmount['@value']}
                           </TableCell>
                         </TableRow>
                       );
@@ -364,23 +378,23 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                     <>
                       <TableRow key={dataFields.InvoiceLine.index}>
                         <TableCell>
-                          {dataFields.InvoiceLine.InvoicedQuantity.value}
+                          {dataFields.InvoiceLine.InvoicedQuantity['@value']}
                         </TableCell>
                         <TableCell>
                           {dataFields.InvoiceLine.InvoicedQuantity.unitCode}
                         </TableCell>
                         <TableCell>
-                          {dataFields.InvoiceLine.Item.Name}
+                          {dataFields?.InvoiceLine.Item.Name || ''}
                         </TableCell>
                         <TableCell>
-                          {dataFields.InvoiceLine.Item.Description}
+                          {dataFields?.InvoiceLine.Item.Description || ''}
                         </TableCell>
                         <TableCell>
-                          {dataFields.InvoiceLine.Price.PriceAmount.value}
+                          {dataFields.InvoiceLine.Price.PriceAmount['@value']}
                         </TableCell>
                         <TableCell>
                           {(Number(
-                            dataFields.InvoiceLine.Price.PriceAmount.value
+                            dataFields.InvoiceLine.Price.PriceAmount['@value']
                           ) *
                             Number(
                               dataFields.TaxTotal.TaxSubtotal.TaxCategory
@@ -389,7 +403,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                             100}
                         </TableCell>
                         <TableCell>
-                          {dataFields.InvoiceLine.LineExtensionAmount.value}
+                          {dataFields.InvoiceLine.LineExtensionAmount['@value']}
                         </TableCell>
                       </TableRow>
                     </>
@@ -433,7 +447,12 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                         {dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent}%):{' '}
                       </TableCell>
                       <TableCell align='right'>
-                        ${dataFields.TaxTotal.TaxSubtotal.TaxableAmount.value}
+                        $
+                        {
+                          dataFields.TaxTotal.TaxSubtotal.TaxableAmount[
+                            '@value'
+                          ]
+                        }
                       </TableCell>
                     </TableRow>
 
@@ -441,7 +460,11 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                       <TableCell>Total Taxable Amount: </TableCell>
                       <TableCell align='right'>
                         $
-                        {dataFields.LegalMonetaryTotal.TaxExclusiveAmount.value}
+                        {
+                          dataFields.LegalMonetaryTotal.TaxExclusiveAmount[
+                            '@value'
+                          ]
+                        }
                       </TableCell>
                     </TableRow>
 
@@ -449,7 +472,11 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                       <TableCell>Total Amount: </TableCell>
                       <TableCell align='right'>
                         $
-                        {dataFields.LegalMonetaryTotal.TaxInclusiveAmount.value}
+                        {
+                          dataFields.LegalMonetaryTotal.TaxInclusiveAmount[
+                            '@value'
+                          ]
+                        }
                       </TableCell>
                     </TableRow>
                   </TableBody>

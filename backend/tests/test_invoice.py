@@ -278,7 +278,7 @@ def test_invoice_edit_successful(client, user, gui_invoice):
       },
       "BuyerReference": "test",
       "DocumentCurrencyCode": "AUD",
-      "ID": "Invoice01",
+      "ID": "1",
       "InvoiceLine": {
         "ID": "0",
         "InvoicedQuantity": {

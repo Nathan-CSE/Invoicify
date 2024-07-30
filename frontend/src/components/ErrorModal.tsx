@@ -5,10 +5,11 @@ import DialogContent from '@mui/material/DialogContent';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import { Alert } from '@mui/material';
+import { Alert, Snackbar } from '@mui/material';
 
 function ErrorModal(props: {
   children: string;
+  open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const handleClose = () => {
@@ -17,14 +18,20 @@ function ErrorModal(props: {
 
   return (
     <>
-      <Alert
-        variant='filled'
-        severity='error'
+      <Snackbar
+        open={props.open}
+        autoHideDuration={10000}
         onClose={handleClose}
-        aria-labelledby='errorModalTitle'
       >
-        {props.children}
-      </Alert>
+        <Alert
+          variant='filled'
+          severity='error'
+          onClose={handleClose}
+          aria-labelledby='errorModalTitle'
+        >
+          {props.children}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
