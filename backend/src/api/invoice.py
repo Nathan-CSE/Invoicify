@@ -7,11 +7,12 @@ from flask_restx import Resource
 
 from models import db, Invoice
 from src.namespaces.invoice import InvoiceNamespace
-from src.services.create_xml import create_xml
+from src.services.create_xml import create_xml, format_xml
 from src.services.utils import base64_encode, token_required, db_insert
 from src.services.validation import ValidationService
 from src.services.conversion import ConversionService
 from src.services.upload import UploadService
+from src.services.ocr import OCRService
 from src.services.send_mail import send_attachment
 
 invoice_ns = InvoiceNamespace(name='invoice', description='Operations related to creating invoices')
@@ -133,17 +134,19 @@ class EditAPI(Resource):
     def put(self, id, user):
         data = request.json
 
-        if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
+        if not (invoice := Invoice.query.filter(Invoice.id == id).filter(Invoice.is_gui == True).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 404)
 
+        json_str = format_xml(data["fields"])
+
         # Fields or rule has been changed
-        if invoice.fields != data["fields"] or invoice.rule != data["rule"]:
+        if invoice.fields != json_str or invoice.rule != data["rule"]:
             invoice.completed_ubl = None
             invoice.is_ready = False
 
         invoice.name = data["name"]
         invoice.rule = data["rule"]
-        invoice.fields = data["fields"] 
+        invoice.fields = json.loads(json_str)
 
         db.session.commit()
 
@@ -360,17 +363,20 @@ class UploadCreateAPI(Resource):
             return make_response(jsonify({"message": f"the file uploaded is not a pdf/json, please upload a valid file"}), 400)
         
         ublretval = []
+        ocr = OCRService()
         for f in request.files.getlist('files'):
             if f.filename.rsplit('.', 1)[1].lower() == 'pdf':
-                pass
-            json_str = f.read().decode('utf-8')
+                pdf_str = f.read()
+                try:
+                    json_str = ocr.run(base64_encode(pdf_str))
+                except Exception as err:
+                    return make_response(jsonify({"message": f"the file uploaded could not be processed by OCR: {str(err)}"}), 400)
 
-            try:
-                json.loads(json_str)
-            except json.JSONDecodeError as e:
-                return make_response(jsonify({"message": f"Invalid JSON file: {str(e)}"}), 400)
-            
-            temp_xml_filename = f.filename.replace('.json', '.xml')
+                temp_xml_filename = f.filename.replace('.pdf', '.xml')
+            else:
+                json_str = f.read().decode('utf-8')
+                temp_xml_filename = f.filename.replace('.json', '.xml')
+
             invoice = Invoice(name=temp_xml_filename, fields=json.loads(json_str), user_id=user.id, is_ready=False)
             db_insert(invoice)
             
