@@ -43,7 +43,8 @@ test_json = {
     }],
     "totalGST": 100.0,
     "totalTaxable": 900.0,
-    "totalAmount": 1000.0
+    "totalAmount": 1000.0,
+    "buyerVatRate": 20
 }
 
 test_invalid_json = {
@@ -237,149 +238,7 @@ def test_invoice_edit_successful(client, user, gui_invoice):
 
     assert res.status_code == 204
     assert gui_invoice.name == "Testing123"
-    assert gui_invoice.fields == {
-        "AccountingCustomerParty": {
-        "Party": {
-          "EndpointID": {
-            "@value": "47555222000",
-            "schemeID": "0151"
-          },
-          "PartyLegalEntity": {
-            "CompanyID": {
-              "@value": "47555222000",
-              "schemeID": "0151"
-            },
-            "RegistrationName": "Henry Averies"
-          },
-          "PartyName": {
-            "Name": "Henry Averies"
-          },
-          "PartyTaxScheme": {
-            "TaxScheme": {
-              "CompanyID": "47555222000",
-              "ID": "GST"
-            }
-          },
-          "PostalAddress": {
-            "AdditionalStreetName": "a man",
-            "CityName": "of fortune",
-            "Country": {
-              "IdentificationCode": "AU"
-            },
-            "PostalZone": "1994",
-            "StreetName": "Jam"
-          }
-        }
-      },
-      "AccountingSupplierParty": {
-        "Party": {
-          "EndpointID": {
-            "@value": "47555222000",
-            "schemeID": "0151"
-          },
-          "PartyLegalEntity": {
-            "CompanyID": {
-              "@value": "47555222000",
-              "schemeID": "0151"
-            },
-            "RegistrationName": "Windows to Fit Pty Ltd"
-          },
-          "PartyName": {
-            "Name": "Windows to Fit Pty Ltd"
-          },
-          "PartyTaxScheme": {
-            "CompanyID": "47555222000",
-            "TaxScheme": {
-              "ID": "GST"
-            }
-          },
-          "PostalAddress": {
-            "AdditionalStreetName": "test",
-            "CityName": "test",
-            "Country": {
-              "IdentificationCode": "AU"
-            },
-            "PostalZone": "2912",
-            "StreetName": "Test"
-          }
-        }
-      },
-      "BuyerReference": "test",
-      "DocumentCurrencyCode": "AUD",
-      "ID": "1",
-      "InvoiceLine": {
-        "ID": "0",
-        "InvoicedQuantity": {
-          "@value": "10",
-          "unitCode": "X01"
-        },
-        "Item": {
-          "ClassifiedTaxCategory": {
-            "ID": "GST",
-            "Percent": "10",
-            "TaxScheme": {
-              "ID": "GST"
-            }
-          },
-          "Description": "Pirate",
-          "Name": "Booty"
-        },
-        "LineExtensionAmount": {
-          "@value": "1000.0",
-          "currencyID": "AUD"
-        },
-        "Price": {
-          "PriceAmount": {
-            "@value": "100.0",
-            "currencyID": "AUD"
-          }
-        }
-      },
-      "InvoiceTypeCode": "380",
-      "IssueDate": "2024-06-25",
-      "LegalMonetaryTotal": {
-        "LineExtensionAmount": {
-          "@value": "900.0",
-          "currencyID": "AUD"
-        },
-        "PayableAmount": {
-          "@value": "1000.0",
-          "currencyID": "AUD"
-        },
-        "TaxExclusiveAmount": {
-          "@value": "900.0",
-          "currencyID": "AUD"
-        },
-        "TaxInclusiveAmount": {
-          "@value": "1000.0",
-          "currencyID": "AUD"
-        }
-      },
-      "Note": "Taxinvoice",
-      "TaxTotal": {
-        "TaxAmount": {
-          "@value": "10",
-          "currencyID": "AUD"
-        },
-        "TaxSubtotal": {
-          "TaxAmount": {
-            "@value": "10",
-            "currencyID": "AUD"
-          },
-          "TaxCategory": {
-            "ID": "S",
-            "Percent": "10",
-            "TaxScheme": {
-              "ID": "GST"
-            }
-          },
-          "TaxableAmount": {
-            "@value": "100.0",
-            "currencyID": "AUD"
-          }
-        }
-      }
-    }
+    assert gui_invoice.fields == {'ID': '1', 'IssueDate': '2024-06-25', 'InvoiceTypeCode': '380', 'Note': 'Taxinvoice', 'DocumentCurrencyCode': 'AUD', 'BuyerReference': 'test', 'AccountingSupplierParty': {'Party': {'EndpointID': {'schemeID': '0151', '@value': '47555222000'}, 'PartyName': {'Name': 'Windows to Fit Pty Ltd'}, 'PostalAddress': {'StreetName': 'Test', 'AdditionalStreetName': 'test', 'CityName': 'test', 'PostalZone': '2912', 'Country': {'IdentificationCode': 'AU'}}, 'PartyLegalEntity': {'RegistrationName': 'Windows to Fit Pty Ltd', 'CompanyID': {'schemeID': '0151', '@value': '47555222000'}}, 'PartyTaxScheme': {'CompanyID': '47555222000', 'TaxScheme': {'ID': 'GST'}}}}, 'AccountingCustomerParty': {'Party': {'EndpointID': {'schemeID': '0151', '@value': '47555222000'}, 'PartyName': {'Name': 'Henry Averies'}, 'PostalAddress': {'StreetName': 'Jam', 'AdditionalStreetName': 'a man', 'CityName': 'of fortune', 'PostalZone': '1994', 'Country': {'IdentificationCode': 'AU'}}, 'PartyLegalEntity': {'RegistrationName': 'Henry Averies', 'CompanyID': {'schemeID': '0151', '@value': '47555222000'}}, 'PartyTaxScheme': {'TaxScheme': {'CompanyID': '47555222000', 'ID': 'GST'}}}}, 'TaxTotal': {'TaxAmount': {'currencyID': 'AUD', '@value': '20'}, 'TaxSubtotal': {'TaxableAmount': {'currencyID': 'AUD', '@value': '100.0'}, 'TaxAmount': {'currencyID': 'AUD', '@value': '20'}, 'TaxCategory': {'ID': 'S', 'Percent': '20', 'TaxScheme': {'ID': 'GST'}}}}, 'LegalMonetaryTotal': {'LineExtensionAmount': {'currencyID': 'AUD', '@value': '900.0'}, 'TaxExclusiveAmount': {'currencyID': 'AUD', '@value': '900.0'}, 'TaxInclusiveAmount': {'currencyID': 'AUD', '@value': '1000.0'}, 'PayableAmount': {'currencyID': 'AUD', '@value': '1000.0'}}, 'InvoiceLine': {'ID': '0', 'InvoicedQuantity': {'unitCode': 'X01', '@value': '10'}, 'LineExtensionAmount': {'currencyID': 'AUD', '@value': '1000.0'}, 'Item': {'Description': 'Pirate', 'Name': 'Booty', 'ClassifiedTaxCategory': {'ID': 'GST', 'Percent': '10', 'TaxScheme': {'ID': 'GST'}}}, 'Price': {'PriceAmount': {'currencyID': 'AUD', '@value': '100.0'}}}}
     assert gui_invoice.rule == "AUNZ_PEPPOL_SB_1_0_10"
     assert gui_invoice.completed_ubl == None
     assert gui_invoice.is_gui == True

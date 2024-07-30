@@ -240,6 +240,7 @@ class UploadValidationAPI(Resource):
                     rules=[rules]
                 )
             except Exception as err:
+                print(str(err))
                 return make_response(jsonify({"message": str(err)}), 400)
 
             if retval["successful"] is True:
