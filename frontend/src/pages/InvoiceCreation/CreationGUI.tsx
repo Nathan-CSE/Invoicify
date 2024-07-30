@@ -450,7 +450,6 @@ export default function CreationGUI(props: {
     }
 
     const {
-      buyerVatRate,
       additionalDocuments,
       extraComments,
       ...filteredInvoiceData
