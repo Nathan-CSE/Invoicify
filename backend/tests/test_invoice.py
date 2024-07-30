@@ -94,6 +94,8 @@ INVOICE_EDIT_PATH = "/invoice/edit"
 INVOICE_DELETE_PATH = "/invoice/delete"
 INVOICE_HISTORY_PATH = "/invoice/history"
 INVOICE_VALIDATE_PATH = "/invoice/validate"
+INVOICE_SEND_PATH = "/invoice/send_ubl"
+
 
 def test_invoice_creation_successful(client, user):
     res = client.post(
@@ -191,6 +193,32 @@ def test_invoice_save_invalid_name_type(client, user):
     )
 
     assert res.status_code == 400
+
+def test_send_fail(client, user):
+    data = {
+        "xml_id": 1,
+        "target_email": "test"
+    }
+    res = client.post(
+        INVOICE_SEND_PATH,
+        data = json.dumps(data),
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+    assert res.status_code == 400
+
+def test_send_suc(client, user, invoice_2):
+    res = client.post(
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_2.id}&target_email=",
+        headers={
+            "Authorisation": user.token,
+            "Content-Type": "application/json"
+        }
+    )
+    # if there is a successful email it would be 200 but I dont want to send emails for testing purposes.
+    assert res.status_code == 200
 
 def test_invoice_edit_successful(client, user, gui_invoice):
     data = {

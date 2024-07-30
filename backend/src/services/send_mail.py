@@ -78,12 +78,15 @@ def send_attachment(send_to:list, text, ubl_data, files):
         )
         file_data['Content-Disposition'] = 'attachment; filename="%s"' % f.filename
         msg.attach(file_data)
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.ehlo()
-        server.login(sender_email, sender_pass)
-        server.sendmail(sender_email, send_to, msg.as_string())
-    return {}
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.ehlo()
+            server.login(sender_email, sender_pass)
+            try:
+                server.sendmail(sender_email, send_to, msg.as_string())
+            except:
+                return False
+        
+    return True
         
 def send_xml(send_to:list, text, file_name):
     '''

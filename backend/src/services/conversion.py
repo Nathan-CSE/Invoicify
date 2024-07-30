@@ -34,6 +34,26 @@ class ConversionService():
         "AUNZ_PEPPOL_SB_1_0_10": {
             "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:selfbilling:international:aunz:3.0",
             "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:selfbilling:01:1.0"
+        },
+        "AUNZ_UBL_1_0_10": {
+            "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0",
+            "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
+        },
+        "FR_EN169321_CII_1_3_11": {
+            "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0",
+            "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
+        },
+        "FR_EN169321_UBL_1_3_11": {
+            "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0",
+            "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
+        },
+        "RO_RO16931_UBL_1_0_8_EN16931": {
+            "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0",
+            "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
+        },
+        "RO_RO16931_UBL_1_0_8_CIUS_RO": {
+            "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0",
+            "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
         }
     }
 
@@ -53,6 +73,11 @@ class ConversionService():
                 - Available values: 
                     - AUNZ_PEPPOL_1_0_10, 
                     - AUNZ_PEPPOL_SB_1_0_10, 
+                    - AUNZ_UBL_1_0_10,
+                    - FR_EN169321_CII_1_3_11,
+                    - FR_EN169321_UBL_1_3_11,
+                    - RO_RO16931_UBL_1_0_8_EN16931,
+                    - RO_RO16931_UBL_1_0_8_CIUS_RO
 
         Raises:
             - ValueError: If the json_str cannot be converted to a Python dictionary

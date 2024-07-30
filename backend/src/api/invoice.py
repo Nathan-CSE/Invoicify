@@ -96,8 +96,10 @@ class SendEmailAPI(Resource):
                 xml_data.append((xml_name, xml))
             else:
                 return make_response(jsonify({"message": "Article not found"}), 400)
-        send_attachment([target_email], "These documents were requested to be sent to you", xml_data, request.files.getlist('files'))
-        return make_response(jsonify({"message": "Successfully sent"}), 200)
+        if send_attachment([target_email], "These documents were requested to be sent to you", xml_data, request.files.getlist('files')):
+            return make_response(jsonify({"message": "Successfully sent"}), 200)
+        else:
+            return make_response(jsonify({"message": "Was unable to be sent"}), 400)
         
         
 @invoice_ns.route("/save")
@@ -242,7 +244,7 @@ class UploadValidationAPI(Resource):
 
             if retval["successful"] is True:
                 json_str = cs.xml_to_json(content)
-                invoice = Invoice(name=file.filename, fields=json.dumps(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
+                invoice = Invoice(name=file.filename, fields=json.loads(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
                 db_insert(invoice)
                 validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": invoice.id, "invoiceName": invoice.name, "rule": rules})
             else:
