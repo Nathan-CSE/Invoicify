@@ -438,6 +438,12 @@ export default function CreationGUI(props: {
 
     for (let i = 0; i < rows.length; i++) {
       const unitCode = rows[i].unitCode;
+      const itemQuantity = rows[i].quantity;
+      const itemName = rows[i].item;
+      const itemDescription = rows[i].description;
+      const itemPrice = rows[i].unitPrice;
+      const itemGST = rows[i].GST;
+      const itemTotalPrice = rows[i].totalPrice;
 
       if (!unitCode.match(/^[A-Z]{3}$/)) {
         setOpenError(true);
@@ -447,6 +453,16 @@ export default function CreationGUI(props: {
         errorCheck = true;
         break;
       }
+
+      if (itemQuantity == 0 || itemName == '' || itemDescription == '' || itemPrice == 0 || itemGST == 0 || itemTotalPrice == 0) {
+        setOpenError(true);
+        setError(
+          `Fill out all fields for item row ${i + 1}.`
+        );
+        errorCheck = true;
+        break;
+      }
+
     }
 
     const {

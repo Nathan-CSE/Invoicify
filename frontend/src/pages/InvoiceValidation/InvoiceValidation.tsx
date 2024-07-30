@@ -160,7 +160,7 @@ export default function InvoiceValidation(props: { token: string; }) {
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
           Invoice Validation
-        </Typography>
+      </Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
 
@@ -209,8 +209,8 @@ export default function InvoiceValidation(props: { token: string; }) {
                 onChange={handleChange}
                 required
               >
-                <MenuItem value={'AUNZ_PEPPOL_1_0_10'}>AU-NZ PEPPOL-1.0.10</MenuItem>
-                <MenuItem value={'AUNZ_PEPPOL_SB_1_0_10'}>AU-NZ PEPPOL-SB-1.0.10</MenuItem>
+                <MenuItem value={'AUNZ_PEPPOL_1_0_10'}>AUNZ_PEPPOL_1_0_10</MenuItem>
+                <MenuItem value={'AUNZ_PEPPOL_SB_1_0_10'}>AUNZ_PEPPOL_SB_1_0_10</MenuItem>
                 <MenuItem value={'AUNZ_UBL_1_0_10'}>AUNZ_UBL_1_0_10</MenuItem>
                 <MenuItem value={'FR_EN169321_CII_1_3_11'}>FR_EN169321_CII_1_3_11</MenuItem>
                 <MenuItem value={'FR_EN169321_UBL_1_3_11'}>FR_EN169321_UBL_1_3_11</MenuItem>
