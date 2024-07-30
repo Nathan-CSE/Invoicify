@@ -11,8 +11,11 @@ import { Card, CardContent, Grid } from '@mui/material';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
 import ReplayIcon from '@mui/icons-material/Replay';
 import SendIcon from '@mui/icons-material/Send';
+import useAuth from '../useAuth';
 
 export default function InvoiceSending(props: { token: string; }) {
+  useAuth(props.token);
+
   console.log('user token: ', props.token);
   console.log("location state: ", useLocation().state);
   const { invoiceNames, recipientEmail } = useLocation().state;

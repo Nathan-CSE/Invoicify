@@ -34,14 +34,60 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import vatRates from '../../VATRates.json';
 import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
+import LoadingDialog from '../../components/LoadingDialog';
+import useAuth from '../useAuth';
 
 interface FileObject {
   file: File;
 }
 
-export default function CreationGUI(props: { token: string }) {
+// Edit flag to determine if we are editing
+// Data passed in to preload it if we are editing
+export default function CreationGUI(props: {
+  token: string;
+  editFlag: boolean;
+  data: any;
+  id: number;
+}) {
+  useAuth(props.token);
+
+  const [loading, setLoading] = React.useState(false);
+  const [loadingMsg, setLoadingMsg] = React.useState<string>('');
   const navigate = useNavigate();
   const countries = Object.keys(vatRates);
+  console.log(props.id);
+  const [fields, setFields] = React.useState<any>(null);
+  // Preloading the saved data
+
+  React.useEffect(() => {
+    if (props.editFlag && props.data) {
+      console.log('Hey guys');
+      setFields(props.data.fields);
+    }
+  }, []);
+
+  console.log(fields);
+
+  // Invoice Name State
+  const [invName, setInvName] = React.useState<string>('');
+  const [invNum, setInvNum] = React.useState<string>('');
+  const [date, setDate] = React.useState<Date>(new Date());
+  const [sellerABN, setSellerABN] = React.useState<string>('');
+  const [sellerName, setSellerName] = React.useState<string>('');
+  // const [sellerAddr, setSellerAddr] = React.useState<string>('');
+  const [sellerStreetName, setSellerStreetName] = React.useState<string>('');
+  const [sellerAddStreetName, setSellerAddStreetName] =
+    React.useState<string>('');
+  const [sellerCityName, setSellerCityName] = React.useState<string>('');
+  const [sellerCode, setSellerCode] = React.useState<string>('');
+
+  const [buyerABN, setBuyerABN] = React.useState<string>('');
+  const [buyerName, setBuyerName] = React.useState<string>('');
+  const [buyerStreetName, setBuyerStreetName] = React.useState<string>('');
+  const [buyerAddStreetName, setBuyerAddStreetName] =
+    React.useState<string>('');
+  const [buyerCityName, setBuyerCityName] = React.useState<string>('');
+  const [buyerCode, setBuyerCode] = React.useState<string>('');
 
   // Form Information
   const [nextId, setNextId] = React.useState(2);
@@ -61,7 +107,124 @@ export default function CreationGUI(props: { token: string }) {
       totalPrice: 0,
     },
   ]);
+  const handleDateChange = (newDate: any) => {
+    setDate(newDate);
+  };
 
+  React.useEffect(() => {
+    const dateString = fields?.IssueDate || '';
+    const [day, month, year] = dateString.split('/');
+    const newDate = `${year}-${month}-${day}`;
+    setDate(new Date(newDate));
+    setInvName(fields?.BuyerReference || '');
+    setInvNum(fields?.ID || '');
+    setSellerABN(
+      fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID[
+        '@value'
+      ] || ''
+    );
+    setSellerName(
+      fields?.AccountingSupplierParty.Party.PartyLegalEntity.RegistrationName ||
+        ''
+    );
+    setSellerStreetName(
+      fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
+    );
+    setSellerAddStreetName(
+      fields?.AccountingSupplierParty.Party.PostalAddress
+        .AdditionalStreetName || ''
+    );
+    setSellerCityName(
+      fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
+    );
+    setSellerCode(
+      fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
+    );
+
+    setBuyerABN(
+      fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID[
+        '@value'
+      ] || ''
+    );
+    setBuyerName(
+      fields?.AccountingCustomerParty.Party.PartyLegalEntity.RegistrationName ||
+        ''
+    );
+    setBuyerStreetName(
+      fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
+    );
+    setBuyerAddStreetName(
+      fields?.AccountingCustomerParty.Party.PostalAddress
+        .AdditionalStreetName || ''
+    );
+    setBuyerCityName(
+      fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
+    );
+    setBuyerCode(
+      fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
+    );
+
+    if (Array.isArray(fields?.InvoiceLine)) {
+      // console.log(rows);
+      let tempRows = rows;
+      let firstFlag = true;
+      fields?.InvoiceLine.forEach((item: any) => {
+        if (firstFlag) {
+          const newRow = {
+            id: 1,
+            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
+            unitCode: item?.InvoicedQuantity.unitCode,
+            item: item?.Item.Name || '',
+            description: item?.Item.Description || '',
+            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
+            GST: 0,
+            totalPrice: 0,
+          };
+          firstFlag = false;
+          // setRows([...rows, newRow]);
+          tempRows = [newRow];
+          console.log(tempRows);
+          // console.log(rows);
+        } else {
+          const newRow = {
+            id: nextId,
+            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
+            unitCode: item?.InvoicedQuantity.unitCode,
+            item: item?.Item.Name || '',
+            description: item?.Item.Description || '',
+            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
+            GST: 0,
+            totalPrice: 0,
+          };
+          tempRows.push(newRow);
+          // setRows([...rows, newRow]);
+          setNextId(nextId + 1);
+        }
+      });
+      setRows(tempRows);
+    } else {
+      if (fields?.InvoiceLine) {
+        const newRow = {
+          id: 1,
+          quantity: parseInt(
+            fields?.InvoiceLine.InvoicedQuantity['@value'],
+            10
+          ),
+          unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
+          item: fields?.InvoiceLine.Item.Name || '',
+          description: fields?.InvoiceLine.Item.Description || '',
+          unitPrice: parseInt(
+            fields?.InvoiceLine.Price.PriceAmount['@value'],
+            10
+          ),
+          GST: 0,
+          totalPrice: 0,
+        };
+        setRows([newRow]);
+        // setNextId(nextId + 1);
+      }
+    }
+  }, [fields]);
   // Uploading additional documents
   const [openFileUpload, setOpenFileUpload] = React.useState(false);
   const [fileList, setFileList] = React.useState<FileObject[]>([]);
@@ -114,7 +277,7 @@ export default function CreationGUI(props: { token: string }) {
   // Changes the VAT rate based on the buyer's country
   const handleChange = (event: { target: { value: any; name: string } }) => {
     const selectedCountry = event.target.value as keyof typeof vatRates;
-
+    console.log(buyerCountry);
     if (event.target.name == 'buyerCountry') {
       setBuyerCountry(selectedCountry);
       setVatRate(vatRates[selectedCountry]);
@@ -204,6 +367,7 @@ export default function CreationGUI(props: { token: string }) {
     const updatedRows = rows.map((row) =>
       row.id === newRow.id ? { ...row, ...newRow } : row
     );
+
     setRows(updatedRows);
   };
 
@@ -297,72 +461,135 @@ export default function CreationGUI(props: { token: string }) {
     if (errorCheck) {
       return;
     } else {
-      try {
-        const response = await axios.post('http://localhost:5000/invoice/create', filteredInvoiceData, {
-          headers: {
-            Authorisation: `${props.token}`,
+      if (props.editFlag) {
+        console.log(filteredInvoiceData);
+        setLoadingMsg('Saving edits...');
+        setLoading(true);
+        const response = await axios.put(
+          `http://localhost:5000/invoice/edit/${props.id}`,
+          {
+            name: formData.get('invoiceName'),
+            fields: filteredInvoiceData,
+            rule: 'AUNZ_PEPPOL_1_0_10',
           },
-        });
 
-        if (response.status === 201) {
-          // This is the one that should be working, but the api backend does not work
-          // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
-
-          // This is to make the response object consistent betwee invoices create via GUI and upload
-          console.log("this is reponse data: ", response.data);
-          console.log("this is reponse data.data: ", response.data.data);
-          const customResponse = {
-            "invoice": {
-              "data": [
-                {
-                  // NOTE: This method chaining fucking sucks -> wtf is this
-                  "filename": response.data.data[0].filename,
-                  "invoiceId": response.data.data[0].invoiceId
-                }
-              ]
+          {
+            headers: {
+              Authorisation: `${props.token}`,
             },
-            "type": "GUI",
-            // This doesn't seem right... but it's how the invoicecreation gui via bulk upload returns
-            "invoiceId": response.data.data[0].invoiceId
           }
+        );
 
-          navigate('/invoice-creation-confirmation', {
-            state: customResponse
-          });
+        setLoading(false);
+
+        if (response.status === 204) {
+          alert('Edit Successful');
         } else {
           console.log(response);
-          alert('Unable to create invoice');
+          alert('Unable to edit invoice');
         }
-      } catch (err) {
-        console.error(err);
-        alert(err);
+
+        navigate('/invoice-management');
+      } else {
+        setLoadingMsg('Creating invoice...');
+        setLoading(true);
+        try {
+          const response = await axios.post(
+            'http://localhost:5000/invoice/create',
+            filteredInvoiceData,
+            {
+              headers: {
+                Authorisation: `${props.token}`,
+              },
+            }
+          );
+          setLoading(false);
+
+          if (response.status === 201) {
+            // This is the one that should be working, but the api backend does not work
+            // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
+
+            // This is to make the response object consistent betwee invoices create via GUI and upload
+            console.log('this is reponse data: ', response.data);
+            console.log('this is reponse data.data: ', response.data.data);
+            const customResponse = {
+              invoice: {
+                data: [
+                  {
+                    // NOTE: This method chaining fucking sucks -> wtf is this
+                    filename: response.data.data[0].filename,
+                    invoiceId: response.data.data[0].invoiceId,
+                  },
+                ],
+              },
+              type: 'GUI',
+              // This doesn't seem right... but it's how the invoicecreation gui via bulk upload returns
+              invoiceId: response.data.data[0].invoiceId,
+            };
+
+            navigate('/invoice-creation-confirmation', {
+              state: customResponse,
+            });
+          } else {
+            console.log(response);
+            alert('Unable to create invoice');
+          }
+        } catch (err) {
+          setLoading(false);
+          console.error(err);
+          alert(err);
+        }
+        // SEND TO BACKEND HERE -> if successful, go to confirmation page
+        return;
       }
-      // SEND TO BACKEND HERE -> if successful, go to confirmation page
-      return;
     }
   };
 
   return (
     <>
+      <LoadingDialog open={loading} message={loadingMsg} />
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>Invoice Creation - GUI</Typography>
+        {props.editFlag ? (
+          <>
+            <Typography variant='h4'>Invoice Edit</Typography>
+            <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
+            <Breadcrumbs
+              aria-label='breadcrumb'
+              separator={<NavigateNextIcon fontSize='small' />}
+            >
+              <Typography component={Link} to='/dashboard'>
+                Dashboard
+              </Typography>
 
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
+              <Typography component={Link} to='/invoice-management'>
+                Invoice Management
+              </Typography>
 
-        <Breadcrumbs
-          aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize='small' />}
-        >
-          <Typography component={Link} to='/sign-in'>
-            Dashboard
-          </Typography>
+              <Typography color='text.primary'>Invoice Edit</Typography>
+            </Breadcrumbs>
+          </>
+        ) : (
+          <>
+            <Typography variant='h4'>Invoice Creation - GUI</Typography>
+            <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
+            <Breadcrumbs
+              aria-label='breadcrumb'
+              separator={<NavigateNextIcon fontSize='small' />}
+            >
+              <Typography component={Link} to='/dashboard'>
+                Dashboard
+              </Typography>
 
-          <Typography component={Link} to='/invoice-creation'>
-            Invoice Creation
-          </Typography>
+              <Typography component={Link} to='/invoice-creation'>
+                Invoice Creation
+              </Typography>
 
-          <Typography color='text.primary'>Invoice Creation - GUI</Typography>
-        </Breadcrumbs>
+              <Typography color='text.primary'>
+                Invoice Creation - GUI
+              </Typography>
+            </Breadcrumbs>
+          </>
+        )}
 
         <form onSubmit={handleSubmit}>
           {/* INVOICE HEADER */}
@@ -380,6 +607,8 @@ export default function CreationGUI(props: { token: string }) {
                 name='invoiceName'
                 autoFocus
                 sx={{ width: '100%' }}
+                value={invName}
+                onChange={(e) => setInvName(e.target.value)}
               />
             </Grid>
 
@@ -393,6 +622,8 @@ export default function CreationGUI(props: { token: string }) {
                 autoFocus
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={invNum}
+                onChange={(e) => setInvNum(e.target.value)}
               />
             </Grid>
 
@@ -404,6 +635,8 @@ export default function CreationGUI(props: { token: string }) {
                     name='invoiceIssueDate'
                     format='dd/MM/yyyy'
                     sx={{ width: '100%' }}
+                    value={date}
+                    onChange={handleDateChange}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -425,6 +658,8 @@ export default function CreationGUI(props: { token: string }) {
                 name='sellerABN'
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={sellerABN}
+                onChange={(e) => setSellerABN(e.target.value)}
               />
 
               <TextField
@@ -433,16 +668,9 @@ export default function CreationGUI(props: { token: string }) {
                 id='sellerCompanyName'
                 label='Company Name'
                 name='sellerCompanyName'
-                sx={{ width: '100%' }}
-              />
-
-              <TextField
-                margin='normal'
-                required
-                id='sellerAddress'
-                label='Address'
-                name='sellerAddress'
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', mb: 3 }}
+                value={sellerName}
+                onChange={(e) => setSellerName(e.target.value)}
               />
 
               <Typography variant='h6' sx={{ mt: 1 }}>
@@ -456,6 +684,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Street Name'
                 name='sellerStreetName'
                 sx={{ width: '100%' }}
+                value={sellerStreetName}
+                onChange={(e) => setSellerStreetName(e.target.value)}
               />
 
               <TextField
@@ -464,6 +694,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Additional Street Name'
                 name='sellerAdditionalStreetName'
                 sx={{ width: '100%' }}
+                value={sellerAddStreetName}
+                onChange={(e) => setSellerAddStreetName(e.target.value)}
               />
 
               <TextField
@@ -473,6 +705,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='City Name'
                 name='sellerCityName'
                 sx={{ width: '100%' }}
+                value={sellerCityName}
+                onChange={(e) => setSellerCityName(e.target.value)}
               />
 
               <TextField
@@ -482,6 +716,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Postal Code'
                 name='sellerPostalCode'
                 sx={{ width: '100%' }}
+                value={sellerCode}
+                onChange={(e) => setSellerCode(e.target.value)}
               />
 
               <FormControl sx={{ mt: 2, width: '100%' }}>
@@ -523,6 +759,8 @@ export default function CreationGUI(props: { token: string }) {
                 name='buyerABN'
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                value={buyerABN}
+                onChange={(e) => setBuyerABN(e.target.value)}
               />
 
               <TextField
@@ -531,16 +769,9 @@ export default function CreationGUI(props: { token: string }) {
                 id='buyerCompanyName'
                 label='Company Name'
                 name='buyerCompanyName'
-                sx={{ width: '100%' }}
-              />
-
-              <TextField
-                margin='normal'
-                required
-                id='buyerAddress'
-                label='Address'
-                name='buyerAddress'
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', mb: 3 }}
+                value={buyerName}
+                onChange={(e) => setBuyerName(e.target.value)}
               />
 
               <Typography variant='h6' sx={{ mt: 1 }}>
@@ -554,6 +785,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Street Name'
                 name='buyerStreetName'
                 sx={{ width: '100%' }}
+                value={buyerStreetName}
+                onChange={(e) => setBuyerStreetName(e.target.value)}
               />
 
               <TextField
@@ -561,7 +794,9 @@ export default function CreationGUI(props: { token: string }) {
                 id='buyerAdditionalStreetName'
                 label='Additional Street Name'
                 name='buyerAdditionalStreetName'
-                sx={{ width: '100%' }}
+                sx={{ width: '100%' }}  
+                value={buyerAddStreetName}
+                onChange={(e) => setBuyerAddStreetName(e.target.value)}
               />
 
               <TextField
@@ -571,6 +806,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='City Name'
                 name='buyerCityName'
                 sx={{ width: '100%' }}
+                value={buyerCityName}
+                onChange={(e) => setBuyerCityName(e.target.value)}
               />
 
               <TextField
@@ -580,6 +817,8 @@ export default function CreationGUI(props: { token: string }) {
                 label='Postal Code'
                 name='buyerPostalCode'
                 sx={{ width: '100%' }}
+                value={buyerCode}
+                onChange={(e) => setBuyerCode(e.target.value)}
               />
 
               <FormControl sx={{ mt: 2, width: '100%' }}>
@@ -695,15 +934,16 @@ export default function CreationGUI(props: { token: string }) {
 
           {/* ADDITIONAL OPTIONS */}
           <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>
-            Additional Options
+            Extra Comments
           </Typography>
-          <Button
+          {/* Commented out because backend does not store it */}
+          {/* <Button
             variant='contained'
             color='primary'
             onClick={() => setOpenFileUpload(true)}
           >
             Upload Additional Documents
-          </Button>
+          </Button> */}
           <DropzoneDialogBase
             dialogTitle={'Upload file'}
             acceptedFiles={['image/*']}
@@ -734,9 +974,9 @@ export default function CreationGUI(props: { token: string }) {
             showFileNamesInPreview={true}
           />
 
-          <Typography variant='h6' sx={{ mt: 4 }}>
+          {/* <Typography variant='h6' sx={{ mt: 4 }}>
             Extra Comments
-          </Typography>
+          </Typography> */}
           <TextField
             multiline
             rows={5}
@@ -759,9 +999,11 @@ export default function CreationGUI(props: { token: string }) {
           </Box>
         </form>
 
-        <Box sx={{ mb: 6 }}>
-          {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-        </Box>
+        {openError && (
+          <ErrorModal open={openError} setOpen={setOpenError}>
+            {error}
+          </ErrorModal>
+        )}
       </Container>
     </>
   );

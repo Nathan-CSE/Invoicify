@@ -5,8 +5,10 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Container,
   Divider,
   Grid,
+  Stack,
 } from '@mui/material';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Typography from '@mui/material/Typography';
@@ -20,9 +22,21 @@ import SettingsMenu from '../components/SettingsMenu';
 import FilterModal from '../components/FilterModal';
 import PrintableInvoice from '../components/PrintableInvoice';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import LoadingDialog from '../components/LoadingDialog';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import { AiOutlineFieldNumber } from "react-icons/ai";
+import NumbersIcon from '@mui/icons-material/Numbers';
+import TagIcon from '@mui/icons-material/Tag';
+import CancelIcon from '@mui/icons-material/Cancel';
+import RuleIcon from '@mui/icons-material/Rule';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import useAuth from './useAuth';
 
 export default function InvoiceManagement(props: { token: string }) {
+  useAuth(props.token);
+
   const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
 
   interface Details {
     id: number;
@@ -32,6 +46,7 @@ export default function InvoiceManagement(props: { token: string }) {
     rule: string;
     user_id: number;
     is_ready: boolean;
+    is_gui: boolean;
   }
 
   // const [details, setDetails] = React.useState<Details[]>([]);
@@ -65,16 +80,23 @@ export default function InvoiceManagement(props: { token: string }) {
   const handleCardClick =
     (id: number) => (event: React.MouseEvent<HTMLButtonElement>) => {
       // alert(1);
-      console.log(id);
+      // console.log(id);
       let cardDetails = details.get(id);
       console.log(cardDetails);
+      console.log(details);
       let cardFields = cardDetails?.fields;
       navigate('/invoice-preview-history', {
-        state: { fields: cardFields, name: cardDetails?.name },
+        state: {
+          fields: cardFields,
+          name: cardDetails?.name,
+          status: cardDetails?.is_gui,
+          invoiceId: id,
+        },
       });
     };
   // Just to fetch data on load
   const getDetails = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(
         'http://localhost:5000/invoice/history',
@@ -85,6 +107,8 @@ export default function InvoiceManagement(props: { token: string }) {
           },
         }
       );
+
+      setLoading(false);
 
       if (response.status === 200) {
         const data: Record<string, Details> = response.data;
@@ -119,6 +143,7 @@ export default function InvoiceManagement(props: { token: string }) {
         setError(response.data.message);
       }
     } catch (error) {
+      setLoading(false);
       if (error instanceof AxiosError) {
         if (error.response) {
           if (error.response.status !== 403) {
@@ -151,11 +176,7 @@ export default function InvoiceManagement(props: { token: string }) {
             position: 'relative',
           }}
         >
-          <SettingsMenu
-            id={items.id}
-            token={props.token}
-            status={items.is_ready}
-          ></SettingsMenu>
+          <SettingsMenu token={props.token} details={items} />
           <CardActionArea onClick={handleCardClick(items.id)}>
             <CardContent
               sx={{
@@ -163,31 +184,50 @@ export default function InvoiceManagement(props: { token: string }) {
                 height: '24rem',
               }}
             >
-              <InvoiceSvg></InvoiceSvg>
-              <Typography variant='h6' component='div'>
-                {items.name}
-              </Typography>
-
-              {items.is_ready ? (
-                <>
-                  <Typography variant='subtitle1' gutterBottom>
-                    Status: Validated
+              <InvoiceSvg />
+              <Box sx={{ display: 'flex', ml: 1, flexDirection: 'column', textAlign: 'left' }}>
+                <Stack direction='row' spacing={1} sx={{ mt: 3 }} alignItems="center">
+                  <ReceiptIcon />
+                  <Typography variant='h6' component='div'>
+                    {items.name}
                   </Typography>
+                </Stack>
 
-                  {
-                    // Vaulted till a later sprint
-                    /* <Typography variant='subtitle1' gutterBottom>
-                    Validated with {items.rule}
-                  </Typography> */
-                  }
-                </>
-              ) : (
-                <>
-                  <Typography variant='subtitle1' gutterBottom>
-                    Status: Unvalidated
+                <Stack direction='row' spacing={1.25} alignItems="center">
+                  <TagIcon style={{ fontSize: 20, marginLeft: 2 }} />
+                  <Typography variant='h6' component='div'>
+                    ID: {items.id}
                   </Typography>
-                </>
-              )}
+                </Stack>
+
+                {items.is_ready ? (
+                  <>
+                    <Stack direction='row' spacing={1} sx={{ my: 1 }} alignItems="center">
+                      <CheckCircleIcon />
+                      <Typography variant='subtitle1' gutterBottom>
+                        Status: Validated
+                      </Typography>
+                    </Stack>
+
+                    <Stack direction='row' spacing={1} sx={{ mb: 1 }} alignItems="center">
+                      <RuleIcon />
+                      <Typography variant='subtitle1' gutterBottom>
+                        Rule: {items.rule}
+                      </Typography>
+                    </Stack>
+                  </>
+                ) : (
+                  <>
+                    <Stack direction='row' spacing={1} sx={{ mb: 1 }} alignItems="center">
+                      <CancelIcon />
+                      <Typography variant='subtitle1' gutterBottom>
+                        Status: Unvalidated
+                      </Typography>
+                    </Stack>
+                  </>
+                )}
+              </Box>
+
             </CardContent>
           </CardActionArea>
         </Card>
@@ -213,27 +253,23 @@ export default function InvoiceManagement(props: { token: string }) {
 
   return (
     <>
-      <Box
-        sx={{
-          mt: 15,
-          mx: 5,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          width: '90%',
-        }}
-      >
+      <LoadingDialog open={loading} message='Retrieving invoices...' />
+      <Container maxWidth="lg" sx={{ marginTop: 11, position: 'relative' }}>
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
             width: '100%',
-            mb: 2,
+            mb: 1,
           }}
         >
           <Typography variant='h4'>Invoice Management</Typography>
-          <Button variant='contained' onClick={handleClickFilter} startIcon={<FilterListIcon />}>
+          <Button
+            variant='contained'
+            onClick={handleClickFilter}
+            startIcon={<FilterListIcon />}
+          >
             FILTER
           </Button>
           <FilterModal
@@ -242,11 +278,11 @@ export default function InvoiceManagement(props: { token: string }) {
             onCancel={handleCancelFilter}
           />
         </Box>
-        <Divider sx={{ borderColor: 'black', width: '100%' }} />
+        <Divider sx={{  width: '100%' }} />
         <Breadcrumbs
           aria-label='breadcrumb'
           separator={<NavigateNextIcon fontSize='small' />}
-          sx={{ mt: 1 }}
+          sx={{ mt: 1, position: 'absolute' }}
         >
           <Typography component={Link} to='/dashboard'>
             Dashboard
@@ -254,23 +290,26 @@ export default function InvoiceManagement(props: { token: string }) {
 
           <Typography color='text.primary'>Invoice Management</Typography>
         </Breadcrumbs>
+
         <Grid
           container
           spacing={9}
           sx={{
-            mt: 4,
+            mt: 0,
             display: 'flex',
-            justifyContent: 'center',
+            // justifyContent: 'center',
             alignItems: 'center',
           }}
         >
           {generateInvoiceCards()}
         </Grid>
-      </Box>
 
-      <Box sx={{ mt: 10 }}>
-        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-      </Box>
+        {openError && (
+          <ErrorModal open={openError} setOpen={setOpenError}>
+            {error}
+          </ErrorModal>
+        )}
+      </Container>
     </>
   );
 }

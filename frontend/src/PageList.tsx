@@ -16,7 +16,9 @@ import InvoiceManagement from './pages/InvoiceManagementPage';
 import HistoryPreviewInvoice from './pages/HistoryPreviewInvoice';
 import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
 import ResetPassword from './pages/UserAuth/ResetPasswordPage';
+import InvoiceEdit from './pages/InvoiceEdit';
 import ValidationReport from './pages/InvoiceValidation/ValidationReport';
+import DocPage from './pages/Documentation';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -89,7 +91,7 @@ function PageList() {
           element={
             <>
               <Navbar token={token} setToken={setToken} />
-              <CreationGUI token={token} />
+              <CreationGUI token={token} editFlag={false} data={null} id={0} />
             </>
           }
         />
@@ -125,7 +127,7 @@ function PageList() {
           element={
             <>
               <Navbar token={token} setToken={setToken} />
-              <ValidationReport />
+              <ValidationReport token={token} />
             </>
           }
         />
@@ -135,6 +137,15 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <InvoiceManagement token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/invoice-edit'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <InvoiceEdit token={token} />
             </>
           }
         />
@@ -171,6 +182,15 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <SettingsPage token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/documentation'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <DocPage token={token} />
             </>
           }
         />
