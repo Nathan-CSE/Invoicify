@@ -211,6 +211,11 @@ export default function InvoiceValidation(props: { token: string; }) {
               >
                 <MenuItem value={'AUNZ_PEPPOL_1_0_10'}>AU-NZ PEPPOL-1.0.10</MenuItem>
                 <MenuItem value={'AUNZ_PEPPOL_SB_1_0_10'}>AU-NZ PEPPOL-SB-1.0.10</MenuItem>
+                <MenuItem value={'AUNZ_UBL_1_0_10'}>AUNZ_UBL_1_0_10</MenuItem>
+                <MenuItem value={'FR_EN169321_CII_1_3_11'}>FR_EN169321_CII_1_3_11</MenuItem>
+                <MenuItem value={'FR_EN169321_UBL_1_3_11'}>FR_EN169321_UBL_1_3_11</MenuItem>
+                <MenuItem value={'RO_RO16931_UBL_1_0_8_EN16931'}>RO_RO16931_UBL_1_0_8_EN16931</MenuItem>
+                <MenuItem value={'RO_RO16931_UBL_1_0_8_CIUS_RO'}>RO_RO16931_UBL_1_0_8_CIUS_RO</MenuItem>
               </Select>
             </FormControl>
           </Box>
