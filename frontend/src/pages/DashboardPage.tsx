@@ -42,7 +42,7 @@ function DashboardPage(props: {
     'Send an Invoice': { svg: SendSvg, route: '/invoice-sending' },
     'Manage Invoices': { svg: ManageSvg, route: '/invoice-management' },
     'Account Settings': { svg: CogSvg, route: '/settings' },
-    'Documentation Info': { svg: DocSvg, route: '/' },
+    'Documentation Info': { svg: DocSvg, route: '/documentation' },
   };
 
   // Function to generate the dashboard card

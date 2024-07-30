@@ -58,7 +58,7 @@ function SettingsPage(props: { token: string }) {
     <>
       <Box
         sx={{
-          mt: 15,
+          mt: 11,
           mx: 5,
           display: 'flex',
           flexDirection: 'column',
