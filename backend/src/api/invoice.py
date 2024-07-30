@@ -242,7 +242,7 @@ class UploadValidationAPI(Resource):
 
             if retval["successful"] is True:
                 json_str = cs.xml_to_json(content)
-                invoice = Invoice(name=file.filename, fields=json.dumps(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
+                invoice = Invoice(name=file.filename, fields=json.loads(json_str), user_id=user.id, is_ready=True, completed_ubl=base64_encode(content), rule=rules)
                 db_insert(invoice)
                 validationRetval.append({"validated": True, "data": "Invoice validated successfully", "invoiceId": invoice.id, "invoiceName": invoice.name, "rule": rules})
             else:
