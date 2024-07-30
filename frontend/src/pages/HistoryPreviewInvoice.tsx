@@ -33,7 +33,7 @@ import useAuth from './useAuth';
 export default function HistoryPreviewInvoice(props: { token: string }) {
   useAuth(props.token);
   const location = useLocation();
-  console.log("this is location: ", location);
+  console.log('this is location: ', location);
   const name = location.state.name;
 
   // Popover Info
@@ -56,7 +56,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
 
   const openPopover = Boolean(anchorEl);
   const id = openPopover ? 'simple-popover' : undefined;
-  console.log("this is invoice id: ", id);
+  console.log('this is invoice id: ', id);
   const [dataFields, setDataFields] = React.useState(location.state.fields);
   console.log(dataFields);
   const [invoiceType, setInvoiceType] = React.useState('JSON');
@@ -77,42 +77,44 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
     }
   }, []);
 
-  const handleDownload = async (event: any) => {    
-    
+  const handleDownload = async (event: any) => {
     event.preventDefault();
 
-    console.log("this is invoiceId, ", invoiceId);
+    console.log('this is invoiceId, ', invoiceId);
 
     try {
-      const response = await axios.post(`http://localhost:5000/invoice/download/${invoiceId}`, {
-        headers: {
-          'Authorisation': `${props.token}`,
+      const response = await axios.post(
+        `http://localhost:5000/invoice/download/${invoiceId}`,
+        {
+          headers: {
+            Authorisation: `${props.token}`,
+          },
         }
-      });
-      
-      if (response.status === 200) {
-        console.log(response.data)
+      );
 
-        // Tried to change this to use saveAs lib, but ran into a bunch of issues trying to format the 
+      if (response.status === 200) {
+        console.log(response.data);
+
+        // Tried to change this to use saveAs lib, but ran into a bunch of issues trying to format the
         // string into a file that was able to be saved
-        const url = window.URL.createObjectURL(new Blob([response.data[0]["message"]]));
+        const url = window.URL.createObjectURL(
+          new Blob([response.data[0]['message']])
+        );
         const link = document.createElement('a');
         link.href = url;
-        console.log(response.data[0]["message"])
+        console.log(response.data[0]['message']);
         link.setAttribute('download', name);
         document.body.appendChild(link);
         link.click();
         link.remove();
-
       } else {
         console.log(response);
-        alert("Unable to create invoice");
+        alert('Unable to create invoice');
       }
     } catch (err) {
       console.error(err);
-      alert(err)
+      alert(err);
     }
-
   };
 
   const formatJSON = (dataFields: any, indentLevel = 0) => {
@@ -372,7 +374,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               >
                 Country:{' '}
                 {
-                  dataFields.AccountingSupplierParty.Party.PostalAddress.Country
+                  dataFields.AccountingCustomerParty.Party.PostalAddress.Country
                     .IdentificationCode
                 }
               </Typography>
@@ -572,8 +574,8 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
             formatGUI(dataFields)
           )}
         </Box>
-        
-        <Grid container justifyContent="center" spacing={6}>
+
+        <Grid container justifyContent='center' spacing={6}>
           <Grid item>
             <Button
               onClick={handleDownload}
@@ -592,7 +594,11 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
             <Button
               component={Link}
               to='/invoice-management'
-              startIcon={<ManageSvg style={{ width: '24px', height: '24px', fill: '#ffffff' }}/>}
+              startIcon={
+                <ManageSvg
+                  style={{ width: '24px', height: '24px', fill: '#ffffff' }}
+                />
+              }
               variant='contained'
               sx={{
                 height: '50px',
@@ -603,7 +609,6 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
             </Button>
           </Grid>
         </Grid>
-
       </Box>
     </>
   );

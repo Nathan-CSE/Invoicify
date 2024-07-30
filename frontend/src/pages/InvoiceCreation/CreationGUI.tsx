@@ -256,18 +256,16 @@ export default function CreationGUI(props: {
   // Function for monetary totals
   const calculateTotals = () => {
     let totalGST = 0;
-    let totalTaxable = 0;
     let totalAmount = 0;
 
     rows.forEach((row) => {
-      totalGST += row.GST;
-      totalTaxable += row.totalPrice - row.GST;
+      totalGST += row.GST * row.quantity;
       totalAmount += row.totalPrice;
     });
 
     return {
       totalGST: totalGST,
-      totalTaxable: totalTaxable,
+      totalTaxable: totalAmount - totalGST,
       totalAmount: totalAmount,
     };
   };
@@ -449,11 +447,8 @@ export default function CreationGUI(props: {
       }
     }
 
-    const {
-      additionalDocuments,
-      extraComments,
-      ...filteredInvoiceData
-    } = invoiceData;
+    const { additionalDocuments, extraComments, ...filteredInvoiceData } =
+      invoiceData;
     var str = JSON.stringify(filteredInvoiceData, null, 2);
     console.log('filtered: ', str);
 
@@ -793,7 +788,7 @@ export default function CreationGUI(props: {
                 id='buyerAdditionalStreetName'
                 label='Additional Street Name'
                 name='buyerAdditionalStreetName'
-                sx={{ width: '100%' }}  
+                sx={{ width: '100%' }}
                 value={buyerAddStreetName}
                 onChange={(e) => setBuyerAddStreetName(e.target.value)}
               />

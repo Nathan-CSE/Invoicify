@@ -38,13 +38,13 @@ export default function SignIn(props: {
       setError('Fill out all required fields');
     } else {
       try {
-        setLoading(true);
+        // setLoading(true);
         const response = await axios.post('http://localhost:5000/auth/login', {
           email,
           password,
         });
 
-        setLoading(false);
+        // setLoading(false);
 
         if (response.status === 200) {
           props.setToken(response.data.token);
@@ -129,7 +129,13 @@ export default function SignIn(props: {
             >
               Forgot password?
             </Typography>
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }} startIcon={<LoginIcon />}>
+            <Button
+              type='submit'
+              fullWidth
+              variant='contained'
+              sx={{ mt: 3 }}
+              startIcon={<LoginIcon />}
+            >
               Sign In
             </Button>
 
