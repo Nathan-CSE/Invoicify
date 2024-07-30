@@ -256,18 +256,16 @@ export default function CreationGUI(props: {
   // Function for monetary totals
   const calculateTotals = () => {
     let totalGST = 0;
-    let totalTaxable = 0;
     let totalAmount = 0;
 
     rows.forEach((row) => {
-      totalGST += row.GST;
-      totalTaxable += row.totalPrice - row.GST;
+      totalGST += row.GST * row.quantity;
       totalAmount += row.totalPrice;
     });
 
     return {
       totalGST: totalGST,
-      totalTaxable: totalTaxable,
+      totalTaxable: totalAmount - totalGST,
       totalAmount: totalAmount,
     };
   };

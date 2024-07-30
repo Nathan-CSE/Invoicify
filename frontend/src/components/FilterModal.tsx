@@ -31,7 +31,7 @@ export default function FilterModal(props: SimpleDialogProps) {
       <Box sx={{ width: '24rem', height: '17rem' }}>
         <DialogTitle>Filter Invoices</DialogTitle>
         <FormControl sx={{ pl: '2.5rem' }}>
-          <FormLabel id='filter-radial-options'>Filter Options</FormLabel>
+          {/* <FormLabel id='filter-radial-options'>Filter Options</FormLabel> */}
           <RadioGroup
             aria-labelledby='filter-radial-options'
             name='radio-buttons-group'
@@ -42,7 +42,7 @@ export default function FilterModal(props: SimpleDialogProps) {
               onClick={() => {
                 setFilterOption('id');
               }}
-              label='Invoice ID'
+              label='Filter by invoice ID'
             />
             <FormControlLabel
               value='name'
@@ -50,7 +50,7 @@ export default function FilterModal(props: SimpleDialogProps) {
               onClick={() => {
                 setFilterOption('name');
               }}
-              label='Invoice Name'
+              label='Filter alphabetically by invoice name'
             />
             <FormControlLabel
               value='status'
@@ -58,7 +58,7 @@ export default function FilterModal(props: SimpleDialogProps) {
               onClick={() => {
                 setFilterOption('status');
               }}
-              label='Invoice Status'
+              label='Show validated invoices only'
             />
           </RadioGroup>
         </FormControl>

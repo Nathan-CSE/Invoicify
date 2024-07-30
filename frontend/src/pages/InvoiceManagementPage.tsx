@@ -32,6 +32,7 @@ import RuleIcon from '@mui/icons-material/Rule';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import useAuth from './useAuth';
 import AbcIcon from '@mui/icons-material/Abc';
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function InvoiceManagement(props: { token: string }) {
   useAuth(props.token);
@@ -201,6 +202,20 @@ export default function InvoiceManagement(props: { token: string }) {
                     ID: {items.id}
                   </Typography>
                 </Stack>
+
+
+
+                {items.is_gui && (
+                  <>
+                    <Stack direction='row' spacing={1} sx={{ my: 1 }} alignItems="center">
+                      <EditIcon />
+                      <Typography variant='subtitle1' gutterBottom>
+                        Editable
+                      </Typography>
+                    </Stack>
+                  </>
+                )}
+
 
                 {items.is_ready ? (
                   <>
