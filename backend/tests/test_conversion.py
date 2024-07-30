@@ -17,10 +17,6 @@ def test_json_conversion_to_xml_invalid_json():
     with pytest.raises(ValueError):
         cs.json_to_xml(TEST_DATA["INVALID_JSON_STR_1"], "blah blah")
 
-def test_json_conversion_to_xml_invalid_formatted_json():
-    #TODO
-    pass
-
 def test_json_conversion_to_xml_invalid_rule():
     with pytest.raises(NotImplementedError):
         cs.json_to_xml(TEST_DATA["JSON_STR_1"], "blah blah")

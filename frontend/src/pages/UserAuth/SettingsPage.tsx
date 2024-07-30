@@ -6,12 +6,18 @@ import { Button, Divider, TextField } from '@mui/material';
 import ErrorModal from '../../components/ErrorModal';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import SaveIcon from '@mui/icons-material/Save';
 import axios, { AxiosError } from 'axios';
+import LoadingDialog from '../../components/LoadingDialog';
+import useAuth from '../useAuth';
 
 function SettingsPage(props: { token: string }) {
+  useAuth(props.token);
+
   // Error Handling
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   const changeAccountDetails = async (
     event: React.FormEvent<HTMLFormElement>
@@ -28,6 +34,7 @@ function SettingsPage(props: { token: string }) {
     } else {
       try {
         console.log(password, updated_password);
+        setLoading(true);
         const response = await axios.patch(
           'http://localhost:5000/auth/change-pw',
           {
@@ -36,6 +43,9 @@ function SettingsPage(props: { token: string }) {
             updated_password,
           }
         );
+
+        setLoading(false);
+
         if (response.status === 200) {
           alert(response.data.message);
         } else {
@@ -43,6 +53,7 @@ function SettingsPage(props: { token: string }) {
           setError(response.data.message);
         }
       } catch (error) {
+        setLoading(false);
         const err = error as AxiosError<{ message: string }>;
         if (err.response) {
           setOpenError(true);
@@ -56,9 +67,10 @@ function SettingsPage(props: { token: string }) {
   };
   return (
     <>
+      <LoadingDialog open={loading} message='Changing password...' />
       <Box
         sx={{
-          mt: 15,
+          mt: 11,
           mx: 5,
           display: 'flex',
           flexDirection: 'column',
@@ -95,7 +107,7 @@ function SettingsPage(props: { token: string }) {
             }}
           />
 
-          <Typography variant='subtitle1' gutterBottom sx={{ mt: 5 }}>
+        <Typography variant='subtitle1' gutterBottom sx={{ mt: 5 }}>
             Change Password
           </Typography>
           <Box component='form' onSubmit={changeAccountDetails} noValidate>
@@ -119,15 +131,17 @@ function SettingsPage(props: { token: string }) {
                 autoComplete='new-password'
               />
             </Box>
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
+            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }} startIcon={<SaveIcon />}>
               Save Changes
             </Button>
           </Box>
         </Box>
-        <Box sx={{ mt: 10 }}>
-          {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-        </Box>
       </Box>
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
     </>
   );
 }

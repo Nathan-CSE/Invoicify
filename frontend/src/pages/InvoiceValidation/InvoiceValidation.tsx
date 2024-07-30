@@ -18,11 +18,16 @@ import Chip from '@mui/material/Chip';
 import MultipleSelect from '../../components/MultipleSelect';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
+import LoadingDialog from '../../components/LoadingDialog';
+import useAuth from '../useAuth';
 
 export default function InvoiceValidation(props: { token: string; }) {
+  useAuth(props.token);
+
   console.log('user token: ', props.token);
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   // const [invoice, setInvoice] = React.useState('');
   const [invoices, setInvoices] = React.useState<string[]>([]);
   const [ruleSet, setRuleSet] = React.useState<string[]>([]);
@@ -64,6 +69,7 @@ export default function InvoiceValidation(props: { token: string; }) {
     try {
       // Placeholder until backend endpoint has been created
       var response;
+      setLoading(true);
 
       if (files) {
         response = await axios.post(`http://localhost:5000/invoice/uploadValidate?rules=${ruleSet}`, formData, {
@@ -81,6 +87,8 @@ export default function InvoiceValidation(props: { token: string; }) {
 
       }
       
+      setLoading(false);
+      
       if (response.status === 200) {
         console.log("api resonse: ", response);
         // navigate('/invoice-validation-report', { state: { fileName: files && files[0].name, ruleSet: ruleSet } });
@@ -91,6 +99,7 @@ export default function InvoiceValidation(props: { token: string; }) {
         navigate('/invoice-validation-report', { state: { response: response.data, ruleSet: ruleSet } });
       }
     } catch (err) {
+      setLoading(false);
       console.error(err);
       alert("Unable to validate invoice. Make sure the XML file itself is complete and has no syntactic errors.");
     }
@@ -136,6 +145,7 @@ export default function InvoiceValidation(props: { token: string; }) {
           alert("Unable to retrieve valid invoices");
         }
       } catch (err) {
+        setLoading(false);
         alert(err);
       }
     };
@@ -146,6 +156,7 @@ export default function InvoiceValidation(props: { token: string; }) {
 
   return (
     <>
+      <LoadingDialog open={loading} message='Validating invoice(s)...' />
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
           Invoice Validation

@@ -17,6 +17,7 @@ import { saveAs } from 'file-saver';
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import useAuth from '../useAuth';
 
 interface AssertionError {
   id: string;
@@ -24,7 +25,9 @@ interface AssertionError {
   location: string;
 }
 
-export default function ValidationReport() {
+export default function ValidationReport(props: { token: string }) {
+  useAuth(props.token);
+
   const location = useLocation();
   const { response, ruleSet } = location.state;
 

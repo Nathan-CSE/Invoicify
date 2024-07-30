@@ -5,10 +5,13 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { CardActionArea } from '@mui/material';
+import Container from '@mui/material/Container';
+import { Breadcrumbs, CardActionArea, Divider, Stack } from '@mui/material';
 import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import checkAuth from './useAuth';
 
 import { ReactComponent as ManageSvg } from '../assets/manage.svg';
 import { ReactComponent as CogSvg } from '../assets/settings.svg';
@@ -25,6 +28,7 @@ function DashboardPage(props: {
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
   console.log(props.token);
+  checkAuth(props.token);
 
   interface dashboardCardInfo {
     svg: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
@@ -42,7 +46,7 @@ function DashboardPage(props: {
     'Send an Invoice': { svg: SendSvg, route: '/invoice-sending' },
     'Manage Invoices': { svg: ManageSvg, route: '/invoice-management' },
     'Account Settings': { svg: CogSvg, route: '/settings' },
-    'Documentation Info': { svg: DocSvg, route: '/' },
+    'Documentation Info': { svg: DocSvg, route: '/documentation' },
   };
 
   // Function to generate the dashboard card
@@ -78,7 +82,20 @@ function DashboardPage(props: {
 
   return (
     <>
-      <Box sx={{ mt: 10 }}>
+      <Container maxWidth='lg' sx={{ marginTop: 11 }}>
+        <Typography variant='h4'>Welcome!</Typography>
+
+        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
+
+        <Stack direction="row" spacing={1} sx={{ mt: 1, mb: 4 }}>
+          <NavigateNextIcon fontSize='small' sx={{ mt: 0.1 }}/>
+          <Typography color='text.primary'>
+            Dashboard
+          </Typography>
+        </Stack>
+
+
+
         <Grid
           container
           spacing={9}
@@ -90,7 +107,7 @@ function DashboardPage(props: {
         >
           {generateOptions(options)}
         </Grid>
-      </Box>
+      </Container>
     </>
   );
 }
