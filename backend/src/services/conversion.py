@@ -39,11 +39,11 @@ class ConversionService():
             "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0",
             "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
         },
-        "FR_EN169321_CII_1_3_11": {
+        "FR_EN16931_CII_1_3_11": {
             "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0",
             "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
         },
-        "FR_EN169321_UBL_1_3_11": {
+        "FR_EN16931_UBL_1_3_11": {
             "cbc:CustomizationID": "urn:cen.eu:en16931:2017#conformant#urn:fdc:peppol.eu:2017:poacc:billing:international:aunz:3.0",
             "cbc:ProfileID": "urn:fdc:peppol.eu:2017:poacc:billing:01:1.0"
         },
