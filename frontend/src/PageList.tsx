@@ -127,7 +127,7 @@ function PageList() {
           element={
             <>
               <Navbar token={token} setToken={setToken} />
-              <ValidationReport />
+              <ValidationReport token={token} />
             </>
           }
         />

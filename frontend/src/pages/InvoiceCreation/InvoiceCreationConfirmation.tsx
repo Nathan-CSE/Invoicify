@@ -16,13 +16,17 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import LoadingDialog from '../../components/LoadingDialog';
+import useAuth from '../useAuth';
 
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
+  useAuth(props.token);
   const invoiceData = useLocation().state;
   console.log('invoice data: ', invoiceData);
   const { data: invoices } = invoiceData.invoice;
   const invoiceId = invoiceData.invoiceId;
   const [currentIndex, setCurrentIndex] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
 
   console.log('this is the invoice data: ', invoiceData);
   
@@ -38,6 +42,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const handleDownload = async (event: any) => {    
     
     event.preventDefault();
+    setLoading(true);
 
     try {
       const response = await axios.post(`http://localhost:5000/invoice/download/${invoiceId}`, {
@@ -46,6 +51,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
         }
       });
       
+      setLoading(false);
       if (response.status === 200) {
         console.log(response.data)
 
@@ -65,6 +71,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
         alert("Unable to create invoice");
       }
     } catch (err) {
+      setLoading(false);
       console.error(err);
       alert(err)
     }
@@ -73,7 +80,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
 
   return (
     <>
-      
+      <LoadingDialog open={loading} message='Downloading invoice...' />
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
           Invoice Creation Result

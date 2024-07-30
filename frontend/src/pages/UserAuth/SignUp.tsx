@@ -11,6 +11,9 @@ import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
 import ErrorModal from '../../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+import LoginIcon from '@mui/icons-material/Login';
+import LoadingDialog from '../../components/LoadingDialog';
 
 export default function SignUp(props: {
   token: string;
@@ -18,6 +21,7 @@ export default function SignUp(props: {
 }) {
   const navigate = useNavigate();
   const [openError, setOpenError] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
   if (props.token) {
     console.log('SIGNUP');
@@ -52,6 +56,7 @@ export default function SignUp(props: {
     } else {
       if (password === confirmPassword) {
         try {
+          setLoading(true);
           const response = await axios.post(
             'http://localhost:5000/auth/register',
             {
@@ -59,6 +64,8 @@ export default function SignUp(props: {
               password,
             }
           );
+
+          setLoading(false);
           if (response.status === 201) {
             props.setToken(response.data.token);
             localStorage.setItem('token', response.data.token);
@@ -72,6 +79,7 @@ export default function SignUp(props: {
             setError(response.data.message);
           }
         } catch (error) {
+          setLoading(false);
           const err = error as AxiosError<{ message: string }>;
           if (err.response) {
             setOpenError(true);
@@ -89,6 +97,7 @@ export default function SignUp(props: {
 
   return (
     <>
+      <LoadingDialog open={loading} message='Signing up...' />
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
@@ -105,7 +114,7 @@ export default function SignUp(props: {
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component='h1' variant='h5'>
+          <Typography component='h1' variant='h5' sx={{ mb: 4 }}>
             Sign up
           </Typography>
           <Box component='form' noValidate onSubmit={handleSubmit}>
@@ -162,7 +171,7 @@ export default function SignUp(props: {
                 />
               </Grid>
             </Grid>
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
+            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }} startIcon={<HowToRegIcon />}>
               Sign Up
             </Button>
             <Button
@@ -172,6 +181,7 @@ export default function SignUp(props: {
               component={Link}
               to='/sign-in'
               sx={{ mt: 3, mb: 2 }}
+              startIcon={<LoginIcon />}
               color='secondary'
             >
               Back to Sign In

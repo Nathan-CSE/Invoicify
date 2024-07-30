@@ -12,8 +12,10 @@ import { Link, useLocation } from 'react-router-dom';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import PrintableInvoice from '../components/PrintableInvoice';
 import { useReactToPrint } from 'react-to-print';
+import useAuth from './useAuth';
 
 export default function PreviewInvoice(props: { token: string; }) {
+  useAuth(props.token);
 
   const componentRef = React.useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({

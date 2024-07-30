@@ -13,6 +13,8 @@ import axios, { AxiosError } from 'axios';
 import { ReactComponent as BackSvg } from '../../assets/backarrow.svg';
 import LoadingDialog from '../../components/LoadingDialog';
 import { Dialog, DialogActions, DialogTitle } from '@mui/material';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import LoginIcon from '@mui/icons-material/Login';
 
 export default function ResetPassword(props: { token: string }) {
   const navigate = useNavigate();
@@ -187,24 +189,6 @@ export default function ResetPassword(props: { token: string }) {
             borderRadius: 4,
           }}
         >
-          <Box
-            component={Link}
-            to='/sign-in'
-            sx={{
-              position: 'absolute',
-              right: 10,
-              top: 5,
-              display: 'flex',
-              flexDirection: 'row',
-              color: 'primary.main',
-              textDecoration: 'none',
-            }}
-          >
-            <BackSvg></BackSvg>
-            <Typography variant='subtitle2' gutterBottom>
-              Back
-            </Typography>
-          </Box>
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
@@ -260,8 +244,21 @@ export default function ResetPassword(props: { token: string }) {
                   fullWidth
                   variant='contained'
                   sx={{ mt: 3 }}
+                  startIcon={<KeyboardArrowRightIcon />}
                 >
                   Submit
+                </Button>
+                <Button
+                  type='submit'
+                  fullWidth
+                  variant='contained'
+                  component={Link}
+                  to='/sign-in'
+                  sx={{ mt: 3, mb: 2 }}
+                  startIcon={<LoginIcon />}
+                  color='secondary'
+                >
+                  Back to Sign In
                 </Button>
               </Box>
             </>
@@ -290,10 +287,23 @@ export default function ResetPassword(props: { token: string }) {
                   fullWidth
                   variant='contained'
                   sx={{ mt: 3 }}
+                  startIcon={<KeyboardArrowRightIcon />}
                 >
                   Submit
                 </Button>
               </Box>
+              <Button
+                type='submit'
+                fullWidth
+                variant='contained'
+                component={Link}
+                to='/sign-in'
+                sx={{ mt: 3, mb: 2 }}
+                startIcon={<LoginIcon />}
+                color='secondary'
+              >
+                Back to Sign In
+              </Button>
             </>
           )}
         </Box>

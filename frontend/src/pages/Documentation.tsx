@@ -13,8 +13,11 @@ import {
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Link } from 'react-router-dom';
 import CircleIcon from '@mui/icons-material/Circle';
+import useAuth from './useAuth';
 
 function DocPage(props: { token: string }) {
+  useAuth(props.token);
+
   return (
     <Container maxWidth='lg' sx={{ mt: 11 }}>
       <Typography variant='h4' gutterBottom>

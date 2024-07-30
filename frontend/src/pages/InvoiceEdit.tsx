@@ -1,8 +1,10 @@
 import { Box } from '@mui/material';
 import CreationGUI from './InvoiceCreation/CreationGUI';
 import { useLocation } from 'react-router-dom';
+import useAuth from './useAuth';
 
 export default function InvoiceEdit(props: { token: string }) {
+  useAuth(props.token);
   const location = useLocation();
 
   return (

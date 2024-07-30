@@ -34,6 +34,8 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import vatRates from '../../VATRates.json';
 import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
+import LoadingDialog from '../../components/LoadingDialog';
+import useAuth from '../useAuth';
 
 interface FileObject {
   file: File;
@@ -47,6 +49,10 @@ export default function CreationGUI(props: {
   data: any;
   id: number;
 }) {
+  useAuth(props.token);
+
+  const [loading, setLoading] = React.useState(false);
+  const [loadingMsg, setLoadingMsg] = React.useState<string>('');
   const navigate = useNavigate();
   const countries = Object.keys(vatRates);
   console.log(props.id);
@@ -457,6 +463,8 @@ export default function CreationGUI(props: {
     } else {
       if (props.editFlag) {
         console.log(filteredInvoiceData);
+        setLoadingMsg('Saving edits...');
+        setLoading(true);
         const response = await axios.put(
           `http://localhost:5000/invoice/edit/${props.id}`,
           {
@@ -472,6 +480,8 @@ export default function CreationGUI(props: {
           }
         );
 
+        setLoading(false);
+
         if (response.status === 204) {
           alert('Edit Successful');
         } else {
@@ -481,6 +491,8 @@ export default function CreationGUI(props: {
 
         navigate('/invoice-management');
       } else {
+        setLoadingMsg('Creating invoice...');
+        setLoading(true);
         try {
           const response = await axios.post(
             'http://localhost:5000/invoice/create',
@@ -491,6 +503,7 @@ export default function CreationGUI(props: {
               },
             }
           );
+          setLoading(false);
 
           if (response.status === 201) {
             // This is the one that should be working, but the api backend does not work
@@ -522,6 +535,7 @@ export default function CreationGUI(props: {
             alert('Unable to create invoice');
           }
         } catch (err) {
+          setLoading(false);
           console.error(err);
           alert(err);
         }
@@ -533,6 +547,7 @@ export default function CreationGUI(props: {
 
   return (
     <>
+      <LoadingDialog open={loading} message={loadingMsg} />
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
         {props.editFlag ? (
           <>
@@ -779,7 +794,7 @@ export default function CreationGUI(props: {
                 id='buyerAdditionalStreetName'
                 label='Additional Street Name'
                 name='buyerAdditionalStreetName'
-                sx={{ width: '100%' }}
+                sx={{ width: '100%' }}  
                 value={buyerAddStreetName}
                 onChange={(e) => setBuyerAddStreetName(e.target.value)}
               />
@@ -919,15 +934,16 @@ export default function CreationGUI(props: {
 
           {/* ADDITIONAL OPTIONS */}
           <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>
-            Additional Options
+            Extra Comments
           </Typography>
-          <Button
+          {/* Commented out because backend does not store it */}
+          {/* <Button
             variant='contained'
             color='primary'
             onClick={() => setOpenFileUpload(true)}
           >
             Upload Additional Documents
-          </Button>
+          </Button> */}
           <DropzoneDialogBase
             dialogTitle={'Upload file'}
             acceptedFiles={['image/*']}
@@ -958,9 +974,9 @@ export default function CreationGUI(props: {
             showFileNamesInPreview={true}
           />
 
-          <Typography variant='h6' sx={{ mt: 4 }}>
+          {/* <Typography variant='h6' sx={{ mt: 4 }}>
             Extra Comments
-          </Typography>
+          </Typography> */}
           <TextField
             multiline
             rows={5}

@@ -10,11 +10,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import CreateIcon from '@mui/icons-material/Create';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LoadingDialog from './LoadingDialog';
 
 export default function SettingsMenu(props: { token: string; details: any }) {
   // Error checking
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   // Open state for the menu
   const [anchorEl, setAnchorEl] = React.useState<null | SVGElement>(null);
@@ -44,6 +46,7 @@ export default function SettingsMenu(props: { token: string; details: any }) {
   };
 
   const handleDelete = async () => {
+    setLoading(true);
     try {
       const response = await axios.delete(
         `http://localhost:5000/invoice/delete/${props.details.id}`,
@@ -54,6 +57,8 @@ export default function SettingsMenu(props: { token: string; details: any }) {
         }
       );
 
+      setLoading(false);
+
       if (response.status === 200) {
         alert('Delete confirmed');
         window.location.reload();
@@ -62,6 +67,7 @@ export default function SettingsMenu(props: { token: string; details: any }) {
         setError(response.data.message);
       }
     } catch (error) {
+      setLoading(false);
       const err = error as AxiosError<{ message: string }>;
       if (err.response) {
         setOpenError(true);
@@ -75,13 +81,16 @@ export default function SettingsMenu(props: { token: string; details: any }) {
 
   return (
     <div>
+      <LoadingDialog open={loading} message='Deleting invoice...' />
       <Box
         sx={{
           position: 'absolute',
           zIndex: 1000,
           cursor: 'pointer',
-          pl: 1,
-          pt: 1,
+          right: 0,
+          top: 0,
+          pr: 1.5,
+          pt: 1.5,
         }}
       >
         <InvoiceSettings onClick={handleClick}></InvoiceSettings>
@@ -91,6 +100,14 @@ export default function SettingsMenu(props: { token: string; details: any }) {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         MenuListProps={{
           'aria-labelledby': 'basic-button',
         }}

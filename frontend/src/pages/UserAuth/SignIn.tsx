@@ -10,6 +10,9 @@ import Container from '@mui/material/Container';
 import { Link, useNavigate } from 'react-router-dom';
 import ErrorModal from '../../components/ErrorModal';
 import axios, { AxiosError } from 'axios';
+import LoginIcon from '@mui/icons-material/Login';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+import LoadingDialog from '../../components/LoadingDialog';
 
 export default function SignIn(props: {
   token: string;
@@ -18,6 +21,7 @@ export default function SignIn(props: {
   const navigate = useNavigate();
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
 
   if (props.token) {
     navigate('/dashboard');
@@ -34,10 +38,13 @@ export default function SignIn(props: {
       setError('Fill out all required fields');
     } else {
       try {
+        setLoading(true);
         const response = await axios.post('http://localhost:5000/auth/login', {
           email,
           password,
         });
+
+        setLoading(false);
 
         if (response.status === 200) {
           props.setToken(response.data.token);
@@ -66,6 +73,7 @@ export default function SignIn(props: {
 
   return (
     <>
+      <LoadingDialog open={loading} message='Signing in...' />
       <Container component='main' maxWidth='xs'>
         <CssBaseline />
         <Box
@@ -114,14 +122,14 @@ export default function SignIn(props: {
 
             <Typography
               variant='subtitle1'
-              sx={{ color: 'info.main', textDecoration: 'none' }}
+              sx={{ color: 'secondary', textDecoration: 'none' }}
               component={Link}
               to='/reset-pw'
               gutterBottom
             >
               Forgot password?
             </Typography>
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }}>
+            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }} startIcon={<LoginIcon />}>
               Sign In
             </Button>
 
@@ -132,7 +140,7 @@ export default function SignIn(props: {
               component={Link}
               to='/sign-up'
               sx={{ mt: 3, mb: 2 }}
-              color='secondary'
+              startIcon={<HowToRegIcon />}
             >
               Register here
             </Button>
