@@ -35,7 +35,7 @@ def format_xml(file):
             unit_code = item["unitCode"],
             item_description = description,
             amount_product = item["quantity"] ,
-            cost_per_product = item["unitPrice"],
+            cost_per_product = item["totalPrice"],
             cost_product = item["totalPrice"],
             tax_amount = item["GST"],
             tax_name = "GST",

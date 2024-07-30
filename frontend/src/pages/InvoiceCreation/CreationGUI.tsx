@@ -632,7 +632,7 @@ export default function CreationGUI(props: {
                   <DatePicker
                     label='Invoice Issue Date'
                     name='invoiceIssueDate'
-                    format='dd/MM/yyyy'
+                    format='yyyy-MM-dd'
                     sx={{ width: '100%' }}
                     value={date}
                     onChange={handleDateChange}
