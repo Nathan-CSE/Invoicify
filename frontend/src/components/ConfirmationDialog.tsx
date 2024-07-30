@@ -19,9 +19,13 @@ export default function ConfirmDialog(props: {
 
   return (
     <>
-      <Dialog open={props.open} onClose={handleClose}>
+      <Dialog
+        open={props.open}
+        onClose={handleClose}
+        sx={{ minWidth: '20rem' }}
+      >
         <DialogTitle>CAUTION</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ minWidth: '20rem' }}>
           <DialogContentText>
             Do you wish to proceed with this action?
           </DialogContentText>
