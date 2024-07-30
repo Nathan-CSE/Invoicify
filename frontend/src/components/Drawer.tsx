@@ -44,16 +44,21 @@ export default function TemporaryDrawer() {
     'Send an Invoice': { svg: SendSvg, route: '/invoice-sending' },
     'Manage Invoices': { svg: ManageSvg, route: '/invoice-management' },
     'Account Settings': { svg: CogSvg, route: '/settings' },
-    'Documentation Info': { svg: DocSvg, route: '/' },
+    'Documentation Info': { svg: DocSvg, route: '/documentation' },
   };
 
   const DrawerList = (
     <Box sx={{ width: 250 }} role='presentation' onClick={toggleDrawer(false)}>
       <List>
-        <Typography variant='h5' fontWeight={"bold"} component='div' sx={{ textAlign: 'center', my: 1 }}>
+        <Typography
+          variant='h5'
+          fontWeight={'bold'}
+          component='div'
+          sx={{ textAlign: 'center', my: 1 }}
+        >
           Invoicify
         </Typography>
-        <Divider sx={{ mb: 1 }}/>
+        <Divider sx={{ mb: 1 }} />
         {Object.entries(options).map(([name, items], index) => (
           <ListItem
             key={index}

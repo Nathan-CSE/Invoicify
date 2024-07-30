@@ -18,6 +18,7 @@ import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
 import ResetPassword from './pages/UserAuth/ResetPasswordPage';
 import InvoiceEdit from './pages/InvoiceEdit';
 import ValidationReport from './pages/InvoiceValidation/ValidationReport';
+import DocPage from './pages/Documentation';
 
 function PageList() {
   const [token, setToken] = React.useState('');
@@ -181,6 +182,15 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <SettingsPage token={token} />
+            </>
+          }
+        />
+        <Route
+          path='/documentation'
+          element={
+            <>
+              <Navbar token={token} setToken={setToken} />
+              <DocPage token={token} />
             </>
           }
         />
