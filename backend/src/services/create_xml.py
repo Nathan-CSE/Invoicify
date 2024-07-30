@@ -43,7 +43,6 @@ def format_xml(file):
     try:
         seller_ad_name = fix_optional("AdditionalStreetName", file["seller"]["address"]["additionalStreetName"])
         buyer_ad_name = fix_optional("AdditionalStreetName", file["buyer"]["address"]["additionalStreetName"])
-        print(file)
         content = template.format(
             invoice_number=file["invoiceNumber"],
             issue_date=file["invoiceIssueDate"], 
