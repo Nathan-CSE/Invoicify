@@ -653,18 +653,9 @@ export default function CreationGUI(props: {
                 id='sellerCompanyName'
                 label='Company Name'
                 name='sellerCompanyName'
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', mb: 3 }}
                 value={sellerName}
                 onChange={(e) => setSellerName(e.target.value)}
-              />
-
-              <TextField
-                margin='normal'
-                required
-                id='sellerAddress'
-                label='Address'
-                name='sellerAddress'
-                sx={{ width: '100%' }}
               />
 
               <Typography variant='h6' sx={{ mt: 1 }}>
@@ -763,18 +754,9 @@ export default function CreationGUI(props: {
                 id='buyerCompanyName'
                 label='Company Name'
                 name='buyerCompanyName'
-                sx={{ width: '100%' }}
+                sx={{ width: '100%', mb: 3 }}
                 value={buyerName}
                 onChange={(e) => setBuyerName(e.target.value)}
-              />
-
-              <TextField
-                margin='normal'
-                required
-                id='buyerAddress'
-                label='Address'
-                name='buyerAddress'
-                sx={{ width: '100%' }}
               />
 
               <Typography variant='h6' sx={{ mt: 1 }}>
