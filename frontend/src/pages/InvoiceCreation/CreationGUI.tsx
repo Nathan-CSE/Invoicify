@@ -116,6 +116,17 @@ export default function CreationGUI(props: {
     const [day, month, year] = dateString.split('/');
     const newDate = `${year}-${month}-${day}`;
     setDate(new Date(newDate));
+    setSellerCountry(
+      fields?.AccountingSupplierParty.Party.PostalAddress.Country
+        .IdentificationCode || ''
+    );
+    setBuyerCountry(
+      fields?.AccountingCustomerParty.Party.PostalAddress.Country
+        .IdentificationCode || ''
+    );
+    const selectedCountry = buyerCountry as keyof typeof vatRates;
+    setVatRate(vatRates[selectedCountry]);
+
     setInvName(fields?.BuyerReference || '');
     setInvNum(fields?.ID || '');
     setSellerABN(
@@ -177,8 +188,11 @@ export default function CreationGUI(props: {
             item: item?.Item.Name || '',
             description: item?.Item.Description || '',
             unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
-            GST: 0,
-            totalPrice: 0,
+            GST:
+              (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
+                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
+              100,
+            totalPrice: fields?.InvoiceLine.LineExtensionAmount['@value'],
           };
           firstFlag = false;
           // setRows([...rows, newRow]);
@@ -193,8 +207,11 @@ export default function CreationGUI(props: {
             item: item?.Item.Name || '',
             description: item?.Item.Description || '',
             unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
-            GST: 0,
-            totalPrice: 0,
+            GST:
+              (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
+                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
+              100,
+            totalPrice: fields?.InvoiceLine.LineExtensionAmount['@value'],
           };
           tempRows.push(newRow);
           // setRows([...rows, newRow]);
@@ -217,14 +234,20 @@ export default function CreationGUI(props: {
             fields?.InvoiceLine.Price.PriceAmount['@value'],
             10
           ),
-          GST: 0,
-          totalPrice: 0,
+          GST:
+            (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
+              Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
+            100,
+          totalPrice: fields?.InvoiceLine.LineExtensionAmount['@value'],
         };
+
         setRows([newRow]);
         // setNextId(nextId + 1);
       }
     }
   }, [fields]);
+
+  console.log(vatRate);
   // Uploading additional documents
   const [openFileUpload, setOpenFileUpload] = React.useState(false);
   const [fileList, setFileList] = React.useState<FileObject[]>([]);
