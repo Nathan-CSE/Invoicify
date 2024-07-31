@@ -256,9 +256,8 @@ export default function CreationGUI(props: {
             unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
             item: fields?.InvoiceLine.Item.Name || '',
             description: fields?.InvoiceLine.Item.Description || '',
-            unitPrice: parseInt(
-              fields?.InvoiceLine.Price.PriceAmount['@value'],
-              10
+            unitPrice: parseFloat(
+              fields?.InvoiceLine.Price.PriceAmount['@value']
             ),
             GST:
               (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
