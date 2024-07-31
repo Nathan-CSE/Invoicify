@@ -6,15 +6,17 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-
+import { useNavigate } from 'react-router-dom';
 // This is vaulted to the other sprint
-export default function ConfirmDialog(props: {
+export default function SuccessDialog(props: {
   open: boolean;
-  function: any;
+  message: string;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const navigate = useNavigate();
   const handleClose = () => {
     props.setOpen(false);
+    navigate('/invoice-management');
   };
 
   return (
@@ -24,15 +26,12 @@ export default function ConfirmDialog(props: {
         onClose={handleClose}
         sx={{ minWidth: '20rem' }}
       >
-        <DialogTitle>CAUTION</DialogTitle>
+        <DialogTitle>SUCCESS</DialogTitle>
         <DialogContent sx={{ minWidth: '20rem' }}>
-          <DialogContentText>
-            Do you wish to proceed with this action?
-          </DialogContentText>
+          <DialogContentText>{props.message}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={props.function}>Confirm</Button>
+          <Button onClick={handleClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </>
