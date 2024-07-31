@@ -144,312 +144,281 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
     console.log(dataFields);
     return (
       <>
-        <Box>
-          <Grid container justifyContent='center' spacing={5}>
-            <Grid item xs={12}>
-              <Typography
-                margin='normal'
-                component='div'
-                id='invoiceName'
-                sx={{ width: '100%' }}
-              >
-                Invoice Number: {dataFields.ID}
-              </Typography>
-            </Grid>
-
-            <Grid item xs={12} sx={{ mt: -5 }}>
-              <Typography
-                margin='normal'
-                component='div'
-                id='invoiceName'
-                sx={{ width: '100%' }}
-              >
-                Invoice Issue Date: {dataFields.IssueDate}
-              </Typography>
-            </Grid>
+        {/* <Container maxWidth="lg" sx={{ marginTop: 11 }}> */}
+        <Typography variant='h5' sx={{ mt: 4 }}>
+          Invoice Header
+        </Typography>
+        <Grid container justifyContent='center' spacing={5}>
+          <Grid item xs={12}>
+            <Typography
+              margin='normal'
+              component='div'
+              id='invoiceName'
+              sx={{ width: '100%' }}
+            >
+              Invoice Number: {dataFields.ID}
+            </Typography>
           </Grid>
 
-          {/* BUYER/SELLER HEADER */}
-          <Grid container justifyContent='center' spacing={4} sx={{ mb: 2 }}>
-            <Grid item xs={5.8}>
-              <Typography variant='h5' sx={{ mt: 4 }}>
-                Seller Information
-              </Typography>
+          <Grid item xs={12} sx={{ mt: -5 }}>
+            <Typography
+              margin='normal'
+              component='div'
+              id='invoiceName'
+              sx={{ width: '100%' }}
+            >
+              Invoice Issue Date: {dataFields.IssueDate}
+            </Typography>
+          </Grid>
+        </Grid>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                ABN:{' '}
-                {
-                  dataFields.AccountingSupplierParty.Party.PartyLegalEntity
-                    .CompanyID['@value']
-                }
-              </Typography>
+        {/* BUYER/SELLER HEADER */}
+        <Grid container justifyContent='center' spacing={4} sx={{ mb: 2 }}>
+          <Grid item xs={5.8}>
+            <Typography variant='h5' sx={{ mt: 4 }}>
+              Seller Information
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Company:{' '}
-                {
-                  dataFields.AccountingSupplierParty.Party.PartyLegalEntity
-                    .RegistrationName
-                }
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              ABN:{' '}
+              {
+                dataFields.AccountingSupplierParty.Party.PartyLegalEntity
+                  .CompanyID['@value']
+              }
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                {/* Address: {sellerInfo.companyAddress} */}
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Company:{' '}
+              {
+                dataFields.AccountingSupplierParty.Party.PartyLegalEntity
+                  .RegistrationName
+              }
+            </Typography>
 
-              <Typography variant='h6' sx={{ mt: 3 }}>
-                Postal Address
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              {/* Address: {sellerInfo.companyAddress} */}
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Street Name:{' '}
-                {
-                  dataFields.AccountingSupplierParty.Party.PostalAddress
-                    .StreetName
-                }
-              </Typography>
+            <Typography variant='h6' sx={{ mt: 3 }}>
+              Postal Address
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Additional Street Name:{' '}
-                {
-                  dataFields.AccountingSupplierParty.Party.PostalAddress
-                    .additionalStreetName
-                }
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Street Name:{' '}
+              {
+                dataFields.AccountingSupplierParty.Party.PostalAddress
+                  .StreetName
+              }
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                City Name:{' '}
-                {
-                  dataFields.AccountingSupplierParty.Party.PostalAddress
-                    .CityName
-                }
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Additional Street Name:{' '}
+              {
+                dataFields.AccountingSupplierParty.Party.PostalAddress
+                  .additionalStreetName
+              }
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Postal Code:{' '}
-                {
-                  dataFields.AccountingSupplierParty.Party.PostalAddress
-                    .PostalZone
-                }
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              City Name:{' '}
+              {
+                dataFields.AccountingSupplierParty.Party.PostalAddress
+                  .CityName
+              }
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Country:{' '}
-                {
-                  dataFields.AccountingSupplierParty.Party.PostalAddress.Country
-                    .IdentificationCode
-                }
-              </Typography>
-            </Grid>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Postal Code:{' '}
+              {
+                dataFields.AccountingSupplierParty.Party.PostalAddress
+                  .PostalZone
+              }
+            </Typography>
 
-            <Grid item xs={0}>
-              <Divider orientation='vertical' sx={{ height: '90%', mt: 6 }} />
-            </Grid>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Country:{' '}
+              {
+                dataFields.AccountingSupplierParty.Party.PostalAddress.Country
+                  .IdentificationCode
+              }
+            </Typography>
+          </Grid>
 
-            <Grid item xs={5.8}>
-              <Typography variant='h5' sx={{ mt: 4 }}>
-                Buyer Information
-              </Typography>
+          <Grid item xs={0}>
+            <Divider orientation='vertical' sx={{ height: '90%', mt: 6 }} />
+          </Grid>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                ABN:{' '}
-                {
-                  dataFields.AccountingCustomerParty.Party.PartyLegalEntity
-                    .CompanyID['@value']
-                }
-              </Typography>
+          <Grid item xs={5.8}>
+            <Typography variant='h5' sx={{ mt: 4 }}>
+              Buyer Information
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Company:{' '}
-                {
-                  dataFields.AccountingCustomerParty.Party.PartyLegalEntity
-                    .RegistrationName
-                }
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              ABN:{' '}
+              {
+                dataFields.AccountingCustomerParty.Party.PartyLegalEntity
+                  .CompanyID['@value']
+              }
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                {/* Address: {buyerInfo.companyAddress} */}
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Company:{' '}
+              {
+                dataFields.AccountingCustomerParty.Party.PartyLegalEntity
+                  .RegistrationName
+              }
+            </Typography>
 
-              <Typography variant='h6' sx={{ mt: 3 }}>
-                Postal Address
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              {/* Address: {buyerInfo.companyAddress} */}
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Street Name:{' '}
-                {
-                  dataFields.AccountingCustomerParty.Party.PostalAddress
-                    .StreetName
-                }
-              </Typography>
+            <Typography variant='h6' sx={{ mt: 3 }}>
+              Postal Address
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Additional Street Name:{' '}
-                {
-                  dataFields.AccountingCustomerParty.Party.PostalAddress
-                    .AdditionalStreetName
-                }
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Street Name:{' '}
+              {
+                dataFields.AccountingCustomerParty.Party.PostalAddress
+                  .StreetName
+              }
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                City Name:{' '}
-                {
-                  dataFields.AccountingCustomerParty.Party.PostalAddress
-                    .CityName
-                }
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Additional Street Name:{' '}
+              {
+                dataFields.AccountingCustomerParty.Party.PostalAddress
+                  .AdditionalStreetName
+              }
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Postal Code:{' '}
-                {
-                  dataFields.AccountingCustomerParty.Party.PostalAddress
-                    .PostalZone
-                }
-              </Typography>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              City Name:{' '}
+              {
+                dataFields.AccountingCustomerParty.Party.PostalAddress
+                  .CityName
+              }
+            </Typography>
 
-              <Typography
-                margin='normal'
-                component='div'
-                sx={{ width: '100%' }}
-              >
-                Country:{' '}
-                {
-                  dataFields.AccountingSupplierParty.Party.PostalAddress.Country
-                    .IdentificationCode
-                }
-              </Typography>
-            </Grid>
-            {/* INVOICE ITEMS */}
-            <Grid item xs={12}>
-              <Typography variant='h5' sx={{ mt: 4 }}>
-                Invoice Items
-              </Typography>
-            </Grid>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Postal Code:{' '}
+              {
+                dataFields.AccountingCustomerParty.Party.PostalAddress
+                  .PostalZone
+              }
+            </Typography>
 
-            <TableContainer component={Paper} sx={{ mt: 2 }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Quantity</TableCell>
-                    <TableCell>Unit Code</TableCell>
-                    <TableCell>Item</TableCell>
-                    <TableCell>Description</TableCell>
-                    <TableCell>Unit Price ($)</TableCell>
-                    <TableCell>GST ($)</TableCell>
-                    <TableCell>Total Price ($)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {Array.isArray(dataFields.InvoiceLine) ? (
-                    dataFields.InvoiceLine.map((item: any, index: number) => {
-                      return (
-                        <TableRow key={index}>
-                          <TableCell>
-                            {item.InvoicedQuantity['@value']}
-                          </TableCell>
-                          <TableCell>
-                            {item.InvoicedQuantity.unitCode}
-                          </TableCell>
-                          <TableCell>{item?.Item.Name || ''}</TableCell>
-                          <TableCell>{item?.Item.Description || ''}</TableCell>
-                          <TableCell>
-                            {item.Price.PriceAmount['@value']}
-                          </TableCell>
-                          <TableCell>
-                            {(Number(item.Price.PriceAmount['@value']) *
-                              Number(
-                                dataFields.TaxTotal.TaxSubtotal.TaxCategory
-                                  .Percent
-                              )) /
-                              100}
-                          </TableCell>
-                          <TableCell>
-                            {item.LineExtensionAmount['@value']}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  ) : (
-                    <>
-                      <TableRow key={dataFields.InvoiceLine.index}>
+            <Typography
+              margin='normal'
+              component='div'
+              sx={{ width: '100%' }}
+            >
+              Country:{' '}
+              {
+                dataFields.AccountingSupplierParty.Party.PostalAddress.Country
+                  .IdentificationCode
+              }
+            </Typography>
+          </Grid>
+          {/* INVOICE ITEMS */}
+          <Grid item xs={12}>
+            <Typography variant='h5' sx={{ mt: 4 }}>
+              Invoice Items
+            </Typography>
+          </Grid>
+
+          <TableContainer component={Paper} sx={{ mt: 2, mx: 4 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Quantity</TableCell>
+                  <TableCell>Unit Code</TableCell>
+                  <TableCell>Item</TableCell>
+                  <TableCell>Description</TableCell>
+                  <TableCell>Unit Price ($)</TableCell>
+                  <TableCell>GST ($)</TableCell>
+                  <TableCell>Total Price ($)</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Array.isArray(dataFields.InvoiceLine) ? (
+                  dataFields.InvoiceLine.map((item: any, index: number) => {
+                    return (
+                      <TableRow key={index}>
                         <TableCell>
-                          {dataFields.InvoiceLine.InvoicedQuantity['@value']}
+                          {item.InvoicedQuantity['@value']}
                         </TableCell>
                         <TableCell>
-                          {dataFields.InvoiceLine.InvoicedQuantity.unitCode}
+                          {item.InvoicedQuantity.unitCode}
+                        </TableCell>
+                        <TableCell>{item?.Item.Name || ''}</TableCell>
+                        <TableCell>{item?.Item.Description || ''}</TableCell>
+                        <TableCell>
+                          {item.Price.PriceAmount['@value']}
                         </TableCell>
                         <TableCell>
-                          {dataFields?.InvoiceLine.Item.Name || ''}
-                        </TableCell>
-                        <TableCell>
-                          {dataFields?.InvoiceLine.Item.Description || ''}
-                        </TableCell>
-                        <TableCell>
-                          {dataFields.InvoiceLine.Price.PriceAmount['@value']}
-                        </TableCell>
-                        <TableCell>
-                          {(Number(
-                            dataFields.InvoiceLine.Price.PriceAmount['@value']
-                          ) *
+                          {(Number(item.Price.PriceAmount['@value']) *
                             Number(
                               dataFields.TaxTotal.TaxSubtotal.TaxCategory
                                 .Percent
@@ -457,88 +426,122 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                             100}
                         </TableCell>
                         <TableCell>
-                          {dataFields.InvoiceLine.LineExtensionAmount['@value']}
+                          {item.LineExtensionAmount['@value']}
                         </TableCell>
                       </TableRow>
-                    </>
-                  )}
+                    );
+                  })
+                ) : (
+                  <>
+                    <TableRow key={dataFields.InvoiceLine.index}>
+                      <TableCell>
+                        {dataFields.InvoiceLine.InvoicedQuantity['@value']}
+                      </TableCell>
+                      <TableCell>
+                        {dataFields.InvoiceLine.InvoicedQuantity.unitCode}
+                      </TableCell>
+                      <TableCell>
+                        {dataFields?.InvoiceLine.Item.Name || ''}
+                      </TableCell>
+                      <TableCell>
+                        {dataFields?.InvoiceLine.Item.Description || ''}
+                      </TableCell>
+                      <TableCell>
+                        {dataFields.InvoiceLine.Price.PriceAmount['@value']}
+                      </TableCell>
+                      <TableCell>
+                        {(Number(
+                          dataFields.InvoiceLine.Price.PriceAmount['@value']
+                        ) *
+                          Number(
+                            dataFields.TaxTotal.TaxSubtotal.TaxCategory
+                              .Percent
+                          )) /
+                          100}
+                      </TableCell>
+                      <TableCell>
+                        {dataFields.InvoiceLine.LineExtensionAmount['@value']}
+                      </TableCell>
+                    </TableRow>
+                  </>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* MONETARY TOTALS */}
+          <Grid item xs={12} sx={{ mb: 2 }}>
+            <Stack direction='row' spacing={1} sx={{ mt: 4 }}>
+              <Typography variant='h5'>Monetary Totals</Typography>
+              <IconButton onClick={handleClickPopover}>
+                <InfoIcon sx={{ mt: -0.25 }} />
+              </IconButton>
+            </Stack>
+            <Popover
+              id={id}
+              open={openPopover}
+              anchorEl={anchorEl}
+              onClose={handleClosePopover}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+              }}
+            >
+              <Typography sx={{ p: 2 }}>
+                GST is determined by the buyer's country.
+              </Typography>
+            </Popover>
+
+            <TableContainer
+              component={Paper}
+              sx={{ maxWidth: '25vw', my: 2 }}
+            >
+              <Table aria-label='simple table'>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>
+                      Total GST (
+                      {dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent}%):{' '}
+                    </TableCell>
+                    <TableCell align='right'>
+                      $
+                      {
+                        dataFields.TaxTotal.TaxSubtotal.TaxableAmount[
+                          '@value'
+                        ]
+                      }
+                    </TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell>Total Taxable Amount: </TableCell>
+                    <TableCell align='right'>
+                      $
+                      {
+                        dataFields.LegalMonetaryTotal.TaxExclusiveAmount[
+                          '@value'
+                        ]
+                      }
+                    </TableCell>
+                  </TableRow>
+
+                  <TableRow>
+                    <TableCell>Total Amount: </TableCell>
+                    <TableCell align='right'>
+                      $
+                      {
+                        dataFields.LegalMonetaryTotal.TaxInclusiveAmount[
+                          '@value'
+                        ]
+                      }
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </TableContainer>
-
-            {/* MONETARY TOTALS */}
-            <Grid item xs={12}>
-              <Stack direction='row' spacing={1} sx={{ mt: 4 }}>
-                <Typography variant='h5'>Monetary Totals</Typography>
-                <IconButton onClick={handleClickPopover}>
-                  <InfoIcon sx={{ mt: -0.25 }} />
-                </IconButton>
-              </Stack>
-              <Popover
-                id={id}
-                open={openPopover}
-                anchorEl={anchorEl}
-                onClose={handleClosePopover}
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                }}
-              >
-                <Typography sx={{ p: 2 }}>
-                  GST is determined by the buyer's country.
-                </Typography>
-              </Popover>
-
-              <TableContainer
-                component={Paper}
-                sx={{ maxWidth: '25vw', my: 2 }}
-              >
-                <Table aria-label='simple table'>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>
-                        Total GST (
-                        {dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent}%):{' '}
-                      </TableCell>
-                      <TableCell align='right'>
-                        $
-                        {
-                          dataFields.TaxTotal.TaxSubtotal.TaxableAmount[
-                            '@value'
-                          ]
-                        }
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                      <TableCell>Total Taxable Amount: </TableCell>
-                      <TableCell align='right'>
-                        $
-                        {
-                          dataFields.LegalMonetaryTotal.TaxExclusiveAmount[
-                            '@value'
-                          ]
-                        }
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                      <TableCell>Total Amount: </TableCell>
-                      <TableCell align='right'>
-                        $
-                        {
-                          dataFields.LegalMonetaryTotal.TaxInclusiveAmount[
-                            '@value'
-                          ]
-                        }
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
           </Grid>
-        </Box>
+        </Grid>
+        {/* </Container> */}
       </>
     );
   };
@@ -547,7 +550,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
     <>
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
-          Previeving: {name}
+          Previewing: {name}
         </Typography>
         {/* <Divider sx={{ borderColor: 'black', width: '100%' }} /> */}
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
@@ -564,7 +567,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
           </Typography>
           <Typography color='text.primary'>Invoice Preview</Typography>
         </Breadcrumbs>
-        <Box sx={{ mt: 5 }}>
+        <Box sx={{ mt: 3 }}>
           {invoiceType === 'JSON' ? (
             <pre style={{ whiteSpace: 'pre-wrap' }}>
               <Typography>{formatJSON(dataFields)}</Typography>
@@ -574,6 +577,13 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
           )}
         </Box>
         
+        <Divider 
+          sx={{ 
+            my: 4,
+            borderBottomWidth: 2,
+          }}
+        />
+
         <Grid container justifyContent="center" spacing={6}>
           <Grid item>
             <Button

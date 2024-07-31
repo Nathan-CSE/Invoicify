@@ -36,6 +36,7 @@ import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../useAuth';
+import SaveIcon from '@mui/icons-material/Save';
 
 interface FileObject {
   file: File;
@@ -1000,6 +1001,7 @@ export default function CreationGUI(props: {
           <Box textAlign='center'>
             <Button
               type='submit'
+              startIcon={<SaveIcon />}
               variant='contained'
               sx={{
                 height: '50px',
