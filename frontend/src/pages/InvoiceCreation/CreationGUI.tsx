@@ -60,15 +60,6 @@ export default function CreationGUI(props: {
   const [fields, setFields] = React.useState<any>(null);
   // Preloading the saved data
 
-  React.useEffect(() => {
-    if (props.editFlag && props.data) {
-      console.log('Hey guys');
-      setFields(props.data.fields);
-    }
-  }, []);
-
-  console.log(fields);
-
   // Invoice Name State
   const [invName, setInvName] = React.useState<string>('');
   const [invNum, setInvNum] = React.useState<string>('');
@@ -96,6 +87,9 @@ export default function CreationGUI(props: {
   const [sellerCountry, setSellerCountry] = React.useState('');
   const [buyerCountry, setBuyerCountry] = React.useState('');
   const [vatRate, setVatRate] = React.useState<number>(0);
+
+  const [priceTotal, setPriceTotal] = React.useState<number>(0);
+  const [itemGST, setItemGST] = React.useState<number>(0);
   const [rows, setRows] = React.useState([
     {
       id: 1,
@@ -113,119 +107,182 @@ export default function CreationGUI(props: {
   };
 
   React.useEffect(() => {
-    const dateString = fields?.IssueDate || '';
-    const [day, month, year] = dateString.split('/');
-    const newDate = `${year}-${month}-${day}`;
-    setDate(new Date(newDate));
-    setInvName(fields?.BuyerReference || '');
-    setInvNum(fields?.ID || '');
-    setSellerABN(
-      fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID[
-        '@value'
-      ] || ''
-    );
-    setSellerName(
-      fields?.AccountingSupplierParty.Party.PartyLegalEntity.RegistrationName ||
-        ''
-    );
-    setSellerStreetName(
-      fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
-    );
-    setSellerAddStreetName(
-      fields?.AccountingSupplierParty.Party.PostalAddress
-        .AdditionalStreetName || ''
-    );
-    setSellerCityName(
-      fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
-    );
-    setSellerCode(
-      fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
-    );
+    if (props.editFlag && props.data) {
+      console.log('Hey guys');
+      setFields(props.data.fields);
+    }
+  }, []);
 
-    setBuyerABN(
-      fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID[
-        '@value'
-      ] || ''
-    );
-    setBuyerName(
-      fields?.AccountingCustomerParty.Party.PartyLegalEntity.RegistrationName ||
-        ''
-    );
-    setBuyerStreetName(
-      fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
-    );
-    setBuyerAddStreetName(
-      fields?.AccountingCustomerParty.Party.PostalAddress
-        .AdditionalStreetName || ''
-    );
-    setBuyerCityName(
-      fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
-    );
-    setBuyerCode(
-      fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
-    );
+  // console.log(fields);
 
-    if (Array.isArray(fields?.InvoiceLine)) {
-      // console.log(rows);
-      let tempRows = rows;
-      let firstFlag = true;
-      fields?.InvoiceLine.forEach((item: any) => {
-        if (firstFlag) {
+  React.useEffect(() => {
+    if (props.editFlag) {
+      console.log(fields);
+      const dateString = fields?.IssueDate || '';
+      const [day, month, year] = dateString.split('/');
+      const newDate = `${year}-${month}-${day}`;
+      setDate(new Date(newDate));
+
+      setInvName(fields?.BuyerReference || '');
+      setInvNum(fields?.ID || '');
+      setSellerABN(
+        fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID[
+          '@value'
+        ] || ''
+      );
+      setSellerName(
+        fields?.AccountingSupplierParty.Party.PartyLegalEntity
+          .RegistrationName || ''
+      );
+      setSellerStreetName(
+        fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
+      );
+      setSellerAddStreetName(
+        fields?.AccountingSupplierParty.Party.PostalAddress
+          .AdditionalStreetName || ''
+      );
+      setSellerCityName(
+        fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
+      );
+      setSellerCode(
+        fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
+      );
+
+      setBuyerABN(
+        fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID[
+          '@value'
+        ] || ''
+      );
+      setBuyerName(
+        fields?.AccountingCustomerParty.Party.PartyLegalEntity
+          .RegistrationName || ''
+      );
+      setBuyerStreetName(
+        fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
+      );
+      setBuyerAddStreetName(
+        fields?.AccountingCustomerParty.Party.PostalAddress
+          .AdditionalStreetName || ''
+      );
+      setBuyerCityName(
+        fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
+      );
+      setBuyerCode(
+        fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
+      );
+
+      if (buyerCountry == '') {
+        setBuyerCountry(
+          fields?.AccountingCustomerParty.Party.PostalAddress.Country
+            .IdentificationCode || ''
+        );
+
+        console.log('ARE YOU FUCKEN HERE?');
+      }
+      if (sellerCountry == '') {
+        setSellerCountry(
+          fields?.AccountingSupplierParty.Party.PostalAddress.Country
+            .IdentificationCode || ''
+        );
+      }
+      // console.log('VAT RATE:' + vatRate);
+      // console.log('SELLER:' + sellerCountry);
+      // console.log('BUYER:' + buyerCountry);
+      const selectedCountry = buyerCountry as keyof typeof vatRates;
+      setVatRate(vatRates[selectedCountry]);
+      if (Array.isArray(fields?.InvoiceLine)) {
+        // console.log(rows);
+        let tempRows = rows;
+        let firstFlag = true;
+        console.log(fields?.InvoiceLine);
+        fields?.InvoiceLine.forEach((item: any) => {
+          console.log(item);
+          // console.log('GST' + itemGST);
+          // console.log('Price' + priceTotal);
+          if (firstFlag) {
+            const newRow = {
+              id: parseInt(item.ID) + 1,
+              quantity: parseInt(item?.InvoicedQuantity['@value'], 10) || 0,
+              unitCode: item?.InvoicedQuantity.unitCode || '',
+              item: item?.Item.Name || '',
+              description: item?.Item.Description || '',
+              unitPrice: parseFloat(item?.Price?.PriceAmount['@value']) || 0.0,
+              GST: parseFloat(item.Item.ClassifiedTaxCategory?.Percent) || 0.0,
+              totalPrice:
+                ((parseFloat(item?.Price?.PriceAmount['@value']) || 0.0) +
+                  (parseFloat(item.Item.ClassifiedTaxCategory?.Percent) ||
+                    0.0)) *
+                (parseInt(item?.InvoicedQuantity['@value'], 10) || 0),
+            };
+            firstFlag = false;
+            // setRows([...rows, newRow]);
+            tempRows = [newRow];
+            setNextId(nextId + 1);
+            // console.log(tempRows);
+            // console.log(rows);
+          } else {
+            const newRow = {
+              id: parseInt(item.ID) + 1,
+              quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
+              unitCode: item?.InvoicedQuantity.unitCode,
+              item: item?.Item.Name || '',
+              description: item?.Item.Description || '',
+              unitPrice: parseFloat(item?.Price?.PriceAmount['@value']) || 0.0,
+              GST: parseFloat(item.Item.ClassifiedTaxCategory?.Percent) || 0.0,
+              totalPrice:
+                ((parseFloat(item?.Price?.PriceAmount['@value']) || 0.0) +
+                  (parseFloat(item.Item.ClassifiedTaxCategory?.Percent) ||
+                    0.0)) *
+                (parseInt(item?.InvoicedQuantity['@value'], 10) || 0),
+            };
+            tempRows.push(newRow);
+            // setRows([...rows, newRow]);
+            setNextId(nextId + 1);
+          }
+        });
+        setRows(tempRows);
+        if (vatRate) {
+          rows.forEach((row) => {
+            handleCellValueChange(row);
+          });
+        }
+      } else {
+        if (fields?.InvoiceLine) {
           const newRow = {
             id: 1,
-            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
-            unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name || '',
-            description: item?.Item.Description || '',
-            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
-            GST: 0,
-            totalPrice: 0,
+            quantity: parseInt(
+              fields?.InvoiceLine.InvoicedQuantity['@value'],
+              10
+            ),
+            unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
+            item: fields?.InvoiceLine.Item.Name || '',
+            description: fields?.InvoiceLine.Item.Description || '',
+            unitPrice: parseFloat(
+              fields?.InvoiceLine.Price.PriceAmount['@value']
+            ),
+            GST:
+              (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
+                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
+              100,
+            totalPrice: fields?.InvoiceLine.LineExtensionAmount['@value'],
           };
-          firstFlag = false;
-          // setRows([...rows, newRow]);
-          tempRows = [newRow];
-          console.log(tempRows);
-          // console.log(rows);
-        } else {
-          const newRow = {
-            id: nextId,
-            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
-            unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name || '',
-            description: item?.Item.Description || '',
-            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
-            GST: 0,
-            totalPrice: 0,
-          };
-          tempRows.push(newRow);
-          // setRows([...rows, newRow]);
-          setNextId(nextId + 1);
+
+          setRows([newRow]);
+          // setNextId(nextId + 1);
         }
-      });
-      setRows(tempRows);
-    } else {
-      if (fields?.InvoiceLine) {
-        const newRow = {
-          id: 1,
-          quantity: parseInt(
-            fields?.InvoiceLine.InvoicedQuantity['@value'],
-            10
-          ),
-          unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
-          item: fields?.InvoiceLine.Item.Name || '',
-          description: fields?.InvoiceLine.Item.Description || '',
-          unitPrice: parseInt(
-            fields?.InvoiceLine.Price.PriceAmount['@value'],
-            10
-          ),
-          GST: 0,
-          totalPrice: 0,
-        };
-        setRows([newRow]);
-        // setNextId(nextId + 1);
+        if (vatRate) {
+          rows.forEach((row) => {
+            handleCellValueChange(row);
+          });
+        }
       }
     }
-  }, [fields]);
+    console.log(buyerCountry);
+    console.log(sellerCountry);
+    console.log(vatRate);
+    console.log('NO SHOT');
+  }, [fields, buyerCountry]);
+
   // Uploading additional documents
   const [openFileUpload, setOpenFileUpload] = React.useState(false);
   const [fileList, setFileList] = React.useState<FileObject[]>([]);
@@ -257,14 +314,14 @@ export default function CreationGUI(props: {
   // Function for monetary totals
   const calculateTotals = () => {
     let totalGST = 0;
-    let totalTaxable = 0;
     let totalAmount = 0;
 
     rows.forEach((row) => {
-      totalGST += row.GST;
-      totalTaxable += row.totalPrice - row.GST;
+      totalGST += row.GST * row.quantity;
       totalAmount += row.totalPrice;
     });
+
+    let totalTaxable = totalAmount - totalGST;
 
     return {
       totalGST: totalGST,
@@ -279,10 +336,12 @@ export default function CreationGUI(props: {
   const handleChange = (event: { target: { value: any; name: string } }) => {
     const selectedCountry = event.target.value as keyof typeof vatRates;
     console.log(buyerCountry);
+    console.log('HELLO?');
     if (event.target.name == 'buyerCountry') {
       setBuyerCountry(selectedCountry);
       setVatRate(vatRates[selectedCountry]);
-
+      console.log('Hi?');
+      console.log(buyerCountry);
       rows.forEach((row) => {
         handleCellValueChange(row);
       });
@@ -369,7 +428,9 @@ export default function CreationGUI(props: {
       row.id === newRow.id ? { ...row, ...newRow } : row
     );
 
+    
     setRows(updatedRows);
+    calculateTotals();
   };
 
   // Form submission & sending to backend + error handling
