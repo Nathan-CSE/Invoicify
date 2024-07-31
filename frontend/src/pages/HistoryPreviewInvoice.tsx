@@ -2,6 +2,7 @@ import {
   Box,
   Breadcrumbs,
   Button,
+  Container,
   Divider,
   Grid,
   IconButton,
@@ -544,15 +545,15 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
 
   return (
     <>
-      <Box sx={{ mt: 10, ml: 10 }}>
-        <Typography variant='h5' sx={{ mt: 4 }}>
+      <Container maxWidth='lg' sx={{ marginTop: 11 }}>
+        <Typography variant='h4'>
           Previeving: {name}
         </Typography>
-        <Divider sx={{ borderColor: 'black', width: '100%' }} />
+        {/* <Divider sx={{ borderColor: 'black', width: '100%' }} /> */}
+        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
         <Breadcrumbs
           aria-label='breadcrumb'
           separator={<NavigateNextIcon fontSize='small' />}
-          sx={{ mt: 1 }}
         >
           <Typography component={Link} to='/dashboard'>
             Dashboard
@@ -603,8 +604,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
             </Button>
           </Grid>
         </Grid>
-
-      </Box>
+      </Container>
     </>
   );
 }

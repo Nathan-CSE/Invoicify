@@ -160,7 +160,7 @@ export default function InvoiceValidation(props: { token: string; }) {
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>
           Invoice Validation
-      </Typography>
+        </Typography>
 
         <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
 

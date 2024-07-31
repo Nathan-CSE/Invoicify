@@ -271,6 +271,7 @@ export default function InvoiceManagement(props: { token: string }) {
   return (
     <>
       <LoadingDialog open={loading} message='Retrieving invoices...' />
+      {/* Inconsistent heading is because of button */}
       <Container maxWidth="lg" sx={{ marginTop: 11, position: 'relative' }}>
         <Box
           sx={{

@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { Button, Divider, TextField } from '@mui/material';
+import { Button, Container, Divider, TextField } from '@mui/material';
 import ErrorModal from '../../components/ErrorModal';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -68,18 +68,10 @@ function SettingsPage(props: { token: string }) {
   return (
     <>
       <LoadingDialog open={loading} message='Changing password...' />
-      <Box
-        sx={{
-          mt: 11,
-          mx: 5,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          width: '90%',
-        }}
-      >
+      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
         <Typography variant='h4'>Account Settings</Typography>
-        <Divider sx={{ borderColor: 'black', width: '100%' }} />
+        {/* <Divider sx={{ borderColor: 'black', width: '100%' }} /> */}
+        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
         <Breadcrumbs
           aria-label='breadcrumb'
           separator={<NavigateNextIcon fontSize='small' />}
@@ -92,8 +84,8 @@ function SettingsPage(props: { token: string }) {
           <Typography color='text.primary'>Account Settings</Typography>
         </Breadcrumbs>
 
-        <Box sx={{ mt: 5, width: '100%' }}>
-          <Typography variant='subtitle1' gutterBottom>
+        <Box sx={{ mt: 4, width: '100%', mb: -2 }}>
+          <Typography variant='h5'>
             Email
           </Typography>
           <TextField
@@ -107,7 +99,7 @@ function SettingsPage(props: { token: string }) {
             }}
           />
 
-        <Typography variant='subtitle1' gutterBottom sx={{ mt: 5 }}>
+        <Typography variant='h5' sx={{ mt: 3 }}>
             Change Password
           </Typography>
           <Box component='form' onSubmit={changeAccountDetails} noValidate>
@@ -131,12 +123,14 @@ function SettingsPage(props: { token: string }) {
                 autoComplete='new-password'
               />
             </Box>
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }} startIcon={<SaveIcon />}>
-              Save Changes
-            </Button>
+            <Box display='flex' justifyContent='center'>
+              <Button type='submit' variant='contained' sx={{ mt: 3, height: '50px', padding: '25px' }} startIcon={<SaveIcon />}>
+                Save Changes
+              </Button>
+            </Box>
           </Box>
         </Box>
-      </Box>
+      </Container>
       {openError && (
         <ErrorModal open={openError} setOpen={setOpenError}>
           {error}

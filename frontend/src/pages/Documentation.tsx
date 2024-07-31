@@ -20,7 +20,7 @@ function DocPage(props: { token: string }) {
 
   return (
     <Container maxWidth='lg' sx={{ mt: 11 }}>
-      <Typography variant='h4' gutterBottom>
+      <Typography variant='h4'>
         Documentation
       </Typography>
       {/* <Divider sx={{ borderColor: 'black' }} />
