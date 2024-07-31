@@ -133,7 +133,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
           )}`;
         } else {
           const val = value ? value : '';
-          console.log(val);
+          // console.log(val);
           formattedString += `${indent}${key}: ${val}\n`;
         }
       }

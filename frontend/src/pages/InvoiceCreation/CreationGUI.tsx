@@ -49,7 +49,7 @@ export default function CreationGUI(props: {
   data: any;
   id: number;
 }) {
-  useAuth(props.token);
+  // useAuth(props.token);
 
   const [loading, setLoading] = React.useState(false);
   const [loadingMsg, setLoadingMsg] = React.useState<string>('');
@@ -86,6 +86,9 @@ export default function CreationGUI(props: {
   const [sellerCountry, setSellerCountry] = React.useState('');
   const [buyerCountry, setBuyerCountry] = React.useState('');
   const [vatRate, setVatRate] = React.useState<number>(0);
+
+  const [priceTotal, setPriceTotal] = React.useState<number>(0);
+  const [itemGST, setItemGST] = React.useState<number>(0);
   const [rows, setRows] = React.useState([
     {
       id: 1,
@@ -112,146 +115,156 @@ export default function CreationGUI(props: {
   // console.log(fields);
 
   React.useEffect(() => {
-    console.log(fields);
-    const dateString = fields?.IssueDate || '';
-    const [day, month, year] = dateString.split('/');
-    const newDate = `${year}-${month}-${day}`;
-    setDate(new Date(newDate));
+    if (props.editFlag) {
+      console.log(fields);
+      const dateString = fields?.IssueDate || '';
+      const [day, month, year] = dateString.split('/');
+      const newDate = `${year}-${month}-${day}`;
+      setDate(new Date(newDate));
 
-    setInvName(fields?.BuyerReference || '');
-    setInvNum(fields?.ID || '');
-    setSellerABN(
-      fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID[
-        '@value'
-      ] || ''
-    );
-    setSellerName(
-      fields?.AccountingSupplierParty.Party.PartyLegalEntity.RegistrationName ||
-        ''
-    );
-    setSellerStreetName(
-      fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
-    );
-    setSellerAddStreetName(
-      fields?.AccountingSupplierParty.Party.PostalAddress
-        .AdditionalStreetName || ''
-    );
-    setSellerCityName(
-      fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
-    );
-    setSellerCode(
-      fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
-    );
+      setInvName(fields?.BuyerReference || '');
+      setInvNum(fields?.ID || '');
+      setSellerABN(
+        fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID[
+          '@value'
+        ] || ''
+      );
+      setSellerName(
+        fields?.AccountingSupplierParty.Party.PartyLegalEntity
+          .RegistrationName || ''
+      );
+      setSellerStreetName(
+        fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
+      );
+      setSellerAddStreetName(
+        fields?.AccountingSupplierParty.Party.PostalAddress
+          .AdditionalStreetName || ''
+      );
+      setSellerCityName(
+        fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
+      );
+      setSellerCode(
+        fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
+      );
 
-    setBuyerABN(
-      fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID[
-        '@value'
-      ] || ''
-    );
-    setBuyerName(
-      fields?.AccountingCustomerParty.Party.PartyLegalEntity.RegistrationName ||
-        ''
-    );
-    setBuyerStreetName(
-      fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
-    );
-    setBuyerAddStreetName(
-      fields?.AccountingCustomerParty.Party.PostalAddress
-        .AdditionalStreetName || ''
-    );
-    setBuyerCityName(
-      fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
-    );
-    setBuyerCode(
-      fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
-    );
+      setBuyerABN(
+        fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID[
+          '@value'
+        ] || ''
+      );
+      setBuyerName(
+        fields?.AccountingCustomerParty.Party.PartyLegalEntity
+          .RegistrationName || ''
+      );
+      setBuyerStreetName(
+        fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
+      );
+      setBuyerAddStreetName(
+        fields?.AccountingCustomerParty.Party.PostalAddress
+          .AdditionalStreetName || ''
+      );
+      setBuyerCityName(
+        fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
+      );
+      setBuyerCode(
+        fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
+      );
 
-    setSellerCountry(
-      fields?.AccountingSupplierParty.Party.PostalAddress.Country
-        .IdentificationCode || ''
-    );
-    setBuyerCountry(
-      fields?.AccountingCustomerParty.Party.PostalAddress.Country
-        .IdentificationCode || ''
-    );
-    const selectedCountry = buyerCountry as keyof typeof vatRates;
-    setVatRate(vatRates[selectedCountry]);
-    console.log('VAT RATE:' + vatRate);
-    console.log('SELLER:' + sellerCountry);
-    console.log('BUYER:' + buyerCountry);
-    if (Array.isArray(fields?.InvoiceLine)) {
-      // console.log(rows);
-      let tempRows = rows;
-      let firstFlag = true;
-      fields?.InvoiceLine.forEach((item: any) => {
-        if (firstFlag) {
+      setSellerCountry(
+        fields?.AccountingSupplierParty.Party.PostalAddress.Country
+          .IdentificationCode || ''
+      );
+      setBuyerCountry(
+        fields?.AccountingCustomerParty.Party.PostalAddress.Country
+          .IdentificationCode || ''
+      );
+
+      const selectedCountry = buyerCountry as keyof typeof vatRates;
+      setVatRate(vatRates[selectedCountry]);
+      // console.log('VAT RATE:' + vatRate);
+      // console.log('SELLER:' + sellerCountry);
+      // console.log('BUYER:' + buyerCountry);
+      if (Array.isArray(fields?.InvoiceLine)) {
+        // console.log(rows);
+        let tempRows = rows;
+        let firstFlag = true;
+        console.log(fields?.InvoiceLine);
+        fields?.InvoiceLine.forEach((item: any) => {
+          console.log(item);
+          // console.log('GST' + itemGST);
+          // console.log('Price' + priceTotal);
+          if (firstFlag) {
+            const newRow = {
+              id: parseInt(item.ID) + 1,
+              quantity: parseInt(item?.InvoicedQuantity['@value'], 10) || 0,
+              unitCode: item?.InvoicedQuantity.unitCode || '',
+              item: item?.Item.Name || '',
+              description: item?.Item.Description || '',
+              unitPrice: parseFloat(item?.Price?.PriceAmount['@value']) || 0.0,
+              GST: parseFloat(item.Item.ClassifiedTaxCategory?.Percent) || 0.0,
+              totalPrice:
+                ((parseFloat(item?.Price?.PriceAmount['@value']) || 0.0) +
+                  (parseFloat(item.Item.ClassifiedTaxCategory?.Percent) ||
+                    0.0)) *
+                (parseInt(item?.InvoicedQuantity['@value'], 10) || 0),
+            };
+            firstFlag = false;
+            // setRows([...rows, newRow]);
+            tempRows = [newRow];
+            setNextId(nextId + 1);
+            // console.log(tempRows);
+            // console.log(rows);
+          } else {
+            const newRow = {
+              id: parseInt(item.ID) + 1,
+              quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
+              unitCode: item?.InvoicedQuantity.unitCode,
+              item: item?.Item.Name || '',
+              description: item?.Item.Description || '',
+              unitPrice: parseFloat(item?.Price?.PriceAmount['@value']) || 0.0,
+              GST: parseFloat(item.Item.ClassifiedTaxCategory?.Percent) || 0.0,
+              totalPrice:
+                ((parseFloat(item?.Price?.PriceAmount['@value']) || 0.0) +
+                  (parseFloat(item.Item.ClassifiedTaxCategory?.Percent) ||
+                    0.0)) *
+                (parseInt(item?.InvoicedQuantity['@value'], 10) || 0),
+            };
+            tempRows.push(newRow);
+            // setRows([...rows, newRow]);
+            setNextId(nextId + 1);
+          }
+        });
+        setRows(tempRows);
+      } else {
+        if (fields?.InvoiceLine) {
           const newRow = {
             id: 1,
-            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
-            unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name || '',
-            description: item?.Item.Description || '',
-            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
+            quantity: parseInt(
+              fields?.InvoiceLine.InvoicedQuantity['@value'],
+              10
+            ),
+            unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
+            item: fields?.InvoiceLine.Item.Name || '',
+            description: fields?.InvoiceLine.Item.Description || '',
+            unitPrice: parseInt(
+              fields?.InvoiceLine.Price.PriceAmount['@value'],
+              10
+            ),
             GST:
               (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
                 Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
               100,
             totalPrice: fields?.InvoiceLine.LineExtensionAmount['@value'],
           };
-          firstFlag = false;
-          // setRows([...rows, newRow]);
-          tempRows = [newRow];
-          console.log(tempRows);
-          // console.log(rows);
-        } else {
-          const newRow = {
-            id: nextId,
-            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
-            unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name || '',
-            description: item?.Item.Description || '',
-            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
-            GST:
-              (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
-                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
-              100,
-            totalPrice: fields?.InvoiceLine.LineExtensionAmount['@value'],
-          };
-          tempRows.push(newRow);
-          // setRows([...rows, newRow]);
-          setNextId(nextId + 1);
-        }
-      });
-      setRows(tempRows);
-    } else {
-      if (fields?.InvoiceLine) {
-        const newRow = {
-          id: 1,
-          quantity: parseInt(
-            fields?.InvoiceLine.InvoicedQuantity['@value'],
-            10
-          ),
-          unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
-          item: fields?.InvoiceLine.Item.Name || '',
-          description: fields?.InvoiceLine.Item.Description || '',
-          unitPrice: parseInt(
-            fields?.InvoiceLine.Price.PriceAmount['@value'],
-            10
-          ),
-          GST:
-            (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
-              Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
-            100,
-          totalPrice: fields?.InvoiceLine.LineExtensionAmount['@value'],
-        };
 
-        setRows([newRow]);
-        // setNextId(nextId + 1);
-      }
-      if (vatRate) {
-        rows.forEach((row) => {
-          handleCellValueChange(row);
-        });
+          setRows([newRow]);
+          // setNextId(nextId + 1);
+        }
+        if (vatRate) {
+          rows.forEach((row) => {
+            handleCellValueChange(row);
+          });
+        }
       }
     }
   }, [fields, buyerCountry, vatRate]);
