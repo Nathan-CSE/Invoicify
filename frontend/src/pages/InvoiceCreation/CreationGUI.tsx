@@ -320,9 +320,11 @@ export default function CreationGUI(props: {
       totalAmount += row.totalPrice;
     });
 
+    let totalTaxable = totalAmount - totalGST;
+
     return {
       totalGST: totalGST,
-      totalTaxable: totalAmount - totalGST,
+      totalTaxable: totalTaxable,
       totalAmount: totalAmount,
     };
   };
@@ -425,7 +427,9 @@ export default function CreationGUI(props: {
       row.id === newRow.id ? { ...row, ...newRow } : row
     );
 
+    
     setRows(updatedRows);
+    calculateTotals();
   };
 
   // Form submission & sending to backend + error handling
@@ -686,7 +690,7 @@ export default function CreationGUI(props: {
                   <DatePicker
                     label='Invoice Issue Date'
                     name='invoiceIssueDate'
-                    format='dd/MM/yyyy'
+                    format='yyyy-MM-dd'
                     sx={{ width: '100%' }}
                     value={date}
                     onChange={handleDateChange}
