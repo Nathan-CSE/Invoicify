@@ -28,17 +28,16 @@ function HomePage(props: { token: string }) {
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
           <Box>
             <Typography variant='h3' gutterBottom>
-              Placeholder
+              About us
             </Typography>
             <Typography variant='body1' gutterBottom>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos
-              blanditiis tenetur unde suscipit, quam beatae rerum inventore
-              consectetur, neque doloribus, cupiditate numquam dignissimos laborum
-              fugiat deleniti? Eum quasi quidem quibusdam. Lorem ipsum dolor sit
-              amet, consectetur adipisicing elit. Quos blanditiis tenetur unde
-              suscipit, quam beatae rerum inventore consectetur, neque doloribus,
-              cupiditate numquam dignissimos laborum fugiat deleniti? Eum quasi
-              quidem quibusdam.
+              Invoicify is an invoicing web service to streamline 
+              the logistics of payments for vendors. Our solution is 
+              targeted towards the SMEs who lack reliable modern solutions f
+              or e-invoice creation, validation, and sending. 
+              Invoicify is a one stop ecosystem, we will handle everything 
+              a user can do with invoices, from creation from the seller’s extracted data, 
+              to sending it to the recipient’s email address.
             </Typography>
           </Box>
           <Box>
