@@ -36,7 +36,7 @@ class InvoiceNamespace(Namespace):
             "totalGST": fields.Float(default=0.1),
             "totalTaxable": fields.Float(default=0.1),
             "totalAmount": fields.Float(default=0.1),
-            "buyerVatRate": fields.Float(default=0.1),
+            "buyerVatRate": fields.Float(default=0.1)
         })
     
     def get_upload_validation_fields(self):

@@ -39,6 +39,7 @@ import axios from 'axios';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../useAuth';
 import SaveIcon from '@mui/icons-material/Save';
+import SuccessDialog from '../../components/SuccessDialog';
 
 interface FileObject {
   file: File;
@@ -57,6 +58,7 @@ export default function CreationGUI(props: {
 
   const [isSmallScreen, setIsSmallScreen] = React.useState(window.innerWidth <= 900);
 
+  const [openDialog, setDialog] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [loadingMsg, setLoadingMsg] = React.useState<string>('');
   const navigate = useNavigate();
@@ -64,15 +66,6 @@ export default function CreationGUI(props: {
   console.log(props.id);
   const [fields, setFields] = React.useState<any>(null);
   // Preloading the saved data
-
-  React.useEffect(() => {
-    if (props.editFlag && props.data) {
-      console.log('Hey guys');
-      setFields(props.data.fields);
-    }
-  }, []);
-
-  console.log(fields);
 
   // Invoice Name State
   const [invName, setInvName] = React.useState<string>('');
@@ -101,6 +94,9 @@ export default function CreationGUI(props: {
   const [sellerCountry, setSellerCountry] = React.useState('');
   const [buyerCountry, setBuyerCountry] = React.useState('');
   const [vatRate, setVatRate] = React.useState<number>(0);
+
+  const [priceTotal, setPriceTotal] = React.useState<number>(0);
+  const [itemGST, setItemGST] = React.useState<number>(0);
   const [rows, setRows] = React.useState([
     {
       id: 1,
@@ -118,6 +114,11 @@ export default function CreationGUI(props: {
   };
 
   React.useEffect(() => {
+    if (props.editFlag && props.data) {
+      console.log('Hey guys');
+      setFields(props.data.fields);
+    }
+    
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 600);
     };
@@ -126,120 +127,176 @@ export default function CreationGUI(props: {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // console.log(fields);
+
   React.useEffect(() => {
-    const dateString = fields?.IssueDate || '';
-    const [day, month, year] = dateString.split('/');
-    const newDate = `${year}-${month}-${day}`;
-    setDate(new Date(newDate));
-    setInvName(fields?.BuyerReference || '');
-    setInvNum(fields?.ID || '');
-    setSellerABN(
-      fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID[
-        '@value'
-      ] || ''
-    );
-    setSellerName(
-      fields?.AccountingSupplierParty.Party.PartyLegalEntity.RegistrationName ||
-        ''
-    );
-    setSellerStreetName(
-      fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
-    );
-    setSellerAddStreetName(
-      fields?.AccountingSupplierParty.Party.PostalAddress
-        .AdditionalStreetName || ''
-    );
-    setSellerCityName(
-      fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
-    );
-    setSellerCode(
-      fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
-    );
+    if (props.editFlag) {
+      console.log(fields);
+      const dateString = fields?.IssueDate || '';
+      const [day, month, year] = dateString.split('/');
+      const newDate = `${year}-${month}-${day}`;
+      setDate(new Date(newDate));
 
-    setBuyerABN(
-      fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID[
-        '@value'
-      ] || ''
-    );
-    setBuyerName(
-      fields?.AccountingCustomerParty.Party.PartyLegalEntity.RegistrationName ||
-        ''
-    );
-    setBuyerStreetName(
-      fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
-    );
-    setBuyerAddStreetName(
-      fields?.AccountingCustomerParty.Party.PostalAddress
-        .AdditionalStreetName || ''
-    );
-    setBuyerCityName(
-      fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
-    );
-    setBuyerCode(
-      fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
-    );
+      setInvName(fields?.BuyerReference || '');
+      setInvNum(fields?.ID || '');
+      setSellerABN(
+        fields?.AccountingSupplierParty.Party.PartyLegalEntity.CompanyID[
+          '@value'
+        ] || ''
+      );
+      setSellerName(
+        fields?.AccountingSupplierParty.Party.PartyLegalEntity
+          .RegistrationName || ''
+      );
+      setSellerStreetName(
+        fields?.AccountingSupplierParty.Party.PostalAddress.StreetName || ''
+      );
+      setSellerAddStreetName(
+        fields?.AccountingSupplierParty.Party.PostalAddress
+          .AdditionalStreetName || ''
+      );
+      setSellerCityName(
+        fields?.AccountingSupplierParty.Party.PostalAddress.CityName || ''
+      );
+      setSellerCode(
+        fields?.AccountingSupplierParty.Party.PostalAddress.PostalZone || ''
+      );
 
-    if (Array.isArray(fields?.InvoiceLine)) {
-      // console.log(rows);
-      let tempRows = rows;
-      let firstFlag = true;
-      fields?.InvoiceLine.forEach((item: any) => {
-        if (firstFlag) {
+      setBuyerABN(
+        fields?.AccountingCustomerParty.Party.PartyLegalEntity.CompanyID[
+          '@value'
+        ] || ''
+      );
+      setBuyerName(
+        fields?.AccountingCustomerParty.Party.PartyLegalEntity
+          .RegistrationName || ''
+      );
+      setBuyerStreetName(
+        fields?.AccountingCustomerParty.Party.PostalAddress.StreetName || ''
+      );
+      setBuyerAddStreetName(
+        fields?.AccountingCustomerParty.Party.PostalAddress
+          .AdditionalStreetName || ''
+      );
+      setBuyerCityName(
+        fields?.AccountingCustomerParty.Party.PostalAddress.CityName || ''
+      );
+      setBuyerCode(
+        fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
+      );
+
+      if (buyerCountry == '') {
+        setBuyerCountry(
+          fields?.AccountingCustomerParty.Party.PostalAddress.Country
+            .IdentificationCode || ''
+        );
+
+        console.log('ARE YOU FUCKEN HERE?');
+      }
+      if (sellerCountry == '') {
+        setSellerCountry(
+          fields?.AccountingSupplierParty.Party.PostalAddress.Country
+            .IdentificationCode || ''
+        );
+      }
+      // console.log('VAT RATE:' + vatRate);
+      // console.log('SELLER:' + sellerCountry);
+      // console.log('BUYER:' + buyerCountry);
+      const selectedCountry = buyerCountry as keyof typeof vatRates;
+      setVatRate(vatRates[selectedCountry]);
+      if (Array.isArray(fields?.InvoiceLine)) {
+        // console.log(rows);
+        let tempRows = rows;
+        let firstFlag = true;
+        console.log(fields?.InvoiceLine);
+        fields?.InvoiceLine.forEach((item: any) => {
+          console.log(item);
+          // console.log('GST' + itemGST);
+          // console.log('Price' + priceTotal);
+          if (firstFlag) {
+            const newRow = {
+              id: parseInt(item.ID) + 1,
+              quantity: parseInt(item?.InvoicedQuantity['@value'], 10) || 0,
+              unitCode: item?.InvoicedQuantity.unitCode || '',
+              item: item?.Item.Name || '',
+              description: item?.Item.Description || '',
+              unitPrice: parseFloat(item?.Price?.PriceAmount['@value']) || 0.0,
+              GST: parseFloat(item.Item.ClassifiedTaxCategory?.Percent) || 0.0,
+              totalPrice:
+                ((parseFloat(item?.Price?.PriceAmount['@value']) || 0.0) +
+                  (parseFloat(item.Item.ClassifiedTaxCategory?.Percent) ||
+                    0.0)) *
+                (parseInt(item?.InvoicedQuantity['@value'], 10) || 0),
+            };
+            firstFlag = false;
+            // setRows([...rows, newRow]);
+            tempRows = [newRow];
+            setNextId(nextId + 1);
+            // console.log(tempRows);
+            // console.log(rows);
+          } else {
+            const newRow = {
+              id: parseInt(item.ID) + 1,
+              quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
+              unitCode: item?.InvoicedQuantity.unitCode,
+              item: item?.Item.Name || '',
+              description: item?.Item.Description || '',
+              unitPrice: parseFloat(item?.Price?.PriceAmount['@value']) || 0.0,
+              GST: parseFloat(item.Item.ClassifiedTaxCategory?.Percent) || 0.0,
+              totalPrice:
+                ((parseFloat(item?.Price?.PriceAmount['@value']) || 0.0) +
+                  (parseFloat(item.Item.ClassifiedTaxCategory?.Percent) ||
+                    0.0)) *
+                (parseInt(item?.InvoicedQuantity['@value'], 10) || 0),
+            };
+            tempRows.push(newRow);
+            // setRows([...rows, newRow]);
+            setNextId(nextId + 1);
+          }
+        });
+        setRows(tempRows);
+        if (vatRate) {
+          rows.forEach((row) => {
+            handleCellValueChange(row);
+          });
+        }
+      } else {
+        if (fields?.InvoiceLine) {
           const newRow = {
             id: 1,
-            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
-            unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name || '',
-            description: item?.Item.Description || '',
-            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
-            GST: 0,
-            totalPrice: 0,
+            quantity: parseInt(
+              fields?.InvoiceLine.InvoicedQuantity['@value'],
+              10
+            ),
+            unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
+            item: fields?.InvoiceLine.Item.Name || '',
+            description: fields?.InvoiceLine.Item.Description || '',
+            unitPrice: parseFloat(
+              fields?.InvoiceLine.Price.PriceAmount['@value']
+            ),
+            GST:
+              (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
+                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
+              100,
+            totalPrice: fields?.InvoiceLine.LineExtensionAmount['@value'],
           };
-          firstFlag = false;
-          // setRows([...rows, newRow]);
-          tempRows = [newRow];
-          console.log(tempRows);
-          // console.log(rows);
-        } else {
-          const newRow = {
-            id: nextId,
-            quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
-            unitCode: item?.InvoicedQuantity.unitCode,
-            item: item?.Item.Name || '',
-            description: item?.Item.Description || '',
-            unitPrice: parseInt(item?.Price.PriceAmount['@value'], 10),
-            GST: 0,
-            totalPrice: 0,
-          };
-          tempRows.push(newRow);
-          // setRows([...rows, newRow]);
-          setNextId(nextId + 1);
+
+          setRows([newRow]);
+          // setNextId(nextId + 1);
         }
-      });
-      setRows(tempRows);
-    } else {
-      if (fields?.InvoiceLine) {
-        const newRow = {
-          id: 1,
-          quantity: parseInt(
-            fields?.InvoiceLine.InvoicedQuantity['@value'],
-            10
-          ),
-          unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
-          item: fields?.InvoiceLine.Item.Name || '',
-          description: fields?.InvoiceLine.Item.Description || '',
-          unitPrice: parseInt(
-            fields?.InvoiceLine.Price.PriceAmount['@value'],
-            10
-          ),
-          GST: 0,
-          totalPrice: 0,
-        };
-        setRows([newRow]);
-        // setNextId(nextId + 1);
+        if (vatRate) {
+          rows.forEach((row) => {
+            handleCellValueChange(row);
+          });
+        }
       }
     }
-  }, [fields]);
+    console.log(buyerCountry);
+    console.log(sellerCountry);
+    console.log(vatRate);
+    console.log('NO SHOT');
+  }, [fields, buyerCountry]);
+
   // Uploading additional documents
   const [openFileUpload, setOpenFileUpload] = React.useState(false);
   const [fileList, setFileList] = React.useState<FileObject[]>([]);
@@ -278,6 +335,8 @@ export default function CreationGUI(props: {
       totalAmount += row.totalPrice;
     });
 
+    let totalTaxable = totalAmount - totalGST;
+
     return {
       totalGST: totalGST,
       totalTaxable: totalAmount - totalGST,
@@ -291,10 +350,12 @@ export default function CreationGUI(props: {
   const handleChange = (event: { target: { value: any; name: string } }) => {
     const selectedCountry = event.target.value as keyof typeof vatRates;
     console.log(buyerCountry);
+    console.log('HELLO?');
     if (event.target.name == 'buyerCountry') {
       setBuyerCountry(selectedCountry);
       setVatRate(vatRates[selectedCountry]);
-
+      console.log('Hi?');
+      console.log(buyerCountry);
       rows.forEach((row) => {
         handleCellValueChange(row);
       });
@@ -381,7 +442,9 @@ export default function CreationGUI(props: {
       row.id === newRow.id ? { ...row, ...newRow } : row
     );
 
+    
     setRows(updatedRows);
+    calculateTotals();
   };
 
   // Form submission & sending to backend + error handling
@@ -478,11 +541,8 @@ export default function CreationGUI(props: {
 
     }
 
-    const {
-      additionalDocuments,
-      extraComments,
-      ...filteredInvoiceData
-    } = invoiceData;
+    const { additionalDocuments, extraComments, ...filteredInvoiceData } =
+      invoiceData;
     var str = JSON.stringify(filteredInvoiceData, null, 2);
     console.log('filtered: ', str);
 
@@ -511,13 +571,12 @@ export default function CreationGUI(props: {
         setLoading(false);
 
         if (response.status === 204) {
-          alert('Edit Successful');
+          setDialog(true);
         } else {
           console.log(response);
           alert('Unable to edit invoice');
+          navigate('/invoice-management');
         }
-
-        navigate('/invoice-management');
       } else {
         setLoadingMsg('Creating invoice...');
         setLoading(true);
@@ -575,6 +634,11 @@ export default function CreationGUI(props: {
 
   return (
     <>
+      <SuccessDialog
+        open={openDialog}
+        message={'Edit Successful'}
+        setOpen={setDialog}
+      />
       <LoadingDialog open={loading} message={loadingMsg} />
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
         {props.editFlag ? (
@@ -661,7 +725,7 @@ export default function CreationGUI(props: {
                   <DatePicker
                     label='Invoice Issue Date'
                     name='invoiceIssueDate'
-                    format='dd/MM/yyyy'
+                    format='yyyy-MM-dd'
                     sx={{ width: '100%' }}
                     value={date}
                     onChange={handleDateChange}
@@ -824,7 +888,7 @@ export default function CreationGUI(props: {
                 id='buyerAdditionalStreetName'
                 label='Additional Street Name'
                 name='buyerAdditionalStreetName'
-                sx={{ width: '100%' }}  
+                sx={{ width: '100%' }}
                 value={buyerAddStreetName}
                 onChange={(e) => setBuyerAddStreetName(e.target.value)}
               />
