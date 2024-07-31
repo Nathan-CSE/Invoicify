@@ -118,7 +118,7 @@ export default function CreationGUI(props: {
       console.log('Hey guys');
       setFields(props.data.fields);
     }
-    
+
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 600);
     };
@@ -556,7 +556,7 @@ export default function CreationGUI(props: {
         const response = await axios.put(
           `http://localhost:5000/invoice/edit/${props.id}`,
           {
-            name: formData.get('invoiceName'),
+            name: `${formData.get('invoiceName')}.xml`,
             fields: filteredInvoiceData,
             rule: 'AUNZ_PEPPOL_1_0_10',
           },
@@ -711,7 +711,6 @@ export default function CreationGUI(props: {
                 id='invoiceNumber'
                 label='Invoice Number'
                 name='invoiceNumber'
-                autoFocus
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                 value={invNum}
@@ -1030,9 +1029,9 @@ export default function CreationGUI(props: {
           </TableContainer>
 
           {/* ADDITIONAL OPTIONS */}
-          <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>
+          {/* <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>
             Extra Comments
-          </Typography>
+          </Typography> */}
           {/* Commented out because backend does not store it */}
           {/* <Button
             variant='contained'
@@ -1074,12 +1073,12 @@ export default function CreationGUI(props: {
           {/* <Typography variant='h6' sx={{ mt: 4 }}>
             Extra Comments
           </Typography> */}
-          <TextField
+          {/* <TextField
             multiline
             rows={5}
             name='extraComments'
             sx={{ width: '100%' }}
-          />
+          /> */}
 
           <Box textAlign='center'>
             <Button
