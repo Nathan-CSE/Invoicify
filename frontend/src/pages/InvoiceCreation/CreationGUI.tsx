@@ -21,6 +21,8 @@ import {
   Popover,
   Grid,
   Stack,
+  useMediaQuery,
+  createTheme,
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -36,11 +38,13 @@ import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../useAuth';
+import SaveIcon from '@mui/icons-material/Save';
 import SuccessDialog from '../../components/SuccessDialog';
 
 interface FileObject {
   file: File;
 }
+
 
 // Edit flag to determine if we are editing
 // Data passed in to preload it if we are editing
@@ -51,6 +55,9 @@ export default function CreationGUI(props: {
   id: number;
 }) {
   useAuth(props.token);
+
+  const [isSmallScreen, setIsSmallScreen] = React.useState(window.innerWidth <= 900);
+
   const [openDialog, setDialog] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [loadingMsg, setLoadingMsg] = React.useState<string>('');
@@ -111,6 +118,13 @@ export default function CreationGUI(props: {
       console.log('Hey guys');
       setFields(props.data.fields);
     }
+
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 600);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // console.log(fields);
@@ -325,7 +339,7 @@ export default function CreationGUI(props: {
 
     return {
       totalGST: totalGST,
-      totalTaxable: totalTaxable,
+      totalTaxable: totalAmount - totalGST,
       totalAmount: totalAmount,
     };
   };
@@ -500,6 +514,12 @@ export default function CreationGUI(props: {
 
     for (let i = 0; i < rows.length; i++) {
       const unitCode = rows[i].unitCode;
+      const itemQuantity = rows[i].quantity;
+      const itemName = rows[i].item;
+      const itemDescription = rows[i].description;
+      const itemPrice = rows[i].unitPrice;
+      const itemGST = rows[i].GST;
+      const itemTotalPrice = rows[i].totalPrice;
 
       if (!unitCode.match(/^[A-Z]{3}$/)) {
         setOpenError(true);
@@ -509,6 +529,16 @@ export default function CreationGUI(props: {
         errorCheck = true;
         break;
       }
+
+      if (itemQuantity == 0 || itemName == '' || itemDescription == '' || itemPrice == 0 || itemGST == 0 || itemTotalPrice == 0) {
+        setOpenError(true);
+        setError(
+          `Fill out all fields for item row ${i + 1}.`
+        );
+        errorCheck = true;
+        break;
+      }
+
     }
 
     const { additionalDocuments, extraComments, ...filteredInvoiceData } =
@@ -526,7 +556,7 @@ export default function CreationGUI(props: {
         const response = await axios.put(
           `http://localhost:5000/invoice/edit/${props.id}`,
           {
-            name: formData.get('invoiceName'),
+            name: `${formData.get('invoiceName')}.xml`,
             fields: filteredInvoiceData,
             rule: 'AUNZ_PEPPOL_1_0_10',
           },
@@ -681,7 +711,6 @@ export default function CreationGUI(props: {
                 id='invoiceNumber'
                 label='Invoice Number'
                 name='invoiceNumber'
-                autoFocus
                 sx={{ width: '100%' }}
                 inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
                 value={invNum}
@@ -707,7 +736,7 @@ export default function CreationGUI(props: {
 
           {/* BUYER/SELLER HEADER */}
           <Grid container justifyContent='center' spacing={4} sx={{ mb: 2 }}>
-            <Grid item xs={5.8}>
+            <Grid item xs={12} md={5.8}>
               <Typography variant='h5' sx={{ mt: 4 }}>
                 Seller Information
               </Typography>
@@ -804,11 +833,13 @@ export default function CreationGUI(props: {
               </FormControl>
             </Grid>
 
-            <Grid item xs={0}>
-              <Divider orientation='vertical' sx={{ height: '90%', mt: 10 }} />
-            </Grid>
+            {!isSmallScreen && (
+              <Grid item xs={0}>
+                <Divider orientation='vertical' sx={{ height: '90%', mt: 10 }} />
+              </Grid>
+            )}
 
-            <Grid item xs={5.8}>
+            <Grid item xs={12} md={5.8}>
               <Typography variant='h5' sx={{ mt: 4 }}>
                 Buyer Information
               </Typography>
@@ -967,7 +998,10 @@ export default function CreationGUI(props: {
             </Typography>
           </Popover>
 
-          <TableContainer component={Paper} sx={{ maxWidth: '25vw', my: 2 }}>
+          <TableContainer
+           component={Paper}
+           sx={{ width: isSmallScreen ? '100%' : '25vw', my: 2 }}
+          >
             <Table aria-label='simple table'>
               <TableBody>
                 <TableRow>
@@ -995,9 +1029,9 @@ export default function CreationGUI(props: {
           </TableContainer>
 
           {/* ADDITIONAL OPTIONS */}
-          <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>
+          {/* <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>
             Extra Comments
-          </Typography>
+          </Typography> */}
           {/* Commented out because backend does not store it */}
           {/* <Button
             variant='contained'
@@ -1039,16 +1073,17 @@ export default function CreationGUI(props: {
           {/* <Typography variant='h6' sx={{ mt: 4 }}>
             Extra Comments
           </Typography> */}
-          <TextField
+          {/* <TextField
             multiline
             rows={5}
             name='extraComments'
             sx={{ width: '100%' }}
-          />
+          /> */}
 
           <Box textAlign='center'>
             <Button
               type='submit'
+              startIcon={<SaveIcon />}
               variant='contained'
               sx={{
                 height: '50px',

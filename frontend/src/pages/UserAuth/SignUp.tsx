@@ -47,6 +47,9 @@ export default function SignUp(props: {
     ) {
       setOpenError(true);
       setError('Fill out all required fields');
+    } else if (!email.includes('@')) {
+      setOpenError(true);
+      setError('Please provide a valid email address');
     } else if (password !== confirmPassword) {
       setOpenError(true);
       setError('Passwords do not match');
