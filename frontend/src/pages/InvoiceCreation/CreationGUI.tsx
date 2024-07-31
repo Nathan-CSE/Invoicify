@@ -170,20 +170,25 @@ export default function CreationGUI(props: {
         fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
       );
 
-      setSellerCountry(
-        fields?.AccountingSupplierParty.Party.PostalAddress.Country
-          .IdentificationCode || ''
-      );
-      setBuyerCountry(
-        fields?.AccountingCustomerParty.Party.PostalAddress.Country
-          .IdentificationCode || ''
-      );
+      if (buyerCountry == '') {
+        setBuyerCountry(
+          fields?.AccountingCustomerParty.Party.PostalAddress.Country
+            .IdentificationCode || ''
+        );
 
-      const selectedCountry = buyerCountry as keyof typeof vatRates;
-      setVatRate(vatRates[selectedCountry]);
+        console.log('ARE YOU FUCKEN HERE?');
+      }
+      if (sellerCountry == '') {
+        setSellerCountry(
+          fields?.AccountingSupplierParty.Party.PostalAddress.Country
+            .IdentificationCode || ''
+        );
+      }
       // console.log('VAT RATE:' + vatRate);
       // console.log('SELLER:' + sellerCountry);
       // console.log('BUYER:' + buyerCountry);
+      const selectedCountry = buyerCountry as keyof typeof vatRates;
+      setVatRate(vatRates[selectedCountry]);
       if (Array.isArray(fields?.InvoiceLine)) {
         // console.log(rows);
         let tempRows = rows;
@@ -235,6 +240,11 @@ export default function CreationGUI(props: {
           }
         });
         setRows(tempRows);
+        if (vatRate) {
+          rows.forEach((row) => {
+            handleCellValueChange(row);
+          });
+        }
       } else {
         if (fields?.InvoiceLine) {
           const newRow = {
@@ -267,7 +277,11 @@ export default function CreationGUI(props: {
         }
       }
     }
-  }, [fields, buyerCountry, vatRate]);
+    console.log(buyerCountry);
+    console.log(sellerCountry);
+    console.log(vatRate);
+    console.log('NO SHOT');
+  }, [fields, buyerCountry]);
 
   // Uploading additional documents
   const [openFileUpload, setOpenFileUpload] = React.useState(false);
@@ -320,10 +334,12 @@ export default function CreationGUI(props: {
   const handleChange = (event: { target: { value: any; name: string } }) => {
     const selectedCountry = event.target.value as keyof typeof vatRates;
     console.log(buyerCountry);
+    console.log('HELLO?');
     if (event.target.name == 'buyerCountry') {
       setBuyerCountry(selectedCountry);
       setVatRate(vatRates[selectedCountry]);
-
+      console.log('Hi?');
+      console.log(buyerCountry);
       rows.forEach((row) => {
         handleCellValueChange(row);
       });
