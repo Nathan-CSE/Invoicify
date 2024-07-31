@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import useAuth from './useAuth';
 
 export default function InvoiceEdit(props: { token: string }) {
-  // useAuth(props.token);
+  useAuth(props.token);
   const location = useLocation();
 
   return (

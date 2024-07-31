@@ -33,7 +33,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import useAuth from './useAuth';
 
 export default function InvoiceManagement(props: { token: string }) {
-  // useAuth(props.token);
+  useAuth(props.token);
 
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);

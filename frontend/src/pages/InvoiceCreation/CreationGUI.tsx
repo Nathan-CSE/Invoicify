@@ -49,7 +49,7 @@ export default function CreationGUI(props: {
   data: any;
   id: number;
 }) {
-  // useAuth(props.token);
+  useAuth(props.token);
 
   const [loading, setLoading] = React.useState(false);
   const [loadingMsg, setLoadingMsg] = React.useState<string>('');
