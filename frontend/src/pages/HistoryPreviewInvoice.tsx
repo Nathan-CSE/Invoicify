@@ -37,6 +37,9 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   console.log("this is location: ", location);
   const name = location.state.name;
 
+  const [isSmallScreen, setIsSmallScreen] = React.useState(window.innerWidth <= 900);
+
+
   // Popover Info
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
   const [invoiceId, setInvoiceId] = React.useState(0);
@@ -54,6 +57,15 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   const handleClosePopover = () => {
     setAnchorEl(null);
   };
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 600);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const openPopover = Boolean(anchorEl);
   const id = openPopover ? 'simple-popover' : undefined;
@@ -174,7 +186,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
 
         {/* BUYER/SELLER HEADER */}
         <Grid container justifyContent='center' spacing={4} sx={{ mb: 2 }}>
-          <Grid item xs={5.8}>
+          <Grid item xs={12} md={6}>
             <Typography variant='h5' sx={{ mt: 4 }}>
               Seller Information
             </Typography>
@@ -276,11 +288,17 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
             </Typography>
           </Grid>
 
-          <Grid item xs={0}>
+          {/* <Grid item xs={0}>
             <Divider orientation='vertical' sx={{ height: '90%', mt: 6 }} />
-          </Grid>
+          </Grid> */}
 
-          <Grid item xs={5.8}>
+          {/* {!isSmallScreen && (
+            <Grid item xs={0}>
+              <Divider orientation='vertical' sx={{ height: '90%', mt: 6 }} />
+            </Grid>
+          )} */}
+
+          <Grid item xs={12} md={6}>
             <Typography variant='h5' sx={{ mt: 4 }}>
               Buyer Information
             </Typography>
@@ -494,7 +512,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
 
             <TableContainer
               component={Paper}
-              sx={{ maxWidth: '25vw', my: 2 }}
+              sx={{ width: isSmallScreen ? '100%' : '25vw', my: 2 }}
             >
               <Table aria-label='simple table'>
                 <TableBody>

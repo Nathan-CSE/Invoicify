@@ -21,6 +21,8 @@ import {
   Popover,
   Grid,
   Stack,
+  useMediaQuery,
+  createTheme,
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
@@ -42,6 +44,7 @@ interface FileObject {
   file: File;
 }
 
+
 // Edit flag to determine if we are editing
 // Data passed in to preload it if we are editing
 export default function CreationGUI(props: {
@@ -51,6 +54,8 @@ export default function CreationGUI(props: {
   id: number;
 }) {
   useAuth(props.token);
+
+  const [isSmallScreen, setIsSmallScreen] = React.useState(window.innerWidth <= 900);
 
   const [loading, setLoading] = React.useState(false);
   const [loadingMsg, setLoadingMsg] = React.useState<string>('');
@@ -111,6 +116,15 @@ export default function CreationGUI(props: {
   const handleDateChange = (newDate: any) => {
     setDate(newDate);
   };
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth <= 600);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   React.useEffect(() => {
     const dateString = fields?.IssueDate || '';
@@ -659,7 +673,7 @@ export default function CreationGUI(props: {
 
           {/* BUYER/SELLER HEADER */}
           <Grid container justifyContent='center' spacing={4} sx={{ mb: 2 }}>
-            <Grid item xs={5.8}>
+            <Grid item xs={12} md={5.8}>
               <Typography variant='h5' sx={{ mt: 4 }}>
                 Seller Information
               </Typography>
@@ -756,11 +770,13 @@ export default function CreationGUI(props: {
               </FormControl>
             </Grid>
 
-            <Grid item xs={0}>
-              <Divider orientation='vertical' sx={{ height: '90%', mt: 10 }} />
-            </Grid>
+            {!isSmallScreen && (
+              <Grid item xs={0}>
+                <Divider orientation='vertical' sx={{ height: '90%', mt: 10 }} />
+              </Grid>
+            )}
 
-            <Grid item xs={5.8}>
+            <Grid item xs={12} md={5.8}>
               <Typography variant='h5' sx={{ mt: 4 }}>
                 Buyer Information
               </Typography>
@@ -919,7 +935,10 @@ export default function CreationGUI(props: {
             </Typography>
           </Popover>
 
-          <TableContainer component={Paper} sx={{ maxWidth: '25vw', my: 2 }}>
+          <TableContainer
+           component={Paper}
+           sx={{ width: isSmallScreen ? '100%' : '25vw', my: 2 }}
+          >
             <Table aria-label='simple table'>
               <TableBody>
                 <TableRow>
