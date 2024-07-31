@@ -11,6 +11,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LoadingDialog from './LoadingDialog';
+import ConfirmDialog from './ConfirmationDialog';
 
 export default function SettingsMenu(props: { token: string; details: any }) {
   // Error checking
@@ -21,6 +22,8 @@ export default function SettingsMenu(props: { token: string; details: any }) {
   // Open state for the menu
   const [anchorEl, setAnchorEl] = React.useState<null | SVGElement>(null);
   const open = Boolean(anchorEl);
+
+  const [openDialog, setDialog] = React.useState(false);
 
   // Handle the mouse events of the menu
   const handleClick = (event: React.MouseEvent<SVGElement>) => {
@@ -44,7 +47,9 @@ export default function SettingsMenu(props: { token: string; details: any }) {
       state: { cardID: props.details.id },
     });
   };
-
+  const handleDeleteDialog = () => {
+    setDialog(true);
+  };
   const handleDelete = async () => {
     setLoading(true);
     try {
@@ -60,7 +65,6 @@ export default function SettingsMenu(props: { token: string; details: any }) {
       setLoading(false);
 
       if (response.status === 200) {
-        alert('Delete confirmed');
         window.location.reload();
       } else {
         setOpenError(true);
@@ -81,6 +85,11 @@ export default function SettingsMenu(props: { token: string; details: any }) {
 
   return (
     <div>
+      <ConfirmDialog
+        open={openDialog}
+        function={handleDelete}
+        setOpen={setDialog}
+      />
       <LoadingDialog open={loading} message='Deleting invoice...' />
       <Box
         sx={{
@@ -150,7 +159,7 @@ export default function SettingsMenu(props: { token: string; details: any }) {
 
           <Box onClick={handleClose}>
             <Button
-              onClick={handleDelete}
+              onClick={handleDeleteDialog}
               startIcon={<DeleteIcon sx={{ mr: -0.75 }} />}
               variant='contained'
               color='error'
@@ -161,9 +170,11 @@ export default function SettingsMenu(props: { token: string; details: any }) {
           </Box>
         </Stack>
       </Menu>
-      {/* <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
-        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-      </Box> */}
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
     </div>
   );
 }
