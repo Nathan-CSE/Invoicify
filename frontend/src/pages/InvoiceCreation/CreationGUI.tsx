@@ -59,15 +59,6 @@ export default function CreationGUI(props: {
   const [fields, setFields] = React.useState<any>(null);
   // Preloading the saved data
 
-  React.useEffect(() => {
-    if (props.editFlag && props.data) {
-      console.log('Hey guys');
-      setFields(props.data.fields);
-    }
-  }, []);
-
-  console.log(fields);
-
   // Invoice Name State
   const [invName, setInvName] = React.useState<string>('');
   const [invNum, setInvNum] = React.useState<string>('');
@@ -112,20 +103,20 @@ export default function CreationGUI(props: {
   };
 
   React.useEffect(() => {
+    if (props.editFlag && props.data) {
+      console.log('Hey guys');
+      setFields(props.data.fields);
+    }
+  }, []);
+
+  // console.log(fields);
+
+  React.useEffect(() => {
+    console.log(fields);
     const dateString = fields?.IssueDate || '';
     const [day, month, year] = dateString.split('/');
     const newDate = `${year}-${month}-${day}`;
     setDate(new Date(newDate));
-    setSellerCountry(
-      fields?.AccountingSupplierParty.Party.PostalAddress.Country
-        .IdentificationCode || ''
-    );
-    setBuyerCountry(
-      fields?.AccountingCustomerParty.Party.PostalAddress.Country
-        .IdentificationCode || ''
-    );
-    const selectedCountry = buyerCountry as keyof typeof vatRates;
-    setVatRate(vatRates[selectedCountry]);
 
     setInvName(fields?.BuyerReference || '');
     setInvNum(fields?.ID || '');
@@ -175,6 +166,19 @@ export default function CreationGUI(props: {
       fields?.AccountingCustomerParty.Party.PostalAddress.PostalZone || ''
     );
 
+    setSellerCountry(
+      fields?.AccountingSupplierParty.Party.PostalAddress.Country
+        .IdentificationCode || ''
+    );
+    setBuyerCountry(
+      fields?.AccountingCustomerParty.Party.PostalAddress.Country
+        .IdentificationCode || ''
+    );
+    const selectedCountry = buyerCountry as keyof typeof vatRates;
+    setVatRate(vatRates[selectedCountry]);
+    console.log('VAT RATE:' + vatRate);
+    console.log('SELLER:' + sellerCountry);
+    console.log('BUYER:' + buyerCountry);
     if (Array.isArray(fields?.InvoiceLine)) {
       // console.log(rows);
       let tempRows = rows;
@@ -244,10 +248,14 @@ export default function CreationGUI(props: {
         setRows([newRow]);
         // setNextId(nextId + 1);
       }
+      if (vatRate) {
+        rows.forEach((row) => {
+          handleCellValueChange(row);
+        });
+      }
     }
-  }, [fields]);
+  }, [fields, buyerCountry, vatRate]);
 
-  console.log(vatRate);
   // Uploading additional documents
   const [openFileUpload, setOpenFileUpload] = React.useState(false);
   const [fileList, setFileList] = React.useState<FileObject[]>([]);
