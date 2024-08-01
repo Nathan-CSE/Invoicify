@@ -3,25 +3,26 @@ import os
 import hashlib
 import jwt
 
+from typing import Callable, Union
 from jwt.exceptions import InvalidSignatureError
 from flask import request
 
-from models import db, User
+from models import db, User, Invoice, ValidationAccessToken
 
-def salt_and_hash(data):
+def salt_and_hash(data: str):
     return hashlib.sha512((data + os.getenv("SALT")).encode('UTF-8')).hexdigest()
 
-def create_jwt_token(payload):
+def create_jwt_token(payload: dict[str, any]):
     return jwt.encode(payload, os.getenv("JWTSECRET"), algorithm='HS256')
 
-def decode_jwt_token(token):
+def decode_jwt_token(token: str) -> dict[str, any]:
     return jwt.decode(token, os.getenv("JWTSECRET"), algorithms=["HS256"], options={"verify_exp": False})
 
-def db_insert(model):
+def db_insert(model: Union[User, Invoice, ValidationAccessToken]):
     db.session.add(model)
     db.session.commit()
 
-def token_required(func):
+def token_required(func: Callable) -> Callable:
     """
     Decorator that validates the token passed in through the Authorisation header
 
@@ -56,9 +57,10 @@ def token_required(func):
         except Exception as err:
             return {"message": f"Unauthorised request: {err}"}, 403
         return func(*args, **kwargs)
+    
     return wrapper
 
-def base64_encode(data):
+def base64_encode(data: bytes):
     '''
     Helper utility to base64 encode data
 
@@ -71,7 +73,7 @@ def base64_encode(data):
     except UnicodeEncodeError as err:
         raise err
 
-def base64_decode(data):
+def base64_decode(data: bytes):
     '''
     Helper utility to base64 decode data
 

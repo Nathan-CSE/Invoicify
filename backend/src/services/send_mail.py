@@ -7,17 +7,17 @@ from dotenv import load_dotenv
 from os.path import basename
 from email.mime.application import MIMEApplication
 from email.utils import COMMASPACE, formatdate
+from werkzeug.datastructures import FileStorage
 
 load_dotenv()
 
-def auth_request(email, code):
+def auth_request(email: str, code: str) -> dict:
     '''
     Sends an email to the email requests if it exists within the database
 
     Arguments:
         email (string)      - A unique string which validates the user
         code (string)      - Unique code to reset password
-
 
     Return Value:
         Returns {} no matter what
@@ -40,13 +40,12 @@ def auth_request(email, code):
         server.sendmail(sender_email, email, text)
     return {}
 
-def send_attachment(send_to:list, text, ubl_data, files):
+def send_attachment(send_to: list[str], text: str, ubl_data: list[tuple[str, str]], files: list[FileStorage]) -> bool:
     '''
     Sends an email with an attachment
 
     Arguments:
         email (string)      - A unique string which validates the user
-
 
     Return Value:
         Returns {} no matter what
@@ -88,15 +87,13 @@ def send_attachment(send_to:list, text, ubl_data, files):
         
     return True
         
-def send_xml(send_to:list, text, file_name):
+def send_xml(send_to: list[str], text: str, file_name: str):
     '''
     Sends an email with an attachment
 
     Arguments:
-        email (string)      - A unique string which validates the user
         text (string)       - UBL
         file_name (string)  - Attachment name
-
 
     Return Value:
         Returns 0 on success
@@ -125,6 +122,7 @@ def send_xml(send_to:list, text, file_name):
         server.ehlo()
         server.login(sender_email, sender_pass)
         server.sendmail(sender_email, send_to, msg.as_string())
+
     return 0
 if __name__ == "__main__":
     send_xml([""], "Hey Loser", "test")
