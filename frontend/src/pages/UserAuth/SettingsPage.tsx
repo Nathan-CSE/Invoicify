@@ -9,7 +9,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SaveIcon from '@mui/icons-material/Save';
 import axios, { AxiosError } from 'axios';
 import LoadingDialog from '../../components/LoadingDialog';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
 
 function SettingsPage(props: { token: string }) {
   useAuth(props.token);

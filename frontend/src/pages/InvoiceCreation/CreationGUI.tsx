@@ -37,7 +37,7 @@ import vatRates from '../../VATRates.json';
 import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
 import LoadingDialog from '../../components/LoadingDialog';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
 import SaveIcon from '@mui/icons-material/Save';
 import SuccessDialog from '../../components/SuccessDialog';
 

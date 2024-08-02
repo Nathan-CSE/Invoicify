@@ -20,7 +20,7 @@ import axios from 'axios';
 import { DropzoneArea } from 'mui-file-dropzone';
 import { BsPencilSquare } from "react-icons/bs";
 import { FaFileUpload } from "react-icons/fa";
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
 
 export default function InvoiceCreation(props: { token: string }) {
   useAuth(props.token);

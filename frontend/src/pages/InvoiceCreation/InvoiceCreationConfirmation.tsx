@@ -17,7 +17,7 @@ import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import LoadingDialog from '../../components/LoadingDialog';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
 
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
   useAuth(props.token);

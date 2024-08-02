@@ -24,12 +24,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
 import axios from 'axios';
 import DownloadIcon from '@mui/icons-material/Download';
-import ReplayIcon from '@mui/icons-material/Replay';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import LoadingDialog from '../components/LoadingDialog';
-import { ReactComponent as ManageSvg } from '../assets/manage.svg';
-import useAuth from './useAuth';
+import { ReactComponent as ManageSvg } from '../../assets/manage.svg';
+import useAuth from '../../helpers/useAuth';
 
 export default function HistoryPreviewInvoice(props: { token: string }) {
   useAuth(props.token);

@@ -19,7 +19,7 @@ import MultipleSelect from '../../components/MultipleSelect';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import LoadingDialog from '../../components/LoadingDialog';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
 
 export default function InvoiceValidation(props: { token: string; }) {
   useAuth(props.token);

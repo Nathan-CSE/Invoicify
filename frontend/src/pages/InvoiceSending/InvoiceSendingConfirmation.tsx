@@ -11,7 +11,7 @@ import { Card, CardContent, Grid } from '@mui/material';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
 import ReplayIcon from '@mui/icons-material/Replay';
 import SendIcon from '@mui/icons-material/Send';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
 
 export default function InvoiceSending(props: { token: string; }) {
   useAuth(props.token);

@@ -17,7 +17,7 @@ import { saveAs } from 'file-saver';
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
 
 interface AssertionError {
   id: string;

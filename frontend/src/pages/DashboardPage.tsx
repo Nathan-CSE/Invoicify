@@ -11,7 +11,7 @@ import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import useAuth from './useAuth';
+import useAuth from '../helpers/useAuth';
 
 import { ReactComponent as ManageSvg } from '../assets/manage.svg';
 import { ReactComponent as CogSvg } from '../assets/settings.svg';

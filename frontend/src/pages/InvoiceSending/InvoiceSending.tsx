@@ -17,7 +17,7 @@ import { TextField } from '@mui/material';
 import MultipleSelect from '../../components/MultipleSelect';
 import SendIcon from '@mui/icons-material/Send';
 import LoadingDialog from '../../components/LoadingDialog';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
 
 export default function InvoiceSending(props: { token: string }) {
   // console.log('user token: ', props.token);
