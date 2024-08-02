@@ -1,15 +1,13 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Button, Container, Divider, TextField } from '@mui/material';
 import ErrorModal from '../../components/ErrorModal';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SaveIcon from '@mui/icons-material/Save';
 import axios, { AxiosError } from 'axios';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../../helpers/useAuth';
+import PageHeader from '../../components/PageHeader';
 
 function SettingsPage(props: { token: string }) {
   useAuth(props.token);
@@ -18,6 +16,10 @@ function SettingsPage(props: { token: string }) {
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard',
+    'Account Settings': '/settings'
+  }
 
   const changeAccountDetails = async (
     event: React.FormEvent<HTMLFormElement>
@@ -69,20 +71,8 @@ function SettingsPage(props: { token: string }) {
     <>
       <LoadingDialog open={loading} message='Changing password...' />
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>Account Settings</Typography>
-        {/* <Divider sx={{ borderColor: 'black', width: '100%' }} /> */}
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-        <Breadcrumbs
-          aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize='small' />}
-          sx={{ mt: 1 }}
-        >
-          <Typography component={Link} to='/dashboard'>
-            Dashboard
-          </Typography>
 
-          <Typography color='text.primary'>Account Settings</Typography>
-        </Breadcrumbs>
+        <PageHeader HeaderTitle={'Account Settings'} BreadcrumbDict={breadcrumbNav} />
 
         <Box sx={{ mt: 4, width: '100%', mb: -2 }}>
           <Typography variant='h5'>

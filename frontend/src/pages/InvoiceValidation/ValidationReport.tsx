@@ -5,19 +5,15 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import { Link, useLocation } from 'react-router-dom';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ReplayIcon from '@mui/icons-material/Replay';
 import DownloadReport from '../../components/DownloadReport';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { saveAs } from 'file-saver';
 import { Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 import useAuth from '../../helpers/useAuth';
+import PageHeader from '../../components/PageHeader';
 
 interface AssertionError {
   id: string;
@@ -41,6 +37,12 @@ export default function ValidationReport(props: { token: string }) {
   const errorData = !isValid ? currentReport.data : null;
   const fileName = currentReport.invoiceName;
 
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard',
+    'Invoice Validation': '/invoice-validation',
+    'Invoice Validation Report': '/invoice-validation-report'
+  }
+
   const handlePrevious = () => {
     if (currentReportIndex > 0) {
       setCurrentReportIndex(currentReportIndex - 1);
@@ -55,13 +57,8 @@ export default function ValidationReport(props: { token: string }) {
 
   return (
     <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-      <Typography variant='h4'>Invoice Validation Report</Typography>
-      <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-      <Breadcrumbs aria-label='breadcrumb' separator={<NavigateNextIcon fontSize="small" />}>
-        <Typography component={Link} to='/dashboard'>Dashboard</Typography>
-        <Typography component={Link} to='/invoice-validation'>Invoice Validation</Typography>
-        <Typography color='text.primary'>Invoice Validation Report</Typography>
-      </Breadcrumbs>
+
+      <PageHeader HeaderTitle={'Invoice Validation Report'} BreadcrumbDict={breadcrumbNav} />
 
       <div id="report-content">
         <Typography variant='h5' fontWeight='bold' textAlign='center' sx={{ my: 2 }}>

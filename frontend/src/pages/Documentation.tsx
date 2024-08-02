@@ -1,46 +1,27 @@
 import {
   Box,
-  Breadcrumbs,
   Container,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Stack,
   Typography,
 } from '@mui/material';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Link } from 'react-router-dom';
-import CircleIcon from '@mui/icons-material/Circle';
 import useAuth from '../helpers/useAuth';
+import PageHeader from '../components/PageHeader';
 
 function DocPage(props: { token: string }) {
   useAuth(props.token);
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard',
+    'Documentation': '/documentation'
+  }
 
   return (
     <Container maxWidth='lg' sx={{ mt: 11 }}>
-      <Typography variant='h4'>
-        Documentation
-      </Typography>
-      {/* <Divider sx={{ borderColor: 'black' }} />
-       */}
-      <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
 
-      <Breadcrumbs
-        aria-label='breadcrumb'
-        separator={<NavigateNextIcon fontSize='small' />}
-      >
-        <Typography component={Link} to='/dashboard'>
-          Dashboard
-        </Typography>
-
-        <Typography color='text.primary'>Documentation</Typography>
-      </Breadcrumbs>
+      <PageHeader HeaderTitle={'Documentation'} BreadcrumbDict={breadcrumbNav} />
 
       <Stack spacing={3} sx={{ mt: 5, mb: 10 }}>
         <Typography variant='h4' gutterBottom>
-          What is an UBL2.1 (Univeral Business Language) and its importance
+          What is UBL2.1 (Universal Business Language) and its importance
         </Typography>
         <Typography variant='body1' gutterBottom>
           UBL 2.1 is widely used in electronic invoicing to standardise the

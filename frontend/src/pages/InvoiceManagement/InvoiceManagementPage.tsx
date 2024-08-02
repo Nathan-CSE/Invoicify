@@ -291,6 +291,7 @@ export default function InvoiceManagement(props: { token: string }) {
     <>
       <LoadingDialog open={loading} message='Retrieving invoices...' />
       <Container maxWidth='lg' sx={{ marginTop: 11, position: 'relative' }}>
+        {/* Don't use PageHeader component here because of button */}
         <Box
           sx={{
             display: 'flex',

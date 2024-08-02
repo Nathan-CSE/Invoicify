@@ -4,20 +4,18 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
-import { Link, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { Link, useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import axios from 'axios';
-import { Card, CardActionArea, CardContent, Stack } from '@mui/material';
+import { Card, CardContent, Stack } from '@mui/material';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
 import DownloadIcon from '@mui/icons-material/Download';
 import ReplayIcon from '@mui/icons-material/Replay';
-import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../../helpers/useAuth';
+import PageHeader from '../../components/PageHeader';
 
 export default function InvoiceCreationConfirmation(props: { token: string; }) {
   useAuth(props.token);
@@ -27,6 +25,12 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
   const invoiceId = invoiceData.invoiceId;
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
+
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard',
+    'Invoice Creation': '/invoice-creation',
+    'Invoice  Creation Result': '/invoice-creation-confirmation'
+  }
 
   console.log('this is the invoice data: ', invoiceData);
   
@@ -82,34 +86,8 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
     <>
       <LoadingDialog open={loading} message='Downloading invoice...' />
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>
-          Invoice Creation Result
-        </Typography>
 
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-
-        <Breadcrumbs
-          aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize="small" />}
-        >
-          <Typography
-            component={Link}
-            to='/dashboard'
-          >
-            Dashboard
-          </Typography>
-
-          <Typography
-            component={Link}
-            to='/invoice-creation'
-          >
-            Invoice Creation
-          </Typography>
-
-          <Typography color='text.primary'>
-            Invoice Creation Result
-          </Typography>
-        </Breadcrumbs>
+        <PageHeader HeaderTitle={'Invoice Creation Result'} BreadcrumbDict={breadcrumbNav} />
 
         <Box textAlign='center' sx={{ mt: 5 }}>
           <Typography variant='h4'>

@@ -3,24 +3,14 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Navbar from '../../components/Navbar';
-import Divider from '@mui/material/Divider';
 import { Link, useNavigate } from 'react-router-dom';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import FileUpload from '../../components/FileUpload';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import LoadingDialog from '../../components/LoadingDialog';
 import axios from 'axios';
 import { DropzoneArea } from 'mui-file-dropzone';
 import { BsPencilSquare } from "react-icons/bs";
 import { FaFileUpload } from "react-icons/fa";
 import useAuth from '../../helpers/useAuth';
+import PageHeader from '../../components/PageHeader';
 
 export default function InvoiceCreation(props: { token: string }) {
   useAuth(props.token);
@@ -29,6 +19,11 @@ export default function InvoiceCreation(props: { token: string }) {
 
   const [loading, setLoading] = React.useState(false);
   
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard',
+    'Invoice Creation': '/invoice-creation'
+  }
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
@@ -80,20 +75,8 @@ export default function InvoiceCreation(props: { token: string }) {
     <>
       <LoadingDialog open={loading} message='Creating invoice(s)...' />
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>Invoice Creation</Typography>
 
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-
-        <Breadcrumbs
-          aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize='small' />}
-        >
-          <Typography component={Link} to='/dashboard'>
-            Dashboard
-          </Typography>
-
-          <Typography color='text.primary'>Invoice Creation</Typography>
-        </Breadcrumbs>
+        <PageHeader HeaderTitle={'Invoice Creation'} BreadcrumbDict={breadcrumbNav} />
 
         <Box sx={{ my: 5 }}>
           <DropzoneArea

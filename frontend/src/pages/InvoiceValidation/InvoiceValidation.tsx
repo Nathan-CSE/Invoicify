@@ -3,23 +3,18 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
-import { Link, useNavigate } from 'react-router-dom';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { useNavigate } from 'react-router-dom';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { DropzoneArea } from "mui-file-dropzone";
 import axios from 'axios';
-import { Checkbox } from '@mui/material';
-import Chip from '@mui/material/Chip';
 import MultipleSelect from '../../components/MultipleSelect';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../../helpers/useAuth';
+import PageHeader from '../../components/PageHeader';
 
 export default function InvoiceValidation(props: { token: string; }) {
   useAuth(props.token);
@@ -33,6 +28,11 @@ export default function InvoiceValidation(props: { token: string; }) {
   const [ruleSet, setRuleSet] = React.useState<string[]>([]);
   const [files, setFiles] = React.useState<File[] | null>([]);
   const [availableInvoices, setAvailableInvoices] = React.useState<{ invoiceId: number; name: string; }[]>([]);
+
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard',
+    'Invoice Validation': '/invoice-validation'
+  }
 
   const handleChange = (event: SelectChangeEvent<string[]>) => {
     console.log('this is event.target: ', event.target);
@@ -158,27 +158,8 @@ export default function InvoiceValidation(props: { token: string; }) {
     <>
       <LoadingDialog open={loading} message='Validating invoice(s)...' />
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>
-          Invoice Validation
-        </Typography>
 
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-
-        <Breadcrumbs
-          aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize="small" />}
-        >
-          <Typography
-            component={Link}
-            to='/dashboard'
-          >
-            Dashboard
-          </Typography>
-
-          <Typography color='text.primary'>
-            Invoice Validation
-          </Typography>
-        </Breadcrumbs>
+        <PageHeader HeaderTitle={'Invoice Validation'} BreadcrumbDict={breadcrumbNav} />
 
         <form onSubmit={handleSubmit}>
           <Box sx={{ my: 5 }}>

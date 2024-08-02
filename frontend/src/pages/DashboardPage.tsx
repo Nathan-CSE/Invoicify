@@ -1,21 +1,20 @@
 import React from 'react';
-import { Routes, Route, useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { Breadcrumbs, CardActionArea, Divider, Stack } from '@mui/material';
+import { CardActionArea } from '@mui/material';
 import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import useAuth from '../helpers/useAuth';
 
 import { ReactComponent as ManageSvg } from '../assets/manage.svg';
 import { ReactComponent as CogSvg } from '../assets/settings.svg';
 import { ReactComponent as DocSvg } from '../assets/documentation.svg';
+import PageHeader from '../components/PageHeader';
 
 // Current Idea -> For loop to create each grid item and card to make it so we dont have to repeat code
 // Wow yeap
@@ -48,6 +47,10 @@ function DashboardPage(props: {
     'Account Settings': { svg: CogSvg, route: '/settings' },
     'Documentation Info': { svg: DocSvg, route: '/documentation' },
   };
+
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard'
+  }
 
   // Function to generate the dashboard card
   function generateOptions(options: dashboardDict): JSX.Element[] {
@@ -83,18 +86,8 @@ function DashboardPage(props: {
   return (
     <>
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>Welcome!</Typography>
 
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-
-        <Stack direction="row" spacing={1} sx={{ mt: 1, mb: 4 }}>
-          <NavigateNextIcon fontSize='small' sx={{ mt: 0.1 }}/>
-          <Typography color='text.primary'>
-            Dashboard
-          </Typography>
-        </Stack>
-
-
+        <PageHeader HeaderTitle={'Welcome!'} BreadcrumbDict={breadcrumbNav} />
 
         <Grid
           container
