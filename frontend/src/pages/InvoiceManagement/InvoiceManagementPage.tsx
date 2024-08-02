@@ -15,23 +15,17 @@ import Typography from '@mui/material/Typography';
 import * as React from 'react';
 import axios, { AxiosError } from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import ErrorModal from '../components/ErrorModal';
-import { ReactComponent as InvoiceSvg } from '../assets/invoice.svg';
-import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
-import SettingsMenu from '../components/SettingsMenu';
-import FilterModal from '../components/FilterModal';
-import PrintableInvoice from '../components/PrintableInvoice';
+import ErrorModal from '../../components/ErrorModal';
+import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
+import SettingsMenu from '../../components/SettingsMenu';
+import FilterModal from '../../components/FilterModal';
 import FilterListIcon from '@mui/icons-material/FilterList';
-import LoadingDialog from '../components/LoadingDialog';
+import LoadingDialog from '../../components/LoadingDialog';
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import { AiOutlineFieldNumber } from 'react-icons/ai';
-import NumbersIcon from '@mui/icons-material/Numbers';
 import TagIcon from '@mui/icons-material/Tag';
 import CancelIcon from '@mui/icons-material/Cancel';
 import RuleIcon from '@mui/icons-material/Rule';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import useAuth from './useAuth';
-import AbcIcon from '@mui/icons-material/Abc';
 import EditIcon from '@mui/icons-material/Edit';
 
 export default function InvoiceManagement(props: { token: string }) {
@@ -297,6 +291,7 @@ export default function InvoiceManagement(props: { token: string }) {
     <>
       <LoadingDialog open={loading} message='Retrieving invoices...' />
       <Container maxWidth='lg' sx={{ marginTop: 11, position: 'relative' }}>
+        {/* Don't use PageHeader component here because of button */}
         <Box
           sx={{
             display: 'flex',

@@ -1,6 +1,5 @@
 import {
   Box,
-  Breadcrumbs,
   Button,
   Container,
   Divider,
@@ -19,17 +18,13 @@ import {
 } from '@mui/material';
 import * as React from 'react';
 import { useLocation } from 'react-router-dom';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
 import axios from 'axios';
 import DownloadIcon from '@mui/icons-material/Download';
-import ReplayIcon from '@mui/icons-material/Replay';
-import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import LoadingDialog from '../components/LoadingDialog';
-import { ReactComponent as ManageSvg } from '../assets/manage.svg';
-import useAuth from './useAuth';
+import { ReactComponent as ManageSvg } from '../../assets/manage.svg';
+import useAuth from '../../helpers/useAuth';
+import PageHeader from '../../components/PageHeader';
 
 export default function HistoryPreviewInvoice(props: { token: string }) {
   useAuth(props.token);
@@ -39,6 +34,11 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
 
   const [isSmallScreen, setIsSmallScreen] = React.useState(window.innerWidth <= 900);
 
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard',
+    'Invoice Management': '/invoice-management',
+    'Invoice Preview': '/invoice-preview-history'
+  }
 
   // Popover Info
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -569,24 +569,9 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   return (
     <>
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>
-          Previewing: {name}
-        </Typography>
-        {/* <Divider sx={{ borderColor: 'black', width: '100%' }} /> */}
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-        <Breadcrumbs
-          aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize='small' />}
-        >
-          <Typography component={Link} to='/dashboard'>
-            Dashboard
-          </Typography>
 
-          <Typography component={Link} to='/invoice-management'>
-            Invoice Management
-          </Typography>
-          <Typography color='text.primary'>Invoice Preview</Typography>
-        </Breadcrumbs>
+        <PageHeader HeaderTitle={`Previewing: ${name}`} BreadcrumbDict={breadcrumbNav} />
+
         <Box sx={{ mt: 3 }}>
           {invoiceType === 'JSON' ? (
             <pre style={{ whiteSpace: 'pre-wrap' }}>

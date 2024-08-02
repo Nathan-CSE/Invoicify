@@ -3,21 +3,17 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
+import { useLocation, useNavigate } from 'react-router-dom';
 import FormControl from '@mui/material/FormControl';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { SelectChangeEvent } from '@mui/material/Select';
 import { DropzoneArea } from 'mui-file-dropzone';
 import axios from 'axios';
 import { TextField } from '@mui/material';
 import MultipleSelect from '../../components/MultipleSelect';
 import SendIcon from '@mui/icons-material/Send';
 import LoadingDialog from '../../components/LoadingDialog';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
+import PageHeader from '../../components/PageHeader';
 
 export default function InvoiceSending(props: { token: string }) {
   // console.log('user token: ', props.token);
@@ -28,6 +24,11 @@ export default function InvoiceSending(props: { token: string }) {
   const [invoices, setInvoices] = React.useState<string[]>([]);
   const [files, setFiles] = React.useState<File[] | null>([]);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
+
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard',
+    'Invoice Sending': '/invoice-sending'
+  }
 
   // How we preload data from another page
   const location = useLocation();
@@ -206,20 +207,8 @@ export default function InvoiceSending(props: { token: string }) {
     <>
       <LoadingDialog open={loading} message={loadingMsg} />
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>Invoice Sending</Typography>
 
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-
-        <Breadcrumbs
-          aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize='small' />}
-        >
-          <Typography component={Link} to='/dashboard'>
-            Dashboard
-          </Typography>
-
-          <Typography color='text.primary'>Invoice Sending</Typography>
-        </Breadcrumbs>
+        <PageHeader HeaderTitle={'Invoice Sending'} BreadcrumbDict={breadcrumbNav} />
 
         <form onSubmit={handleSubmit}>
           <Box sx={{ my: 5 }}>
