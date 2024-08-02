@@ -57,7 +57,7 @@ class SendUBLAPI(Resource):
         if invoice:
             cs = ConversionService()
             xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
-            return make_response(jsonify({"message": xml}, 200))
+            return make_response(jsonify({"message": xml}), 200)
         else:
             return make_response(jsonify({"message": "Article not found"}), 400)
 

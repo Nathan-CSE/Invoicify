@@ -1,21 +1,20 @@
-import base64
 import io
 import json
 
 from models import Invoice
 from tests.fixtures import client, user, user_2, invoice, invoice_2, gui_invoice, gui_invoice_2
 from tests.data import TEST_DATA
-
-INVOICE_CREATE_PATH = "/invoice/create"
-INVOICE_UPLOAD_VALIDATE_PATH = "/invoice/uploadValidate"
-INVOICE_UPLOAD_CREATE_PATH = "/invoice/uploadCreate"
-INVOICE_SAVE_PATH = "/invoice/save"
-INVOICE_EDIT_PATH = "/invoice/edit"
-INVOICE_DELETE_PATH = "/invoice/delete"
-INVOICE_HISTORY_PATH = "/invoice/history"
-INVOICE_VALIDATE_PATH = "/invoice/validate"
-INVOICE_SEND_PATH = "/invoice/send_ubl"
-
+from tests.urls import (
+    INVOICE_CREATE_PATH, 
+    INVOICE_UPLOAD_CREATE_PATH, 
+    INVOICE_UPLOAD_VALIDATE_PATH, 
+    INVOICE_DELETE_PATH, 
+    INVOICE_EDIT_PATH, 
+    INVOICE_HISTORY_PATH, 
+    INVOICE_SAVE_PATH, 
+    INVOICE_SEND_PATH, 
+    INVOICE_VALIDATE_PATH,
+)
 
 def test_invoice_creation_successful(client, user):
     res = client.post(
