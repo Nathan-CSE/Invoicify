@@ -61,6 +61,9 @@ def send_attachment(send_to: list[str], text: str, ubl_data: list[tuple[str, str
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = "Tax Invoice"
 
+    if not send_to:
+        return True
+    
     msg.attach(MIMEText(text))
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
         server.ehlo()
