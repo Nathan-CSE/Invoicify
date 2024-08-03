@@ -124,6 +124,7 @@ export default function SignUp(props: {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  data-cy='register-firstName'
                   autoComplete='given-name'
                   name='firstName'
                   required
@@ -135,6 +136,7 @@ export default function SignUp(props: {
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
+                  data-cy='register-lastName'
                   required
                   fullWidth
                   id='lastName'
@@ -145,6 +147,7 @@ export default function SignUp(props: {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  data-cy='register-email'
                   required
                   fullWidth
                   name='email'
@@ -155,6 +158,7 @@ export default function SignUp(props: {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  data-cy='register-password'
                   required
                   fullWidth
                   name='password'
@@ -165,6 +169,7 @@ export default function SignUp(props: {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  data-cy='register-confirmPassword'
                   required
                   fullWidth
                   name='confirmPassword'
@@ -174,7 +179,14 @@ export default function SignUp(props: {
                 />
               </Grid>
             </Grid>
-            <Button type='submit' fullWidth variant='contained' sx={{ mt: 3 }} startIcon={<HowToRegIcon />}>
+            <Button 
+              data-cy='register-signUp'
+              type='submit'
+              fullWidth
+              variant='contained'
+              sx={{ mt: 3 }}
+              startIcon={<HowToRegIcon />}
+            >
               Sign Up
             </Button>
             <Button

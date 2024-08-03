@@ -140,6 +140,7 @@ export default function SignIn(props: {
             </Button>
 
             <Button
+              data-cy='register'
               type='submit'
               fullWidth
               variant='contained'
