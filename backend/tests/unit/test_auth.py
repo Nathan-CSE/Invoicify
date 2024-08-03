@@ -3,12 +3,7 @@ import json
 from tests.fixtures import client, user
 from models import User
 from src.services.utils import salt_and_hash, create_jwt_token, db_insert
-
-REGISTER_PATH = "/auth/register"
-LOGIN_PATH = "/auth/login"
-CHANGE_PW_PATH = "/auth/change-pw"
-GET_CODE = "/auth/reset-code"
-FORGOT_PASS = "/auth/reset-pw"
+from tests.urls import REGISTER_PATH, LOGIN_PATH, CHANGE_PW_PATH, GET_CODE, FORGOT_PASS
 
 def test_register_successfully(client):
     data = {
