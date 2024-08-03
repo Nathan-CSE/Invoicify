@@ -143,7 +143,7 @@ describe('test prototype scenarios', () => {
   });
 
   it('uploads a JSON file and sends by email', () => {
-    cy.get('[data-cy="invoice-sending"]').click();
+    cy.get('[data-cy="dashboard-sending"]').click();
 
     cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/uploadInvoice.json', { 
       action: 'drag-drop' 
@@ -164,7 +164,7 @@ describe('test prototype scenarios', () => {
   });
 
   it('uploads a PDF file and sends by email', () => {
-    cy.get('[data-cy="invoice-sending"]').click();
+    cy.get('[data-cy="dashboard-sending"]').click();
 
     cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/OCRinvoice.pdf', { 
       action: 'drag-drop' 
@@ -184,10 +184,72 @@ describe('test prototype scenarios', () => {
 
   });
 
-  it('converts a PDF file to JSON & validates it', () => {
-    cy.get('[data-cy="invoice-sending"]').click();
+  it('converts a PDF to XML, validates it & sends it', () => {
+    cy.get('[data-cy="dashboard-creation"]').click();
 
     cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/OCRinvoice.pdf', { 
+      action: 'drag-drop' 
+    });
+
+    cy.get('[data-cy="generate-invoice"]').click();
+
+    // 30 seconds wait lol
+    cy.wait(30000);
+
+    cy.get('[data-cy="toggle-drawer"]').click();
+
+    cy.get('[data-cy="drawer-validation"]').click();
+
+    cy.get('.css-1agvk75').selectFile('cypress/fixtures/expected_xmls/OCRinvoice.xml', { 
+      action: 'drag-drop' 
+    });
+
+    cy.get('[data-cy="validation-select"]')
+      .parent()
+      .click()
+      .get('ul > li[data-value="AUNZ_PEPPOL_1_0_10"]')
+      .click()
+    ;
+
+    cy.get('[data-cy="validation-submit"]').click();
+
+    cy.get('[data-cy="validation-invalid"]').should('be.visible');
+
+  });
+
+  it('converts a JSON to XML & validates it', () => {
+    cy.get('[data-cy="dashboard-creation"]').click();
+
+    cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/uploadInvoice.json', { 
+      action: 'drag-drop' 
+    });
+
+    cy.get('[data-cy="generate-invoice"]').click();
+
+    cy.get('[data-cy="toggle-drawer"]').click();
+
+    cy.get('[data-cy="drawer-validation"]').click();
+
+    cy.get('.css-1agvk75').selectFile('cypress/fixtures/expected_xmls/uploadInvoice.xml', { 
+      action: 'drag-drop' 
+    });
+
+    cy.get('[data-cy="validation-select"]')
+      .parent()
+      .click()
+      .get('ul > li[data-value="AUNZ_PEPPOL_1_0_10"]')
+      .click()
+    ;
+
+    cy.get('[data-cy="validation-submit"]').click();
+
+    cy.get('[data-cy="validation-valid"]').should('be.visible');
+
+    cy.get('[data-cy="toggle-drawer"]').click();
+
+    cy.get('[data-cy="drawer-sending"]').click();
+
+    cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/uploadInvoice.json', { 
       action: 'drag-drop' 
     });
 
@@ -205,14 +267,4 @@ describe('test prototype scenarios', () => {
 
   });
 
-  // it('convert JSON file to XML, validate and send by email', () => {
-  //   cy.get('[data-cy="invoice-creation"]').click();
-
-  //   cy.get('.css-1agvk75').selectFile('cypress/fixtures/uploadInvoice.json', { 
-  //     action: 'drag-drop' 
-  //   });
-
-  //   cy.get('[data-cy="generate-invoice"]').click();
-    
-  // });
 })

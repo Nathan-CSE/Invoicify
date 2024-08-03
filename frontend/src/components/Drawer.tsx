@@ -30,6 +30,7 @@ export default function TemporaryDrawer() {
   interface dashboardCardInfo {
     svg: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
     route: string;
+    cy: string;
   }
 
   interface dashboardDict {
@@ -38,13 +39,13 @@ export default function TemporaryDrawer() {
 
   // REPLACE your route to the page when implemented
   const options = {
-    'Dashboard': { svg: HomeSvg, route: '/dashboard' },
-    'Create/Upload an Invoice': { svg: PenSvg, route: '/invoice-creation' },
-    'Validate an Invoice': { svg: TickSvg, route: '/invoice-validation' },
-    'Send an Invoice': { svg: SendSvg, route: '/invoice-sending' },
-    'Manage Invoices': { svg: ManageSvg, route: '/invoice-management' },
-    'Account Settings': { svg: CogSvg, route: '/settings' },
-    'Documentation Info': { svg: DocSvg, route: '/documentation' },
+    'Dashboard': { svg: HomeSvg, route: '/dashboard', cy: 'drawer-dashboard' },
+    'Create/Upload an Invoice': { svg: PenSvg, route: '/invoice-creation', cy: 'drawer-creation' },
+    'Validate an Invoice': { svg: TickSvg, route: '/invoice-validation', cy: 'drawer-validation' },
+    'Send an Invoice': { svg: SendSvg, route: '/invoice-sending', cy: 'drawer-sending' },
+    'Manage Invoices': { svg: ManageSvg, route: '/invoice-management', cy: 'drawer-management' },
+    'Account Settings': { svg: CogSvg, route: '/settings', cy: 'drawer-settings' },
+    'Documentation Info': { svg: DocSvg, route: '/documentation', cy: 'drawer-documentation' },
   };
 
   const DrawerList = (
@@ -61,6 +62,7 @@ export default function TemporaryDrawer() {
         <Divider sx={{ mb: 1 }} />
         {Object.entries(options).map(([name, items], index) => (
           <ListItem
+            data-cy={items.cy}
             key={index}
             disablePadding
             onClick={() => {
@@ -82,6 +84,7 @@ export default function TemporaryDrawer() {
   return (
     <div>
       <IconButton
+        data-cy="toggle-drawer"
         size='large'
         edge='start'
         color='inherit'

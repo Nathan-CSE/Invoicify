@@ -182,8 +182,9 @@ export default function InvoiceValidation(props: { token: string; }) {
             <FormControl variant="standard" fullWidth>
               <InputLabel id="select-rule-set">Rule Set</InputLabel>
               <Select
-                labelId="select-rule-set"
-                id="rule-set"
+                data-cy='validation-select'
+                labelId='select-rule-set'
+                id='rule-set'
                 name='rule-set'
                 value={ruleSet}
                 label="Rule Set"
@@ -203,6 +204,7 @@ export default function InvoiceValidation(props: { token: string; }) {
 
           <Box textAlign='center'>
             <Button
+              data-cy='validation-submit'
               type='submit'
               variant='contained'
               startIcon={<FactCheckIcon />}

@@ -68,7 +68,7 @@ export default function ValidationReport(props: { token: string }) {
           <Box display="flex" alignItems="center" justifyContent="center" sx={{ maxWidth: '40vh', border: 'solid 0.5px', borderRadius: 4, paddingX: 2, margin: '0 auto' }}>
             <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
               <CheckCircleIcon sx={{ color: 'green', fontSize: '3rem' }} />
-              <Typography>The file {fileName} is valid.</Typography>
+              <Typography data-cy='validation-valid'>The file {fileName} is valid.</Typography>
             </Stack>
           </Box>
         ) : (
@@ -96,6 +96,7 @@ export default function ValidationReport(props: { token: string }) {
               >
                 <CancelIcon sx={{ color: 'red', fontSize: '3rem' }} />
                 <Typography
+                  data-cy='validation-invalid'
                   sx={{ 
                     maxWidth: 'calc(100% - 4rem)',
                     overflowWrap: 'break-word',

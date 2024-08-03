@@ -32,6 +32,7 @@ function DashboardPage(props: {
   interface dashboardCardInfo {
     svg: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
     route: string;
+    cy: string;
   }
 
   interface dashboardDict {
@@ -40,12 +41,12 @@ function DashboardPage(props: {
 
   // REPLACE your route to the page when implemented
   const options = {
-    'Create/Upload an Invoice': { svg: PenSvg, route: 'invoice-creation' },
-    'Validate an Invoice': { svg: TickSvg, route: 'invoice-validation' },
-    'Send an Invoice': { svg: SendSvg, route: 'invoice-sending' },
-    'Manage Invoices': { svg: ManageSvg, route: 'invoice-management' },
-    'Account Settings': { svg: CogSvg, route: 'settings' },
-    'Documentation Info': { svg: DocSvg, route: 'documentation' },
+    'Create/Upload an Invoice': { svg: PenSvg, route: '/invoice-creation', cy: 'dashboard-creation' },
+    'Validate an Invoice': { svg: TickSvg, route: '/invoice-validation', cy: 'dashboard-validation' },
+    'Send an Invoice': { svg: SendSvg, route: '/invoice-sending', cy: 'dashboard-sending' },
+    'Manage Invoices': { svg: ManageSvg, route: '/invoice-management', cy: 'dashboard-management' },
+    'Account Settings': { svg: CogSvg, route: '/settings', cy: 'dashboard-settings' },
+    'Documentation Info': { svg: DocSvg, route: '/documentation', cy: 'dashboard-documentation' },
   };
 
   const breadcrumbNav = {
@@ -57,9 +58,9 @@ function DashboardPage(props: {
     return Object.entries(options).map(([name, items], index) => (
       <Grid key={index} item>
         <Card
-          data-cy={items.route}
+          data-cy={items.cy}
           component={Link}
-          to={`/${items.route}`}
+          to={items.route}
           sx={{
             border: 1,
             borderRadius: '16px',
