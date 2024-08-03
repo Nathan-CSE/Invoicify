@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 const registerDetails = {
   'first-name': 'John',
   'last-name': 'Smith',
