@@ -8,7 +8,6 @@ const useAuth = (token: string) => {
   const checktoken = localStorage.getItem('token');
 
   const unAuthRoutes = ['/', '/sign-in', '/sign-up', '/reset-pw']
-  console.log('this is token: ', token);
 
   // useEffect(() => {
   //   if (!token) {
