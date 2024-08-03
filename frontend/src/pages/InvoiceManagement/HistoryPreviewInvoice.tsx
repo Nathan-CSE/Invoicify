@@ -426,6 +426,8 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               <TableBody>
                 {Array.isArray(dataFields.InvoiceLine) ? (
                   dataFields.InvoiceLine.map((item: any, index: number) => {
+                    let baseAmount = (Number(item.Price.PriceAmount['@value']) / 
+                    (1 + Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100))
                     return (
                       <TableRow key={index}>
                         <TableCell>
@@ -437,15 +439,14 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                         <TableCell>{item?.Item.Name || ''}</TableCell>
                         <TableCell>{item?.Item.Description || ''}</TableCell>
                         <TableCell>
-                          {item.Price.PriceAmount['@value']}
+                          {baseAmount.toFixed(2)}
                         </TableCell>
                         <TableCell>
-                          {(Number(item.Price.PriceAmount['@value']) *
+                          {((baseAmount *
                             Number(
-                              dataFields.TaxTotal.TaxSubtotal.TaxCategory
-                                .Percent
+                              dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent
                             )) /
-                            100}
+                            100).toFixed(2)}
                         </TableCell>
                         <TableCell>
                           {item.LineExtensionAmount['@value']}
@@ -469,17 +470,24 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                         {dataFields?.InvoiceLine.Item.Description || ''}
                       </TableCell>
                       <TableCell>
-                        {dataFields.InvoiceLine.Price.PriceAmount['@value']}
+                        {/* Total Price / Tax Percent = Price before tax */}
+                        {
+                          (Number(dataFields.InvoiceLine.Price.PriceAmount['@value']) 
+                          / 
+                          (Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100 + 1)).toFixed(2)
+                        }
                       </TableCell>
                       <TableCell>
-                        {(Number(
-                          dataFields.InvoiceLine.Price.PriceAmount['@value']
-                        ) *
-                          Number(
-                            dataFields.TaxTotal.TaxSubtotal.TaxCategory
-                              .Percent
-                          )) /
-                          100}
+                        {
+                          ((
+                            Number(dataFields.InvoiceLine.Price.PriceAmount['@value']) 
+                            / 
+                            (Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100 + 1)
+                            *
+                            Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent)
+                          ) /
+                          100).toFixed(2)
+                        }
                       </TableCell>
                       <TableCell>
                         {dataFields.InvoiceLine.LineExtensionAmount['@value']}
