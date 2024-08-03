@@ -10,6 +10,7 @@ import { IoInformationCircleOutline } from "react-icons/io5";
 import { AiOutlineFieldNumber } from "react-icons/ai";
 import NumbersIcon from '@mui/icons-material/Numbers';
 import TagIcon from '@mui/icons-material/Tag';
+import { Typography } from '@mui/material';
 
 
 export default function MultipleSelect(props: { invoices: string[], availableInvoices: { invoiceId: number; name: string; }[], file: File[] | null, handleChange: (event: SelectChangeEvent<string[]>, child: React.ReactNode) => void }) {
@@ -36,7 +37,9 @@ export default function MultipleSelect(props: { invoices: string[], availableInv
                   <Chip
                     key={value}
                     label={invoice ? invoice.name : value}
-                    sx={{ height: 25 }}
+                    sx={{
+                      height: 25,
+                    }}
                   />
                 );
               })}
@@ -57,7 +60,15 @@ export default function MultipleSelect(props: { invoices: string[], availableInv
                   // {/* <Checkbox checked={invoices.indexOf(invoice.invoiceId.toString()) > -1} /> */}
                 />
                 <TagIcon style={{ paddingBottom: '1px', marginRight: '4px', fontSize: 15 }} /> 
-                {invoice.invoiceId}: {invoice.name}
+                <Typography
+                  sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {invoice.invoiceId}: {invoice.name}
+                </Typography>
               </MenuItem>
             );
           })}

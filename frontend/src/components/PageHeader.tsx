@@ -16,7 +16,16 @@ export default function BreadcrumbNav(props: { HeaderTitle: string, BreadcrumbDi
   return (
     <>
 
-      <Typography variant='h4'>{HeaderTitle}</Typography>
+      <Typography
+        variant='h4'
+        sx={{
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {HeaderTitle}
+      </Typography>
 
       <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
 
@@ -27,7 +36,7 @@ export default function BreadcrumbNav(props: { HeaderTitle: string, BreadcrumbDi
         {entries.length === 1 ? (
           <Stack direction="row" spacing={1} sx={{ mb: 4 }}>
             <NavigateNextIcon fontSize='small' sx={{ mt: 0.1, color: 'black' }}/>
-            <Typography color='text.primary'>
+            <Typography key={entries[0][0]} color='text.primary'>
               {entries[0][0]}
             </Typography>
           </Stack>
@@ -38,7 +47,7 @@ export default function BreadcrumbNav(props: { HeaderTitle: string, BreadcrumbDi
                 {pageName}
               </Typography>
             ) : (
-              <Typography component={Link} to={route}>
+              <Typography key={route} component={Link} to={route}>
                 {pageName}
               </Typography>
             )

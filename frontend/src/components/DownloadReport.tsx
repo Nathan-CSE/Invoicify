@@ -81,8 +81,7 @@ export default function DownloadReport(props: { invoiceName: String, currentRepo
         startIcon={<DownloadIcon />}
         variant='contained'
         sx={{
-          height: '50px',
-          padding: '25px',
+          padding: '15px',
         }}
       >
         Download Report

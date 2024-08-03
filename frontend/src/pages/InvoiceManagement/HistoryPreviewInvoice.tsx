@@ -25,6 +25,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { ReactComponent as ManageSvg } from '../../assets/manage.svg';
 import useAuth from '../../helpers/useAuth';
 import PageHeader from '../../components/PageHeader';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+
 
 export default function HistoryPreviewInvoice(props: { token: string }) {
   useAuth(props.token);
@@ -570,7 +572,28 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
     <>
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
 
-        <PageHeader HeaderTitle={`Previewing: ${name}`} BreadcrumbDict={breadcrumbNav} />
+        <PageHeader HeaderTitle={`Invoice Preview`} BreadcrumbDict={breadcrumbNav} />
+
+        <Stack
+          direction='row'
+          spacing={1}
+          sx={{ mt: 3, mb: -2 }}
+          alignItems='center'
+        >
+          <ReceiptIcon />
+          <Typography
+            variant='h5'
+            // component='div'
+            fontWeight={'bold'}
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {name}
+          </Typography>
+        </Stack>
 
         <Box sx={{ mt: 3 }}>
           {invoiceType === 'JSON' ? (
@@ -596,8 +619,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               startIcon={<DownloadIcon />}
               variant='contained'
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
               }}
             >
               Download Invoice
@@ -615,8 +637,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
               variant='contained'
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
               }}
             >
               Back to Invoice Management

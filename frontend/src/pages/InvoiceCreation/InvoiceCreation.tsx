@@ -97,8 +97,7 @@ export default function InvoiceCreation(props: { token: string }) {
             variant='contained'
             startIcon={<FaFileUpload />}
             sx={{
-              height: '50px',
-              padding: '25px',
+              padding: '15px',
             }}
           >
             Generate Invoices from Uploaded Files
@@ -117,8 +116,7 @@ export default function InvoiceCreation(props: { token: string }) {
             variant='contained'
             startIcon={<BsPencilSquare style={{ marginRight: 2 }}/>}
             sx={{
-              height: '50px',
-              padding: '25px',
+              padding: '15px',
             }}
           >
             Create a New Invoice from a GUI Form

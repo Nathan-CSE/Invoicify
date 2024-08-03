@@ -207,8 +207,7 @@ export default function InvoiceValidation(props: { token: string; }) {
               variant='contained'
               startIcon={<FactCheckIcon />}
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
               }}
             >
               Validate Invoice(s)

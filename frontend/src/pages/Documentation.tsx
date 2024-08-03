@@ -27,6 +27,8 @@ function DocPage(props: { token: string }) {
           UBL 2.1 is widely used in electronic invoicing to standardise the
           format and ensure interoperability between different systems. Here are
           some key aspects of UBL 2.1 in invoicing:
+        </Typography>
+        <Typography variant='body1' gutterBottom>
           <ul>
             <Stack spacing={2}>
               <li>
@@ -51,6 +53,8 @@ function DocPage(props: { token: string }) {
               </li>
             </Stack>
           </ul>
+        </Typography>
+        <Typography variant='body1' gutterBottom>
           This website provides a tool to create UBL2.1 XMLs via Json, Validate
           UBL2.1 XMLs against the ANZ PEPPOL ruleset, and send the invoices to a
           designated end user.
