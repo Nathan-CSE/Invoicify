@@ -7,8 +7,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import LoadingDialog from '../../components/LoadingDialog';
 import axios from 'axios';
 import { DropzoneArea } from 'mui-file-dropzone';
-import { BsPencilSquare } from "react-icons/bs";
-import { FaFileUpload } from "react-icons/fa";
+import { BsPencilSquare } from 'react-icons/bs';
+import { FaFileUpload } from 'react-icons/fa';
 import useAuth from '../../helpers/useAuth';
 import PageHeader from '../../components/PageHeader';
 
@@ -18,11 +18,11 @@ export default function InvoiceCreation(props: { token: string }) {
   const [files, setFiles] = React.useState<File[]>([]);
 
   const [loading, setLoading] = React.useState(false);
-  
+
   const breadcrumbNav = {
-    'Dashboard': '/dashboard',
-    'Invoice Creation': '/invoice-creation'
-  }
+    Dashboard: '/dashboard',
+    'Invoice Creation': '/invoice-creation',
+  };
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -30,8 +30,8 @@ export default function InvoiceCreation(props: { token: string }) {
     const formData = new FormData();
 
     if (files.length > 0) {
-      files.forEach(item => {
-        formData.append("files", item);
+      files.forEach((item) => {
+        formData.append('files', item);
       });
     } else {
       alert('You must upload a valid file to create an invoice.');
@@ -41,12 +41,16 @@ export default function InvoiceCreation(props: { token: string }) {
     // console.log('file to be sent: ', file);
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/invoice/uploadCreate', formData, {
-        headers: {
-          Authorisation: `${props.token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(
+        'http://localhost:5000/invoice/uploadCreate',
+        formData,
+        {
+          headers: {
+            Authorisation: `${props.token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
       setLoading(false);
       if (response.status === 200) {
@@ -67,16 +71,17 @@ export default function InvoiceCreation(props: { token: string }) {
     } catch (err) {
       setLoading(false);
       alert(err);
-
-    } 
+    }
   };
 
   return (
     <>
       <LoadingDialog open={loading} message='Creating invoice(s)...' />
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-
-        <PageHeader HeaderTitle={'Invoice Creation'} BreadcrumbDict={breadcrumbNav} />
+        <PageHeader
+          HeaderTitle={'Invoice Creation'}
+          BreadcrumbDict={breadcrumbNav}
+        />
 
         <Box sx={{ my: 5 }}>
           <DropzoneArea
@@ -111,10 +116,11 @@ export default function InvoiceCreation(props: { token: string }) {
 
         <Box textAlign='center'>
           <Button
+            data-cy='create-gui'
             component={Link}
             to='/invoice-creation-GUI'
             variant='contained'
-            startIcon={<BsPencilSquare style={{ marginRight: 2 }}/>}
+            startIcon={<BsPencilSquare style={{ marginRight: 2 }} />}
             sx={{
               padding: '15px',
             }}

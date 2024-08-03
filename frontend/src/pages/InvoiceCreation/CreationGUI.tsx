@@ -52,7 +52,9 @@ export default function CreationGUI(props: {
 }) {
   useAuth(props.token);
 
-  const [isSmallScreen, setIsSmallScreen] = React.useState(window.innerWidth <= 900);
+  const [isSmallScreen, setIsSmallScreen] = React.useState(
+    window.innerWidth <= 900
+  );
 
   const [openDialog, setDialog] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -64,16 +66,16 @@ export default function CreationGUI(props: {
   // Preloading the saved data
 
   const breadcrumbNavEdit = {
-    'Dashboard': '/dashboard',
+    Dashboard: '/dashboard',
     'Invoice Management': '/invoice-management',
-    'Invoice Edit': '/invoice-edit'
-  }
+    'Invoice Edit': '/invoice-edit',
+  };
 
   const breadcrumbNavGUI = {
-    'Dashboard': '/dashboard',
+    Dashboard: '/dashboard',
     'Invoice Creation': '/invoice-creation',
-    'Invoice Creation - GUI': '/invoice-creation-GUI'
-  }
+    'Invoice Creation - GUI': '/invoice-creation-GUI',
+  };
 
   // Invoice Name State
   const [invName, setInvName] = React.useState<string>('');
@@ -198,7 +200,6 @@ export default function CreationGUI(props: {
           fields?.AccountingCustomerParty.Party.PostalAddress.Country
             .IdentificationCode || ''
         );
-
       }
       if (sellerCountry == '') {
         setSellerCountry(
@@ -221,11 +222,13 @@ export default function CreationGUI(props: {
           // console.log('GST' + itemGST);
           // console.log('Price' + priceTotal);
           if (firstFlag) {
-            
-            const baseAmount = (parseFloat(item?.Price?.PriceAmount['@value']) / (1 + Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent /100)))
-            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            console.log(Number(item?.Item.ClassifiedTaxCategory?.Percent))
-            
+            const baseAmount =
+              parseFloat(item?.Price?.PriceAmount['@value']) /
+              (1 +
+                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent / 100));
+            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+            console.log(Number(item?.Item.ClassifiedTaxCategory?.Percent));
+
             const newRow = {
               id: parseInt(item.ID) + 1,
               quantity: parseInt(item?.InvoicedQuantity['@value'], 10) || 0,
@@ -243,10 +246,13 @@ export default function CreationGUI(props: {
             // console.log(tempRows);
             // console.log(rows);
           } else {
-            const baseAmount = (parseFloat(item?.Price?.PriceAmount['@value']) / (1 + Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent /100)))
+            const baseAmount =
+              parseFloat(item?.Price?.PriceAmount['@value']) /
+              (1 +
+                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent / 100));
 
-            console.log("###############################")
-            console.log(baseAmount)
+            console.log('###############################');
+            console.log(baseAmount);
 
             const newRow = {
               id: parseInt(item.ID) + 1,
@@ -271,8 +277,11 @@ export default function CreationGUI(props: {
         }
       } else {
         if (fields?.InvoiceLine) {
-          const baseAmount = (parseFloat(fields?.InvoiceLine.Price.PriceAmount['@value']) / (1 + (Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100)))
-          console.log("3" + baseAmount)
+          const baseAmount =
+            parseFloat(fields?.InvoiceLine.Price.PriceAmount['@value']) /
+            (1 +
+              Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100);
+          console.log('3' + baseAmount);
 
           const newRow = {
             id: 1,
@@ -284,9 +293,16 @@ export default function CreationGUI(props: {
             item: fields?.InvoiceLine.Item.Name || '',
             description: fields?.InvoiceLine.Item.Description || '',
             unitPrice: parseFloat(baseAmount.toFixed(2)),
-            GST:
-              parseFloat((baseAmount * Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100).toFixed(2)),
-            totalPrice: Number(fields?.InvoiceLine.LineExtensionAmount['@value']),
+            GST: parseFloat(
+              (
+                (baseAmount *
+                  Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
+                100
+              ).toFixed(2)
+            ),
+            totalPrice: Number(
+              fields?.InvoiceLine.LineExtensionAmount['@value']
+            ),
           };
 
           setRows([newRow]);
@@ -450,7 +466,6 @@ export default function CreationGUI(props: {
       row.id === newRow.id ? { ...row, ...newRow } : row
     );
 
-    
     setRows(updatedRows);
     calculateTotals();
   };
@@ -538,15 +553,19 @@ export default function CreationGUI(props: {
         break;
       }
 
-      if (itemQuantity == 0 || itemName == '' || itemDescription == '' || itemPrice == 0 || itemGST == 0 || itemTotalPrice == 0) {
+      if (
+        itemQuantity == 0 ||
+        itemName == '' ||
+        itemDescription == '' ||
+        itemPrice == 0 ||
+        itemGST == 0 ||
+        itemTotalPrice == 0
+      ) {
         setOpenError(true);
-        setError(
-          `Fill out all fields for item row ${i + 1}.`
-        );
+        setError(`Fill out all fields for item row ${i + 1}.`);
         errorCheck = true;
         break;
       }
-
     }
 
     const { additionalDocuments, extraComments, ...filteredInvoiceData } =
@@ -579,7 +598,6 @@ export default function CreationGUI(props: {
         if (response.status === 204) {
           setDialog(true);
         } else {
-        
           alert('Unable to edit invoice');
           navigate('/invoice-management');
         }
@@ -649,11 +667,17 @@ export default function CreationGUI(props: {
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
         {props.editFlag ? (
           <>
-            <PageHeader HeaderTitle={'Invoice Edit'} BreadcrumbDict={breadcrumbNavEdit} />
+            <PageHeader
+              HeaderTitle={'Invoice Edit'}
+              BreadcrumbDict={breadcrumbNavEdit}
+            />
           </>
         ) : (
           <>
-            <PageHeader HeaderTitle={'Invoice Creation - GUI'} BreadcrumbDict={breadcrumbNavGUI} />
+            <PageHeader
+              HeaderTitle={'Invoice Creation - GUI'}
+              BreadcrumbDict={breadcrumbNavGUI}
+            />
           </>
         )}
 
@@ -666,6 +690,7 @@ export default function CreationGUI(props: {
           <Grid container justifyContent='center' spacing={5} sx={{ mb: 2 }}>
             <Grid item xs={6}>
               <TextField
+                data-cy='invoice-gui-name'
                 margin='normal'
                 required
                 id='invoiceName'
@@ -680,6 +705,7 @@ export default function CreationGUI(props: {
 
             <Grid item xs={6}>
               <TextField
+                data-cy='invoice-gui-number'
                 margin='normal'
                 required
                 id='invoiceNumber'
@@ -716,6 +742,7 @@ export default function CreationGUI(props: {
               </Typography>
 
               <TextField
+                data-cy='invoice-seller-abn'
                 margin='normal'
                 required
                 id='sellerABN'
@@ -728,6 +755,7 @@ export default function CreationGUI(props: {
               />
 
               <TextField
+                data-cy='invoice-seller-name'
                 margin='normal'
                 required
                 id='sellerCompanyName'
@@ -743,6 +771,7 @@ export default function CreationGUI(props: {
               </Typography>
 
               <TextField
+                data-cy='invoice-seller-streetname'
                 margin='normal'
                 required
                 id='sellerStreetName'
@@ -754,6 +783,7 @@ export default function CreationGUI(props: {
               />
 
               <TextField
+                data-cy='invoice-seller-addstreetname'
                 margin='normal'
                 id='sellerAdditionalStreetName'
                 label='Additional Street Name'
@@ -764,6 +794,7 @@ export default function CreationGUI(props: {
               />
 
               <TextField
+                data-cy='invoice-seller-cityname'
                 margin='normal'
                 required
                 id='sellerCityName'
@@ -775,6 +806,7 @@ export default function CreationGUI(props: {
               />
 
               <TextField
+                data-cy='invoice-seller-pc'
                 margin='normal'
                 required
                 id='sellerPostalCode'
@@ -788,6 +820,7 @@ export default function CreationGUI(props: {
               <FormControl sx={{ mt: 2, width: '100%' }}>
                 <InputLabel id='country-label'>Country</InputLabel>
                 <Select
+                  data-cy='invoice-seller-country'
                   labelId='country-label'
                   id='country'
                   required
@@ -809,7 +842,10 @@ export default function CreationGUI(props: {
 
             {!isSmallScreen && (
               <Grid item xs={0}>
-                <Divider orientation='vertical' sx={{ height: '90%', mt: 10 }} />
+                <Divider
+                  orientation='vertical'
+                  sx={{ height: '90%', mt: 10 }}
+                />
               </Grid>
             )}
 
@@ -819,6 +855,7 @@ export default function CreationGUI(props: {
               </Typography>
 
               <TextField
+                data-cy='invoice-buyer-abn'
                 margin='normal'
                 required
                 id='buyerABN'
@@ -831,6 +868,7 @@ export default function CreationGUI(props: {
               />
 
               <TextField
+                data-cy='invoice-buyer-name'
                 margin='normal'
                 required
                 id='buyerCompanyName'
@@ -846,6 +884,7 @@ export default function CreationGUI(props: {
               </Typography>
 
               <TextField
+                data-cy='invoice-buyer-streetname'
                 margin='normal'
                 required
                 id='buyerStreetName'
@@ -857,6 +896,7 @@ export default function CreationGUI(props: {
               />
 
               <TextField
+                data-cy='invoice-buyer-addstreetname'
                 margin='normal'
                 id='buyerAdditionalStreetName'
                 label='Additional Street Name'
@@ -867,6 +907,7 @@ export default function CreationGUI(props: {
               />
 
               <TextField
+                data-cy='invoice-buyer-cityname'
                 margin='normal'
                 required
                 id='buyerCityName'
@@ -878,6 +919,7 @@ export default function CreationGUI(props: {
               />
 
               <TextField
+                data-cy='invoice-buyer-pc'
                 margin='normal'
                 required
                 id='buyerPostalCode'
@@ -891,6 +933,7 @@ export default function CreationGUI(props: {
               <FormControl sx={{ mt: 2, width: '100%' }}>
                 <InputLabel id='country-label'>Country</InputLabel>
                 <Select
+                  data-cy='invoice-buyer-country'
                   labelId='country-label'
                   id='country'
                   required
@@ -973,8 +1016,8 @@ export default function CreationGUI(props: {
           </Popover>
 
           <TableContainer
-           component={Paper}
-           sx={{ width: isSmallScreen ? '100%' : '25vw', my: 2 }}
+            component={Paper}
+            sx={{ width: isSmallScreen ? '100%' : '25vw', my: 2 }}
           >
             <Table aria-label='simple table'>
               <TableBody>
