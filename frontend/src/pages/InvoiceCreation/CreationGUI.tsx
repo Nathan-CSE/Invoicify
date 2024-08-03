@@ -339,10 +339,11 @@ export default function CreationGUI(props: {
 
     rows.forEach((row) => {
       totalGST += row.GST * row.quantity;
-      totalAmount += row.totalPrice;
+      totalAmount += Number(row.totalPrice);
     });
 
     let totalTaxable = totalAmount - totalGST;
+    console.log("totalAmount", totalAmount)
 
     return {
       totalGST: totalGST,
