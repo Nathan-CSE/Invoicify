@@ -239,6 +239,7 @@ export default function InvoiceSending(props: { token: string }) {
           <Box sx={{ minWidth: 120, mb: 5 }}>
             <FormControl variant='standard' fullWidth>
               <TextField
+                data-cy='send-email'
                 margin='normal'
                 required
                 id='recipientEmail'
@@ -252,6 +253,7 @@ export default function InvoiceSending(props: { token: string }) {
 
           <Box textAlign='center'>
             <Button
+              data-cy='send-submit'
               type='submit'
               variant='contained'
               startIcon={<SendIcon style={{ marginTop: 2 }} />}

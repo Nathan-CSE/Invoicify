@@ -32,7 +32,7 @@ export default function InvoiceSending(props: { token: string; }) {
         <PageHeader HeaderTitle={'Invoice Sending Confirmation'} BreadcrumbDict={breadcrumbNav} />
 
         <Box textAlign='center' sx={{ mt: 5 }}>
-          <Typography variant='h4' sx={{ mb: 1 }}>
+          <Typography data-cy='send-confirmation' variant='h4' sx={{ mb: 1 }}>
             Your file(s) have been sent!
           </Typography>
           <Typography variant='h6'>

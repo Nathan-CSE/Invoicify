@@ -98,6 +98,7 @@ export default function InvoiceCreation(props: { token: string }) {
 
         <Box textAlign='center'>
           <Button
+            data-cy='generate-invoice'
             onClick={handleSubmit}
             variant='contained'
             startIcon={<FaFileUpload />}
