@@ -1099,6 +1099,7 @@ export default function CreationGUI(props: {
 
           <Box textAlign='center'>
             <Button
+              data-cy='confirm-gui'
               type='submit'
               startIcon={<SaveIcon />}
               variant='contained'
