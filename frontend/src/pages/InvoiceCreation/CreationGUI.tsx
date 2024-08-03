@@ -343,7 +343,6 @@ export default function CreationGUI(props: {
     });
 
     let totalTaxable = totalAmount - totalGST;
-    console.log("totalAmount", totalAmount)
 
     return {
       totalGST: totalGST,
