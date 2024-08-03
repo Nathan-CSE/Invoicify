@@ -20,7 +20,6 @@ function HomePage(props: { token: string }) {
 
   return (
     <>
-      {/* <Navbar /> */}
       <Container maxWidth='lg' sx={{ marginY: 10 }}>
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
           <Box>
@@ -30,8 +29,8 @@ function HomePage(props: { token: string }) {
             <Typography variant='body1' gutterBottom>
               Invoicify is an invoicing web service to streamline 
               the logistics of payments for vendors. Our solution is 
-              targeted towards the SMEs who lack reliable modern solutions f
-              or e-invoice creation, validation, and sending. 
+              targeted towards the SMEs who lack reliable modern solutions for 
+              e-invoice creation, validation, and sending. 
               Invoicify is a one stop ecosystem, we will handle everything 
               a user can do with invoices, from creation from the seller’s extracted data, 
               to sending it to the recipient’s email address.
@@ -49,35 +48,13 @@ function HomePage(props: { token: string }) {
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'row',
+            flexDirection: { xs: 'column', sm: 'row' },
             gap: 8,
             mt: 8,
             justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
-            <Box
-              sx={{
-                border: 6,
-                borderRadius: '50%',
-                borderColor: '#2196F3',
-                width: 150,
-                height: 150,
-                alignContent: 'center',
-                textAlign: 'center',
-              }}
-            >
-              <TickSvg />
-            </Box>
-            <Typography
-              variant='subtitle1'
-              sx={{ fontWeight: 'bold' }}
-              gutterBottom
-            >
-              INVOICE VALIDATION
-            </Typography>
-          </Box>
-
           <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
             <Box
               sx={{
@@ -94,8 +71,7 @@ function HomePage(props: { token: string }) {
             </Box>
             <Typography
               variant='subtitle1'
-              sx={{ fontWeight: 'bold' }}
-              gutterBottom
+              sx={{ fontWeight: 'bold', mt: 2 }}
             >
               INVOICE CREATION
             </Typography>
@@ -113,12 +89,35 @@ function HomePage(props: { token: string }) {
                 textAlign: 'center',
               }}
             >
+              <TickSvg />
+            </Box>
+            <Typography
+              variant='subtitle1'
+              sx={{ fontWeight: 'bold', mt: 2 }}
+            >
+              INVOICE VALIDATION
+            </Typography>
+          </Box>
+
+
+
+          <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
+            <Box
+              sx={{
+                border: 6,
+                borderRadius: '50%',
+                borderColor: '#2196F3',
+                width: 150,
+                height: 150,
+                alignContent: 'center',
+                textAlign: 'center',
+              }}
+            >
               <SendSvg />
             </Box>
             <Typography
               variant='subtitle1'
-              sx={{ fontWeight: 'bold' }}
-              gutterBottom
+              sx={{ fontWeight: 'bold', mt: 2 }}
             >
               INVOICE SENDING
             </Typography>

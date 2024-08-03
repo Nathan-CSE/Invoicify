@@ -21,8 +21,8 @@ export default function SignUp(props: {
 }) {
   const navigate = useNavigate();
   const [openError, setOpenError] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
   if (props.token) {
     console.log('SIGNUP');
     navigate('/dashboard');

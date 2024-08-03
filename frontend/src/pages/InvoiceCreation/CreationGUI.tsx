@@ -1060,8 +1060,7 @@ export default function CreationGUI(props: {
               startIcon={<SaveIcon />}
               variant='contained'
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
                 my: 6,
               }}
             >

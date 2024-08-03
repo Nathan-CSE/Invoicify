@@ -196,7 +196,15 @@ export default function InvoiceManagement(props: { token: string }) {
                   alignItems='center'
                 >
                   <ReceiptIcon />
-                  <Typography variant='h6' component='div'>
+                  <Typography
+                    variant='h6'
+                    component='div'
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     {items.name}
                   </Typography>
                 </Stack>
@@ -331,11 +339,11 @@ export default function InvoiceManagement(props: { token: string }) {
         <Grid
           container
           spacing={9}
+          alignItems='center'
+          // justifyContent='center'
           sx={{
             mt: 0,
             display: 'flex',
-            // justifyContent: 'center',
-            alignItems: 'center',
           }}
         >
           {generateInvoiceCards()}

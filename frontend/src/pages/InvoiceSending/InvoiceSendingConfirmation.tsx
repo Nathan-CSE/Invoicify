@@ -29,7 +29,7 @@ export default function InvoiceSending(props: { token: string; }) {
      
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
 
-        <PageHeader HeaderTitle={'Invoice Sending'} BreadcrumbDict={breadcrumbNav} />
+        <PageHeader HeaderTitle={'Invoice Sending Confirmation'} BreadcrumbDict={breadcrumbNav} />
 
         <Box textAlign='center' sx={{ mt: 5 }}>
           <Typography variant='h4' sx={{ mb: 1 }}>
@@ -81,8 +81,7 @@ export default function InvoiceSending(props: { token: string; }) {
               startIcon={<ReplayIcon />}
               variant='contained'
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
               }}
             >
               Send another Invoice
