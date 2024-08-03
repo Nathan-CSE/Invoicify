@@ -100,6 +100,7 @@ export default function SignIn(props: {
             sx={{ mt: 1 }}
           >
             <TextField
+              data-cy='login-email'
               margin='normal'
               required
               fullWidth
@@ -110,6 +111,7 @@ export default function SignIn(props: {
               autoFocus
             />
             <TextField
+              data-cy='login-password'
               margin='normal'
               required
               fullWidth
@@ -130,6 +132,7 @@ export default function SignIn(props: {
               Forgot password?
             </Typography>
             <Button
+              data-cy='login-signIn'
               type='submit'
               fullWidth
               variant='contained'
