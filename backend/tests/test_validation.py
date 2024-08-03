@@ -6,7 +6,6 @@ from requests.exceptions import HTTPError
 from tests.fixtures import client
 from src.services.validation import ValidationService
 
-VALIDATION_PATH = "/validation/validation"
 vs = ValidationService()
 
 def test_xml_validate_function_success(client):

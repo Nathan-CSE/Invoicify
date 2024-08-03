@@ -1,11 +1,10 @@
-import io
 import json
 import re
 
-from flask import request, jsonify, make_response, send_file
+from flask import Response, request, jsonify, make_response
 from flask_restx import Resource
 
-from models import db, Invoice
+from models import User, db, Invoice
 from src.namespaces.invoice import InvoiceNamespace
 from src.services.create_xml import create_xml, format_xml
 from src.services.utils import base64_encode, token_required, db_insert
@@ -29,7 +28,7 @@ class CreateUBLAPI(Resource):
         },
     )
     @token_required
-    def post(self, user):
+    def post(self, user: User) -> Response:
         data = request.json
         try:
             res = create_xml(data, user)
@@ -53,7 +52,7 @@ class SendUBLAPI(Resource):
             400: 'Bad request',
         }
     )
-    def post(self, id):
+    def post(self, id: int) -> Response:
         invoice = Invoice.query.where(Invoice.id==id).first()
         if invoice:
             cs = ConversionService()
@@ -73,7 +72,7 @@ class SendEmailAPI(Resource):
         400: 'Bad request',
     })
     @token_required
-    def post(self, user):
+    def post(self, user: User) -> Response:
         ups = UploadService()
         if 'files' in request.files:
             res = ups.handle_file_upload(request)
@@ -113,7 +112,7 @@ class SaveAPI(Resource):
         },
     )
     @token_required
-    def post(self, user):
+    def post(self, user: User) -> Response:
         data = request.json
         db_insert(Invoice(name=data["name"], fields=data["fields"], rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False))
         
@@ -131,7 +130,7 @@ class EditAPI(Resource):
         },
     )
     @token_required
-    def put(self, id, user):
+    def put(self, id: int, user: User) -> Response:
         data = request.json
 
         if not (invoice := Invoice.query.filter(Invoice.id == id).filter(Invoice.is_gui == True).first()) or invoice.user_id != user.id:
@@ -163,7 +162,7 @@ class DeleteAPI(Resource):
         },
     )
     @token_required
-    def delete(self, id, user):
+    def delete(self, id: int, user: User) -> Response:
         if not (invoice := Invoice.query.filter(Invoice.id == id).first()) or invoice.user_id != user.id:
             return make_response(jsonify({"message": "Invoice does not exist"}), 404)
 
@@ -173,7 +172,7 @@ class DeleteAPI(Resource):
 
 @invoice_ns.route("/history")
 class HistoryAPI(Resource):
-    def check_bool(self, bool):
+    def check_bool(self, bool: bool) -> bool:
         bool = bool.lower().capitalize()
         if bool == "True":
             return True
@@ -191,7 +190,7 @@ class HistoryAPI(Resource):
         },
     )
     @token_required
-    def get(self, user):
+    def get(self, user: User) -> Response:
         sql = Invoice.query.filter(Invoice.user_id==user.id)
         args = request.args
         if args.get("is_ready"):
@@ -218,7 +217,7 @@ class UploadValidationAPI(Resource):
         400: 'Bad request',
     })
     @token_required
-    def post(self, user):
+    def post(self, user: User) -> Response:
         ups = UploadService()
         
         res = ups.handle_xml_upload(request)
@@ -285,7 +284,7 @@ class ValidationAPI(Resource):
         }
     )
     @token_required
-    def get(self, user):
+    def get(self, user: User) -> Response:
         args = invoice_ns.get_id_validation_fields().parse_args()
         invoice_ids = args['id']
         rules = args['rules']
@@ -357,7 +356,7 @@ class UploadCreateAPI(Resource):
         400: 'Bad request',
     })
     @token_required
-    def post(self, user):
+    def post(self, user: User) -> Response:
         ups = UploadService()
         res = ups.handle_file_upload(request)
         if not res:

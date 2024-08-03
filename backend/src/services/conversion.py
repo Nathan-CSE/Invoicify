@@ -1,6 +1,7 @@
 import json
 import re
 
+from typing import Union
 from xml.etree.ElementTree import ElementTree, Element, SubElement, tostring, fromstring, ParseError
 
 class ConversionService():
@@ -57,7 +58,7 @@ class ConversionService():
         }
     }
 
-    def json_to_xml(self, json_str, rule_chosen):
+    def json_to_xml(self, json_str: str, rule_chosen: str) -> str:
         '''
         Converts a JSON string into an XML string
 
@@ -115,7 +116,7 @@ class ConversionService():
         
         return xml_str
     
-    def xml_to_json(self, xml_str):
+    def xml_to_json(self, xml_str: str) -> str:
         '''
         Converts a XML string into an JSON string
 
@@ -192,7 +193,7 @@ class ConversionService():
                 fields[element_tag] = element.text
 
 
-    def _build_xml_tree_from_json(self, element, key, value):
+    def _build_xml_tree_from_json(self, element: Element, key: str, value: Union[dict, str, any]):
         '''
         Recursively builds an XML by performing a DFS
         This function does not return any value
@@ -244,7 +245,7 @@ class ConversionService():
         else:
             raise ValueError(f"{key} contains invalid characters")
 
-    def _build_xml_from_json(self, element, data):
+    def _build_xml_from_json(self, element: Element, data: dict):
         '''
         Loops through all key-value pairs within a JSON
         This function does not return any value
@@ -261,3 +262,4 @@ class ConversionService():
                     self._build_xml_tree_from_json(element, key, item)
             else:
                 self._build_xml_tree_from_json(element, key, value)
+                

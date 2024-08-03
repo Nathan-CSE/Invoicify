@@ -1,8 +1,10 @@
-from datetime import datetime, timedelta
-from xml.etree.ElementTree import fromstring, ParseError
 import requests
 import hashlib
 import os
+
+from datetime import datetime, timedelta
+from typing import Optional
+from xml.etree.ElementTree import fromstring, ParseError
 
 from models import db, ValidationAccessToken
 from src.services.utils import db_insert, base64_decode
@@ -27,7 +29,7 @@ class ValidationService():
     _AUTH_URL = "https://dev-eat.auth.eu-central-1.amazoncognito.com/oauth2/token"
     _VALIDATION_URL = "https://services.ebusiness-cloud.com/ess-schematron/v1/api/validate"
 
-    def validate_xml(self, filename, content, rules):
+    def validate_xml(self, filename: str, content: str, rules: list[str]) -> dict:
         '''
         Validates that an XML is compliant with the specified UBL rules
 
@@ -85,7 +87,7 @@ class ValidationService():
 
         return response_body
 
-    def _generate_token(self, access_token):
+    def _generate_token(self, access_token: Optional[ValidationAccessToken]) -> ValidationAccessToken:
         '''
         Generates an OAuth Token to allow access to the Validation API
         Stores a new token in the database if it does not exist, otherwise updates the previous access_token with the new token
@@ -134,7 +136,7 @@ class ValidationService():
 
         return access_token
 
-    def _check_for_invalid_xml(self, content):
+    def _check_for_invalid_xml(self, content: str):
         '''
         Checks if the XML string passed in is formatted correctly by attempting to convert it into an XML object
         This function has no return value
@@ -150,3 +152,4 @@ class ValidationService():
             fromstring(content)
         except ParseError as err:
             raise err
+        
