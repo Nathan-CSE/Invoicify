@@ -1,16 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../components/Navbar';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Divider from '@mui/material/Divider';
-import Stack from '@mui/material/Stack';
 import InvoiceFlavourImage from '../assets/stock_invoice.png';
 import { ReactComponent as TickSvg } from '../assets/validate.svg';
 import { ReactComponent as PenSvg } from '../assets/create.svg';
 import { ReactComponent as SendSvg } from '../assets/send.svg';
 import { Container } from '@mui/material';
-import checkAuth from './useAuth';
+import checkAuth from '../helpers/useAuth';
 
 function HomePage(props: { token: string }) {
   const navigate = useNavigate();

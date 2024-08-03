@@ -6,7 +6,6 @@ import {
   Typography,
   Container,
   Divider,
-  Breadcrumbs,
   FormControl,
   InputLabel,
   Select,
@@ -21,11 +20,8 @@ import {
   Popover,
   Grid,
   Stack,
-  useMediaQuery,
-  createTheme,
 } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { useNavigate } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { DropzoneDialogBase } from 'mui-file-dropzone';
@@ -37,14 +33,14 @@ import vatRates from '../../VATRates.json';
 import ErrorModal from '../../components/ErrorModal';
 import axios from 'axios';
 import LoadingDialog from '../../components/LoadingDialog';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
 import SaveIcon from '@mui/icons-material/Save';
 import SuccessDialog from '../../components/SuccessDialog';
+import PageHeader from '../../components/PageHeader';
 
 interface FileObject {
   file: File;
 }
-
 
 // Edit flag to determine if we are editing
 // Data passed in to preload it if we are editing
@@ -66,6 +62,18 @@ export default function CreationGUI(props: {
   console.log(props.id);
   const [fields, setFields] = React.useState<any>(null);
   // Preloading the saved data
+
+  const breadcrumbNavEdit = {
+    'Dashboard': '/dashboard',
+    'Invoice Management': '/invoice-management',
+    'Invoice Edit': '/invoice-edit'
+  }
+
+  const breadcrumbNavGUI = {
+    'Dashboard': '/dashboard',
+    'Invoice Creation': '/invoice-creation',
+    'Invoice Creation - GUI': '/invoice-creation-GUI'
+  }
 
   // Invoice Name State
   const [invName, setInvName] = React.useState<string>('');
@@ -191,7 +199,6 @@ export default function CreationGUI(props: {
             .IdentificationCode || ''
         );
 
-        console.log('ARE YOU FUCKEN HERE?');
       }
       if (sellerCountry == '') {
         setSellerCountry(
@@ -643,43 +650,11 @@ export default function CreationGUI(props: {
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
         {props.editFlag ? (
           <>
-            <Typography variant='h4'>Invoice Edit</Typography>
-            <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-            <Breadcrumbs
-              aria-label='breadcrumb'
-              separator={<NavigateNextIcon fontSize='small' />}
-            >
-              <Typography component={Link} to='/dashboard'>
-                Dashboard
-              </Typography>
-
-              <Typography component={Link} to='/invoice-management'>
-                Invoice Management
-              </Typography>
-
-              <Typography color='text.primary'>Invoice Edit</Typography>
-            </Breadcrumbs>
+            <PageHeader HeaderTitle={'Invoice Edit'} BreadcrumbDict={breadcrumbNavEdit} />
           </>
         ) : (
           <>
-            <Typography variant='h4'>Invoice Creation - GUI</Typography>
-            <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-            <Breadcrumbs
-              aria-label='breadcrumb'
-              separator={<NavigateNextIcon fontSize='small' />}
-            >
-              <Typography component={Link} to='/dashboard'>
-                Dashboard
-              </Typography>
-
-              <Typography component={Link} to='/invoice-creation'>
-                Invoice Creation
-              </Typography>
-
-              <Typography color='text.primary'>
-                Invoice Creation - GUI
-              </Typography>
-            </Breadcrumbs>
+            <PageHeader HeaderTitle={'Invoice Creation - GUI'} BreadcrumbDict={breadcrumbNavGUI} />
           </>
         )}
 
