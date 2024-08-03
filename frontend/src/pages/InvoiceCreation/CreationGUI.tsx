@@ -52,7 +52,9 @@ export default function CreationGUI(props: {
 }) {
   useAuth(props.token);
 
-  const [isSmallScreen, setIsSmallScreen] = React.useState(window.innerWidth <= 900);
+  const [isSmallScreen, setIsSmallScreen] = React.useState(
+    window.innerWidth <= 900
+  );
 
   const [openDialog, setDialog] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -64,16 +66,16 @@ export default function CreationGUI(props: {
   // Preloading the saved data
 
   const breadcrumbNavEdit = {
-    'Dashboard': '/dashboard',
+    Dashboard: '/dashboard',
     'Invoice Management': '/invoice-management',
-    'Invoice Edit': '/invoice-edit'
-  }
+    'Invoice Edit': '/invoice-edit',
+  };
 
   const breadcrumbNavGUI = {
-    'Dashboard': '/dashboard',
+    Dashboard: '/dashboard',
     'Invoice Creation': '/invoice-creation',
-    'Invoice Creation - GUI': '/invoice-creation-GUI'
-  }
+    'Invoice Creation - GUI': '/invoice-creation-GUI',
+  };
 
   // Invoice Name State
   const [invName, setInvName] = React.useState<string>('');
@@ -198,7 +200,6 @@ export default function CreationGUI(props: {
           fields?.AccountingCustomerParty.Party.PostalAddress.Country
             .IdentificationCode || ''
         );
-
       }
       if (sellerCountry == '') {
         setSellerCountry(
@@ -449,7 +450,6 @@ export default function CreationGUI(props: {
       row.id === newRow.id ? { ...row, ...newRow } : row
     );
 
-    
     setRows(updatedRows);
     calculateTotals();
   };
@@ -537,15 +537,19 @@ export default function CreationGUI(props: {
         break;
       }
 
-      if (itemQuantity == 0 || itemName == '' || itemDescription == '' || itemPrice == 0 || itemGST == 0 || itemTotalPrice == 0) {
+      if (
+        itemQuantity == 0 ||
+        itemName == '' ||
+        itemDescription == '' ||
+        itemPrice == 0 ||
+        itemGST == 0 ||
+        itemTotalPrice == 0
+      ) {
         setOpenError(true);
-        setError(
-          `Fill out all fields for item row ${i + 1}.`
-        );
+        setError(`Fill out all fields for item row ${i + 1}.`);
         errorCheck = true;
         break;
       }
-
     }
 
     const { additionalDocuments, extraComments, ...filteredInvoiceData } =
@@ -650,11 +654,17 @@ export default function CreationGUI(props: {
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
         {props.editFlag ? (
           <>
-            <PageHeader HeaderTitle={'Invoice Edit'} BreadcrumbDict={breadcrumbNavEdit} />
+            <PageHeader
+              HeaderTitle={'Invoice Edit'}
+              BreadcrumbDict={breadcrumbNavEdit}
+            />
           </>
         ) : (
           <>
-            <PageHeader HeaderTitle={'Invoice Creation - GUI'} BreadcrumbDict={breadcrumbNavGUI} />
+            <PageHeader
+              HeaderTitle={'Invoice Creation - GUI'}
+              BreadcrumbDict={breadcrumbNavGUI}
+            />
           </>
         )}
 
@@ -810,7 +820,10 @@ export default function CreationGUI(props: {
 
             {!isSmallScreen && (
               <Grid item xs={0}>
-                <Divider orientation='vertical' sx={{ height: '90%', mt: 10 }} />
+                <Divider
+                  orientation='vertical'
+                  sx={{ height: '90%', mt: 10 }}
+                />
               </Grid>
             )}
 
@@ -974,8 +987,8 @@ export default function CreationGUI(props: {
           </Popover>
 
           <TableContainer
-           component={Paper}
-           sx={{ width: isSmallScreen ? '100%' : '25vw', my: 2 }}
+            component={Paper}
+            sx={{ width: isSmallScreen ? '100%' : '25vw', my: 2 }}
           >
             <Table aria-label='simple table'>
               <TableBody>
