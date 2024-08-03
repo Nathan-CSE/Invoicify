@@ -221,19 +221,20 @@ export default function CreationGUI(props: {
           // console.log('GST' + itemGST);
           // console.log('Price' + priceTotal);
           if (firstFlag) {
+            
+            const baseAmount = (parseFloat(item?.Price?.PriceAmount['@value']) / (1 + Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent /100)))
+            console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            console.log(Number(item?.Item.ClassifiedTaxCategory?.Percent))
+            
             const newRow = {
               id: parseInt(item.ID) + 1,
               quantity: parseInt(item?.InvoicedQuantity['@value'], 10) || 0,
               unitCode: item?.InvoicedQuantity.unitCode || '',
               item: item?.Item.Name || '',
               description: item?.Item.Description || '',
-              unitPrice: parseFloat(item?.Price?.PriceAmount['@value']) || 0.0,
+              unitPrice: baseAmount || 0.0,
               GST: parseFloat(item.Item.ClassifiedTaxCategory?.Percent) || 0.0,
-              totalPrice:
-                ((parseFloat(item?.Price?.PriceAmount['@value']) || 0.0) +
-                  (parseFloat(item.Item.ClassifiedTaxCategory?.Percent) ||
-                    0.0)) *
-                (parseInt(item?.InvoicedQuantity['@value'], 10) || 0),
+              totalPrice: parseFloat(item.LineExtensionAmount['@value']),
             };
             firstFlag = false;
             // setRows([...rows, newRow]);
@@ -242,19 +243,20 @@ export default function CreationGUI(props: {
             // console.log(tempRows);
             // console.log(rows);
           } else {
+            const baseAmount = (parseFloat(item?.Price?.PriceAmount['@value']) / (1 + Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent /100)))
+
+            console.log("###############################")
+            console.log(baseAmount)
+
             const newRow = {
               id: parseInt(item.ID) + 1,
               quantity: parseInt(item?.InvoicedQuantity['@value'], 10),
               unitCode: item?.InvoicedQuantity.unitCode,
               item: item?.Item.Name || '',
               description: item?.Item.Description || '',
-              unitPrice: parseFloat(item?.Price?.PriceAmount['@value']) || 0.0,
+              unitPrice: baseAmount || 0.0,
               GST: parseFloat(item.Item.ClassifiedTaxCategory?.Percent) || 0.0,
-              totalPrice:
-                ((parseFloat(item?.Price?.PriceAmount['@value']) || 0.0) +
-                  (parseFloat(item.Item.ClassifiedTaxCategory?.Percent) ||
-                    0.0)) *
-                (parseInt(item?.InvoicedQuantity['@value'], 10) || 0),
+              totalPrice: parseFloat(item.LineExtensionAmount['@value']),
             };
             tempRows.push(newRow);
             // setRows([...rows, newRow]);
@@ -269,6 +271,9 @@ export default function CreationGUI(props: {
         }
       } else {
         if (fields?.InvoiceLine) {
+          const baseAmount = (parseFloat(fields?.InvoiceLine.Price.PriceAmount['@value']) / (1 + (Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100)))
+          console.log("3" + baseAmount)
+
           const newRow = {
             id: 1,
             quantity: parseInt(
@@ -278,14 +283,10 @@ export default function CreationGUI(props: {
             unitCode: fields?.InvoiceLine.InvoicedQuantity.unitCode,
             item: fields?.InvoiceLine.Item.Name || '',
             description: fields?.InvoiceLine.Item.Description || '',
-            unitPrice: parseFloat(
-              fields?.InvoiceLine.Price.PriceAmount['@value']
-            ),
+            unitPrice: parseFloat(baseAmount.toFixed(2)),
             GST:
-              (Number(fields?.InvoiceLine.Price.PriceAmount['@value']) *
-                Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent)) /
-              100,
-            totalPrice: fields?.InvoiceLine.LineExtensionAmount['@value'],
+              parseFloat((baseAmount * Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100).toFixed(2)),
+            totalPrice: Number(fields?.InvoiceLine.LineExtensionAmount['@value']),
           };
 
           setRows([newRow]);
@@ -504,7 +505,7 @@ export default function CreationGUI(props: {
       totalGST: totalGST,
       totalTaxable: totalTaxable,
       totalAmount: totalAmount,
-      buyerVatRate: vatRate,
+      buyerVatRate: Number(vatRate),
       additionalDocuments: fileList.map((file) => ({
         fileName: file.file.name,
         fileSize: file.file.size,
@@ -551,13 +552,11 @@ export default function CreationGUI(props: {
     const { additionalDocuments, extraComments, ...filteredInvoiceData } =
       invoiceData;
     var str = JSON.stringify(filteredInvoiceData, null, 2);
-    console.log('filtered: ', str);
 
     if (errorCheck) {
       return;
     } else {
       if (props.editFlag) {
-        console.log(filteredInvoiceData);
         setLoadingMsg('Saving edits...');
         setLoading(true);
         const response = await axios.put(
@@ -580,7 +579,7 @@ export default function CreationGUI(props: {
         if (response.status === 204) {
           setDialog(true);
         } else {
-          console.log(response);
+        
           alert('Unable to edit invoice');
           navigate('/invoice-management');
         }
