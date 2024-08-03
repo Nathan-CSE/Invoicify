@@ -1,3 +1,5 @@
+from flask import Request
+
 class UploadService():
     """
     Upload service for uploading files
@@ -12,8 +14,7 @@ class UploadService():
             - Generates an OAuth Token to allow access to the Validation API
     """
     
-    
-    def handle_file_upload(self, request):
+    def handle_file_upload(self, request: Request) -> bool:
         '''
         Takes in files and ensure that they are pdf/ json
 
@@ -40,9 +41,7 @@ class UploadService():
 
         return True
 
-
-
-    def handle_xml_upload(self, request):
+    def handle_xml_upload(self, request: Request) -> bool:
         '''
         Takes in files and ensure that they are xml
 
@@ -65,15 +64,4 @@ class UploadService():
             return True
         else:
             return False
-
-
-    # def save_file(file, email):
         
-    #     base_path = "instance/documents"
-    #     user_folder = os.path.join(base_path, email)
-    #     file_destination = os.path.join(user_folder, "files", file.filename)
-        
-    #     # Create the directory structure if it doesn't exist
-    #     os.makedirs(os.path.dirname(file_destination), exist_ok=True)
-        
-    #     file.save(file_destination)

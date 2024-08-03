@@ -14,9 +14,10 @@ class OCRService():
         run(self, content)
             - Converts a base64 encoded PDF into a JSON string
     """
+
     _URL = "https://xtract.upbrains.ai/integration-apis/extract-file"
 
-    def run(self, content):
+    def run(self, content: str) -> str:
         '''
         Runs the OCR for a base64 encoded PDF file and converts it into a JSON string
 
@@ -29,7 +30,7 @@ class OCRService():
             - KeyError, IndexError: If the PDF passed in doesn't return correct fields
 
         Return Value:
-            Returns {}
+            Returns JSON string
         '''
         try:
             res = requests.post(

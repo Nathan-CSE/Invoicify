@@ -6,86 +6,6 @@ from models import Invoice
 from tests.fixtures import client, user, user_2, invoice, invoice_2, gui_invoice, gui_invoice_2
 from tests.data import TEST_DATA
 
-test_json = {
-    "invoiceName": "test",
-    "invoiceNumber": 1,
-    "invoiceIssueDate": "2024-06-25",
-    "seller": {
-        "ABN": 47555222000,
-        "companyName": "Windows to Fit Pty Ltd",
-        "address": {
-            "streetName": "Test",
-            "additionalStreetName": "test",
-            "cityName": "test",
-            "postalCode": "2912",
-            "country": "AU"
-        }
-    },
-    "buyer": {
-        "ABN": 47555222000,
-        "companyName": "Henry Averies",
-        "address": {
-            "streetName": "Jam",
-            "additionalStreetName": "a man",
-            "cityName": "of fortune",
-            "postalCode": "1994",
-            "country": "AU"
-        }
-    },
-    "invoiceItems": [{
-        "quantity": 10,
-        "unitCode": "X01",
-        "item": "Booty",
-        "description": "Pirate",
-        "unitPrice": 100.0,
-        "GST": 10,
-        "totalPrice": 1000.0
-    }],
-    "totalGST": 100.0,
-    "totalTaxable": 900.0,
-    "totalAmount": 1000.0,
-    "buyerVatRate": 20
-}
-
-test_invalid_json = {
-    "invoiceName": "test",
-    "invoiceNumber": "1",
-    "invoiceIssueDate": "2024-06-25",
-    "seller": {
-        "companyName": "Windows to Fit Pty Ltd",
-        "address": {
-            "streetName": "Test",
-            "additionalStreetName": "test",
-            "cityName": "test",
-            "postalCode": 2912,
-            "country": "AU"
-        }
-    },
-    "buyer": {
-        "ABN": 47555222000,
-        "companyName": "Henry Averies",
-        "address": {
-            "streetName": "Jam",
-            "additionalStreetName": "a man",
-            "cityName": "of fortune",
-            "postalCode": 1994,
-            "country": "AU"
-        }
-    },
-    "invoiceItems": [{
-        "quantity": 10,
-        "unitCode": "X01",
-        "item": "Booty",
-        "description": "Pirate",
-        "unitPrice": 100.0,
-        "GST": 10,
-        "totalPrice": 1000.0
-    }],
-    "totalGST": 100.0,
-    "totalTaxable": 900.0,
-    "totalAmount": 1000.0
-}
-
 INVOICE_CREATE_PATH = "/invoice/create"
 INVOICE_UPLOAD_VALIDATE_PATH = "/invoice/uploadValidate"
 INVOICE_UPLOAD_CREATE_PATH = "/invoice/uploadCreate"
@@ -100,7 +20,7 @@ INVOICE_SEND_PATH = "/invoice/send_ubl"
 def test_invoice_creation_successful(client, user):
     res = client.post(
         INVOICE_CREATE_PATH,
-        data=json.dumps(test_json),
+        data=json.dumps(TEST_DATA["JSON"]),
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json",
@@ -114,7 +34,7 @@ def test_invoice_creation_successful(client, user):
 def test_invoice_creation_invalid(client, user):
     res = client.post(
         INVOICE_CREATE_PATH,
-        data=json.dumps(test_invalid_json),
+        data=json.dumps(TEST_DATA["INVALID_JSON"]),
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json",
@@ -127,7 +47,7 @@ def test_invoice_creation_invalid(client, user):
 def test_invoice_creation_unauthorised(client):
     res = client.post(
         INVOICE_CREATE_PATH,
-        data=json.dumps(test_json),
+        data=json.dumps(TEST_DATA["JSON"]),
         headers={
             "Authorisation": "blahaofsisja blah blah blah",
             "Content-Type": "application/json",
@@ -223,7 +143,7 @@ def test_send_suc(client, user, invoice_2):
 def test_invoice_edit_successful(client, user, gui_invoice):
     data = {
         "name": "Testing123",
-        "fields": test_json,
+        "fields": TEST_DATA["JSON"],
         "rule": "AUNZ_PEPPOL_SB_1_0_10"
     }
 
@@ -284,12 +204,12 @@ def test_invoice_edit_invoice_does_not_belong_to_user(client, user_2, invoice):
     assert res.status_code == 404
 
 def test_invoice_edit_invoice_resets_is_ready_and_completed_ubl_if_fields_or_rule_changes(client, user, gui_invoice_2):
-    test_json_2 = test_json
+    test_json_2 = TEST_DATA["JSON"]
     test_json_2["invoiceName"] = "Test invoice 2"
 
     data = {
         "name": "test-invoice",
-        "fields": test_json,
+        "fields": TEST_DATA["JSON"],
         "rule": "AUNZ_PEPPOL_1_0_10"
     }
 

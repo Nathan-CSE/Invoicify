@@ -1,6 +1,6 @@
 import secrets
 
-from flask import request, jsonify, make_response
+from flask import Response, request, jsonify, make_response
 from flask_restx import Resource
 
 from models import db, User
@@ -19,7 +19,7 @@ class RegisterAPI(Resource):
         201: 'Created successfully',
         400: 'Bad request',
     })
-    def post(self):
+    def post(self) -> Response:
         data = request.json
         
         email = data['email']
@@ -45,7 +45,7 @@ class LoginAPI(Resource):
         200: 'Success',
         400: 'Bad request',
     })
-    def post(self):
+    def post(self) -> Response:
         data = request.json
         
         email = data['email']
@@ -68,7 +68,7 @@ class ChangePWAPI(Resource):
         200: 'Success',
         400: 'Bad request',
     })
-    def patch(self):
+    def patch(self) -> Response:
         data = request.json
         
         email = data['email']
@@ -98,7 +98,7 @@ class SendCodeAPI(Resource):
         200: 'Sent successfully',
         400: 'Bad request',
     })
-    def patch(self):
+    def patch(self) -> Response:
         data = request.json
         email = data['email']
         user = User.query.filter_by(email=email).first() 
@@ -123,7 +123,7 @@ class ResetPassAPI(Resource):
         204: 'Reset successfully',
         400: 'Bad request',
     })
-    def patch(self):
+    def patch(self) -> Response:
         data = request.json
         email = data['email']
         user = User.query.filter_by(email=email).first() 
