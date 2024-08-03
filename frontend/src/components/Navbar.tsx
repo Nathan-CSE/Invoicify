@@ -35,6 +35,7 @@ function Navbar(props: {
     if (props.token) {
       return (
         <Button
+          data-cy='logout'
           component={Link}
           to='/sign-in'
           startIcon={<LogoutIcon />}
@@ -49,6 +50,8 @@ function Navbar(props: {
       if (currentPath == '/') {
         return (
           <Button
+            data-cy='login'
+            title='LoginButton'
             component={Link}
             to='/sign-in'
             startIcon={<LoginIcon />}
