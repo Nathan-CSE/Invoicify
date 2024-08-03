@@ -159,6 +159,7 @@ export default function InvoiceManagement(props: { token: string }) {
     return Array.from(details.values()).map((items) => (
       <Grid key={items.id} item>
         <Card
+          data-cy='invoice-card'
           sx={{
             border: 1,
             borderRadius: '16px',
@@ -216,11 +217,14 @@ export default function InvoiceManagement(props: { token: string }) {
                   </Typography>
                 </Stack>
 
-
-
                 {items.is_gui && (
                   <>
-                    <Stack direction='row' spacing={1} sx={{ my: 1 }} alignItems="center">
+                    <Stack
+                      direction='row'
+                      spacing={1}
+                      sx={{ my: 1 }}
+                      alignItems='center'
+                    >
                       <EditIcon />
                       <Typography variant='subtitle1' gutterBottom>
                         Editable
@@ -228,7 +232,6 @@ export default function InvoiceManagement(props: { token: string }) {
                     </Stack>
                   </>
                 )}
-
 
                 {items.is_ready ? (
                   <>

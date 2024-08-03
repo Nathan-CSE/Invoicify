@@ -1,12 +1,11 @@
 /// <reference types="cypress" />
 
-
 const registerDetails = {
   'first-name': 'John',
   'last-name': 'Smith',
-  'email': 'smith@gmail.com',
-  'password': 'smith123'
-}
+  email: 'smith@gmail.com',
+  password: 'smith123',
+};
 
 // describe('test user login', () => {
 //   beforeEach(() => {
@@ -49,31 +48,31 @@ const registerDetails = {
 //     cy.get('[data-cy="register"]').click();
 
 //     cy.get('[data-cy="register-firstName"]')
-//       .find('input')  
+//       .find('input')
 //       .focus()
 //       .type(registerDetails["first-name"])
 //     ;
-    
+
 //     cy.get('[data-cy="register-lastName"]')
-//       .find('input')  
+//       .find('input')
 //       .focus()
 //       .type(registerDetails["last-name"])
 //     ;
 
 //     cy.get('[data-cy="register-email"]')
-//       .find('input')  
+//       .find('input')
 //       .focus()
 //       .type(registerDetails["email"])
 //     ;
 
 //     cy.get('[data-cy="register-password"]')
-//       .find('input')  
+//       .find('input')
 //       .focus()
 //       .type(registerDetails["password"])
 //     ;
 
 //     cy.get('[data-cy="register-confirmPassword"]')
-//       .find('input')  
+//       .find('input')
 //       .focus()
 //       .type(registerDetails["password"])
 //     ;
@@ -89,13 +88,13 @@ const registerDetails = {
 //     cy.url().should('include', 'localhost:3000/sign-in');
 
 //     cy.get('[data-cy="login-email"]')
-//       .find('input')  
+//       .find('input')
 //       .focus()
 //       .type(registerDetails["email"])
 //     ;
-    
+
 //     cy.get('[data-cy="login-password"]')
-//       .find('input')  
+//       .find('input')
 //       .focus()
 //       .type(registerDetails["password"])
 //     ;
@@ -115,9 +114,10 @@ describe('test prototype scenarios', () => {
       req.reply({
         statusCode: 200,
         body: {
-          "message": "User logged in successfully.",
-          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmUuc21pdGhAZXhhbXBsZS5jb20ifQ.hRQ0311NXzLtdBwKQk2Iqunxfy0PcVUYQ2xzF6NmfoY"
-        }
+          message: 'User logged in successfully.',
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmUuc21pdGhAZXhhbXBsZS5jb20ifQ.hRQ0311NXzLtdBwKQk2Iqunxfy0PcVUYQ2xzF6NmfoY',
+        },
       });
     });
 
@@ -125,71 +125,73 @@ describe('test prototype scenarios', () => {
     cy.url().should('include', 'localhost:3000/sign-in');
 
     cy.get('[data-cy="login-email"]')
-      .find('input')  
+      .find('input')
       .focus()
-      .type(registerDetails["email"])
-    ;
-    
+      .type(registerDetails['email']);
+
     cy.get('[data-cy="login-password"]')
-      .find('input')  
+      .find('input')
       .focus()
-      .type(registerDetails["password"])
-    ;
+      .type(registerDetails['password']);
 
     cy.get('[data-cy="login-signIn"]').click();
 
     cy.url().should('include', 'localhost:3000/dashboard');
-
   });
 
   it('uploads a JSON file and sends by email', () => {
     cy.get('[data-cy="dashboard-sending"]').click();
 
-    cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/uploadInvoice.json', { 
-      action: 'drag-drop' 
-    });
+    cy.get('.css-1agvk75').selectFile(
+      'cypress/fixtures/initial_files/uploadInvoice.json',
+      {
+        action: 'drag-drop',
+      }
+    );
 
     cy.get('[data-cy="send-email"]')
-      .find('input')  
+      .find('input')
       .focus()
-      .type(registerDetails["email"])
-    ;
+      .type(registerDetails['email']);
 
     cy.get('[data-cy="send-submit"]').click();
 
     cy.wait(6000);
 
     cy.get('[data-cy="send-confirmation').should('be.visible');
-
   });
 
   it('uploads a PDF file and sends by email', () => {
     cy.get('[data-cy="dashboard-sending"]').click();
 
-    cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/OCRinvoice.pdf', { 
-      action: 'drag-drop' 
-    });
+    cy.get('.css-1agvk75').selectFile(
+      'cypress/fixtures/initial_files/OCRinvoice.pdf',
+      {
+        action: 'drag-drop',
+      }
+    );
 
     cy.get('[data-cy="send-email"]')
-      .find('input')  
+      .find('input')
       .focus()
-      .type(registerDetails["email"])
-    ;
+      .type(registerDetails['email']);
 
     cy.get('[data-cy="send-submit"]').click();
 
     cy.wait(6000);
 
     cy.get('[data-cy="send-confirmation').should('be.visible');
-
   });
 
   it('converts a PDF to XML, validates it & sends it', () => {
     cy.get('[data-cy="dashboard-creation"]').click();
 
-    cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/OCRinvoice.pdf', { 
-      action: 'drag-drop' 
-    });
+    cy.get('.css-1agvk75').selectFile(
+      'cypress/fixtures/initial_files/OCRinvoice.pdf',
+      {
+        action: 'drag-drop',
+      }
+    );
 
     cy.get('[data-cy="generate-invoice"]').click();
 
@@ -200,29 +202,33 @@ describe('test prototype scenarios', () => {
 
     cy.get('[data-cy="drawer-validation"]').click();
 
-    cy.get('.css-1agvk75').selectFile('cypress/fixtures/expected_xmls/OCRinvoice.xml', { 
-      action: 'drag-drop' 
-    });
+    cy.get('.css-1agvk75').selectFile(
+      'cypress/fixtures/expected_xmls/OCRinvoice.xml',
+      {
+        action: 'drag-drop',
+      }
+    );
 
     cy.get('[data-cy="validation-select"]')
       .parent()
       .click()
       .get('ul > li[data-value="AUNZ_PEPPOL_1_0_10"]')
-      .click()
-    ;
+      .click();
 
     cy.get('[data-cy="validation-submit"]').click();
 
     cy.get('[data-cy="validation-invalid"]').should('be.visible');
-
   });
 
   it('converts a JSON to XML & validates it', () => {
     cy.get('[data-cy="dashboard-creation"]').click();
 
-    cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/uploadInvoice.json', { 
-      action: 'drag-drop' 
-    });
+    cy.get('.css-1agvk75').selectFile(
+      'cypress/fixtures/initial_files/uploadInvoice.json',
+      {
+        action: 'drag-drop',
+      }
+    );
 
     cy.get('[data-cy="generate-invoice"]').click();
 
@@ -230,16 +236,18 @@ describe('test prototype scenarios', () => {
 
     cy.get('[data-cy="drawer-validation"]').click();
 
-    cy.get('.css-1agvk75').selectFile('cypress/fixtures/expected_xmls/uploadInvoice.xml', { 
-      action: 'drag-drop' 
-    });
+    cy.get('.css-1agvk75').selectFile(
+      'cypress/fixtures/expected_xmls/uploadInvoice.xml',
+      {
+        action: 'drag-drop',
+      }
+    );
 
     cy.get('[data-cy="validation-select"]')
       .parent()
       .click()
       .get('ul > li[data-value="AUNZ_PEPPOL_1_0_10"]')
-      .click()
-    ;
+      .click();
 
     cy.get('[data-cy="validation-submit"]').click();
 
@@ -249,22 +257,22 @@ describe('test prototype scenarios', () => {
 
     cy.get('[data-cy="drawer-sending"]').click();
 
-    cy.get('.css-1agvk75').selectFile('cypress/fixtures/initial_files/uploadInvoice.json', { 
-      action: 'drag-drop' 
-    });
+    cy.get('.css-1agvk75').selectFile(
+      'cypress/fixtures/initial_files/uploadInvoice.json',
+      {
+        action: 'drag-drop',
+      }
+    );
 
     cy.get('[data-cy="send-email"]')
-      .find('input')  
+      .find('input')
       .focus()
-      .type(registerDetails["email"])
-    ;
+      .type(registerDetails['email']);
 
     cy.get('[data-cy="send-submit"]').click();
 
     cy.wait(6000);
 
     cy.get('[data-cy="send-confirmation').should('be.visible');
-
   });
-
-})
+});

@@ -98,7 +98,7 @@ describe('test user login', () => {
   });
 });
 
-describe('test prototype scenarios', () => {
+describe('user logs in and creates an xml through the creation gui', () => {
   beforeEach(() => {
     cy.visit('localhost:3000');
 
@@ -109,6 +109,20 @@ describe('test prototype scenarios', () => {
           message: 'User logged in successfully.',
           token:
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmUuc21pdGhAZXhhbXBsZS5jb20ifQ.hRQ0311NXzLtdBwKQk2Iqunxfy0PcVUYQ2xzF6NmfoY',
+        },
+      });
+    });
+
+    cy.intercept('POST', '/invoice/create', (req) => {
+      req.reply({
+        statusCode: 201,
+        body: {
+          data: [
+            {
+              filename: 'mocked_filename.xml',
+              invoiceId: 'mocked_invoice_id',
+            },
+          ],
         },
       });
     });
@@ -132,20 +146,6 @@ describe('test prototype scenarios', () => {
   });
 
   it('creates an invoice via gui', () => {
-    cy.intercept('POST', '/invoice/create', (req) => {
-      req.reply({
-        statusCode: 201,
-        body: {
-          data: [
-            {
-              filename: 'mocked_filename.xml',
-              invoiceId: 'mocked_invoice_id',
-            },
-          ],
-        },
-      });
-    });
-
     cy.get('[data-cy="dashboard-creation"]').click();
     cy.get('[data-cy="create-gui"]').click();
 
@@ -294,5 +294,75 @@ describe('test prototype scenarios', () => {
     // Check if we have navigated correctly after a successful creation
     cy.get('[data-cy="confirm-gui"]').click();
     cy.url().should('include', 'localhost:3000/invoice-creation-confirmation');
+  });
+});
+
+describe('login and look at their previous invoices', () => {
+  beforeEach(() => {
+    cy.visit('localhost:3000');
+
+    cy.intercept('POST', '/auth/login', (req) => {
+      req.reply({
+        statusCode: 200,
+        body: {
+          message: 'User logged in successfully.',
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmUuc21pdGhAZXhhbXBsZS5jb20ifQ.hRQ0311NXzLtdBwKQk2Iqunxfy0PcVUYQ2xzF6NmfoY',
+        },
+      });
+    });
+
+    cy.intercept('GET', '/invoice/history', (req) => {
+      req.reply({
+        statusCode: 200,
+        body: {
+          '1': {
+            id: 1,
+            name: 'Invoice 1',
+            completed_ubl: null,
+            fields: {},
+            rule: 'Rule A',
+            user_id: 123,
+            is_ready: false,
+            is_gui: true,
+          },
+          '2': {
+            id: 2,
+            name: 'Invoice 2',
+            completed_ubl: null,
+            fields: {},
+            rule: 'Rule B',
+            user_id: 456,
+            is_ready: false,
+            is_gui: false,
+          },
+        },
+      });
+    });
+
+    cy.get('[data-cy="login"]').click();
+    cy.url().should('include', 'localhost:3000/sign-in');
+
+    cy.get('[data-cy="login-email"]')
+      .find('input')
+      .focus()
+      .type(details['email']);
+
+    cy.get('[data-cy="login-password"]')
+      .find('input')
+      .focus()
+      .type(details['password']);
+
+    cy.get('[data-cy="login-signIn"]').click();
+
+    cy.url().should('include', 'localhost:3000/dashboard');
+  });
+
+  it('displays all invoices correctly', () => {
+    cy.get('[data-cy="dashboard-management"]').click();
+    cy.wait(3000);
+    cy.get('[data-cy="invoice-card"]').should('have.length', 2);
+    cy.contains('[data-cy="invoice-card"]', 'Invoice 1').should('exist');
+    cy.contains('[data-cy="invoice-card"]', 'Invoice 2').should('exist');
   });
 });
