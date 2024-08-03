@@ -64,7 +64,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
         const url = window.URL.createObjectURL(new Blob([response.data["message"]]));
         const link = document.createElement('a');
         link.href = url;
-        console.log(response.data[0]["message"])
+        console.log(response.data["message"])
         link.setAttribute('download', invoices[currentIndex].filename);
         document.body.appendChild(link);
         link.click();
