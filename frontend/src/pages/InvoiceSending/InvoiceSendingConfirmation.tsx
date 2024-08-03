@@ -5,17 +5,21 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import { Link, useLocation } from 'react-router-dom';
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Card, CardContent, Grid } from '@mui/material';
 import { ReactComponent as InvoiceSvg } from '../../assets/invoice.svg';
 import ReplayIcon from '@mui/icons-material/Replay';
 import SendIcon from '@mui/icons-material/Send';
-import useAuth from '../useAuth';
+import useAuth from '../../helpers/useAuth';
+import PageHeader from '../../components/PageHeader';
 
 export default function InvoiceSending(props: { token: string; }) {
   useAuth(props.token);
-
+  const breadcrumbNav = {
+    'Dashboard': '/dashboard',
+    'Invoice Sending': '/invoice-sending',
+    'Invoice Sending Confirmation': '/invoice-sending-confirmation'
+  }
+  
   console.log('user token: ', props.token);
   console.log("location state: ", useLocation().state);
   const { invoiceNames, recipientEmail } = useLocation().state;
@@ -24,34 +28,8 @@ export default function InvoiceSending(props: { token: string; }) {
     <>
      
       <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-        <Typography variant='h4'>
-          Invoice Sending
-        </Typography>
 
-        <Divider sx={{ borderBottomWidth: 1.5, marginBottom: 1 }} />
-
-        <Breadcrumbs
-          aria-label='breadcrumb'
-          separator={<NavigateNextIcon fontSize="small" />}
-        >
-          <Typography
-            component={Link}
-            to='/dashboard'
-          >
-            Dashboard
-          </Typography>
-
-          <Typography
-            component={Link}
-            to='/invoice-sending'
-          >
-            Invoice Sending
-          </Typography>
-
-          <Typography color='text.primary'>
-            Invoice Sending Confirmation
-          </Typography>
-        </Breadcrumbs>
+        <PageHeader HeaderTitle={'Invoice Sending'} BreadcrumbDict={breadcrumbNav} />
 
         <Box textAlign='center' sx={{ mt: 5 }}>
           <Typography variant='h4' sx={{ mb: 1 }}>

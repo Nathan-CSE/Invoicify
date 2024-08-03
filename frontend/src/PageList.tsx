@@ -1,22 +1,21 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import DashboardPage from './pages/DashboardPage';
 import SignIn from './pages/UserAuth/SignIn';
 import SignUp from './pages/UserAuth/SignUp';
 import SettingsPage from './pages/UserAuth/SettingsPage';
+import ResetPassword from './pages/UserAuth/ResetPasswordPage';
 import InvoiceCreation from './pages/InvoiceCreation/InvoiceCreation';
 import InvoiceCreationConfirmation from './pages/InvoiceCreation/InvoiceCreationConfirmation';
 import CreationGUI from './pages/InvoiceCreation/CreationGUI';
-import Navbar from './components/Navbar';
-import PreviewInvoice from './pages/PreviewInvoice';
 import InvoiceSending from './pages/InvoiceSending/InvoiceSending';
 import InvoiceSendingConfirmation from './pages/InvoiceSending/InvoiceSendingConfirmation';
-import InvoiceManagement from './pages/InvoiceManagementPage';
-import HistoryPreviewInvoice from './pages/HistoryPreviewInvoice';
+import InvoiceManagement from './pages/InvoiceManagement/InvoiceManagementPage';
+import HistoryPreviewInvoice from './pages/InvoiceManagement/HistoryPreviewInvoice';
+import InvoiceEdit from './pages/InvoiceManagement/InvoiceEdit';
 import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
-import ResetPassword from './pages/UserAuth/ResetPasswordPage';
-import InvoiceEdit from './pages/InvoiceEdit';
 import ValidationReport from './pages/InvoiceValidation/ValidationReport';
 import DocPage from './pages/Documentation';
 
@@ -101,15 +100,6 @@ function PageList() {
             <>
               <Navbar token={token} setToken={setToken} />
               <InvoiceCreationConfirmation token={token} />
-            </>
-          }
-        />
-        <Route
-          path='/invoice-preview'
-          element={
-            <>
-              <Navbar token={token} setToken={setToken} />
-              <PreviewInvoice token={token} />
             </>
           }
         />
