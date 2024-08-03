@@ -55,14 +55,14 @@ def send_attachment(send_to: list[str], text: str, ubl_data: list[tuple[str, str
     sender_email = os.getenv("EMAIL_USER")
     sender_pass = os.getenv("EMAIL_PASS")
 
+    if len(send_to) == 1 and send_to[0] == "":
+        return True 
+
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = COMMASPACE.join(send_to)
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = "Tax Invoice"
-
-    if not send_to:
-        return True
     
     msg.attach(MIMEText(text))
     with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
