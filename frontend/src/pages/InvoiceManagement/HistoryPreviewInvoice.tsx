@@ -25,6 +25,8 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { ReactComponent as ManageSvg } from '../../assets/manage.svg';
 import useAuth from '../../helpers/useAuth';
 import PageHeader from '../../components/PageHeader';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+
 
 export default function HistoryPreviewInvoice(props: { token: string }) {
   useAuth(props.token);
@@ -424,6 +426,8 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               <TableBody>
                 {Array.isArray(dataFields.InvoiceLine) ? (
                   dataFields.InvoiceLine.map((item: any, index: number) => {
+                    let baseAmount = (Number(item.Price.PriceAmount['@value']) / 
+                    (1 + Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100))
                     return (
                       <TableRow key={index}>
                         <TableCell>
@@ -435,15 +439,14 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                         <TableCell>{item?.Item.Name || ''}</TableCell>
                         <TableCell>{item?.Item.Description || ''}</TableCell>
                         <TableCell>
-                          {item.Price.PriceAmount['@value']}
+                          {baseAmount.toFixed(2)}
                         </TableCell>
                         <TableCell>
-                          {(Number(item.Price.PriceAmount['@value']) *
+                          {((baseAmount *
                             Number(
-                              dataFields.TaxTotal.TaxSubtotal.TaxCategory
-                                .Percent
+                              dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent
                             )) /
-                            100}
+                            100).toFixed(2)}
                         </TableCell>
                         <TableCell>
                           {item.LineExtensionAmount['@value']}
@@ -467,17 +470,24 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                         {dataFields?.InvoiceLine.Item.Description || ''}
                       </TableCell>
                       <TableCell>
-                        {dataFields.InvoiceLine.Price.PriceAmount['@value']}
+                        {/* Total Price / Tax Percent = Price before tax */}
+                        {
+                          (Number(dataFields.InvoiceLine.Price.PriceAmount['@value']) 
+                          / 
+                          (Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100 + 1)).toFixed(2)
+                        }
                       </TableCell>
                       <TableCell>
-                        {(Number(
-                          dataFields.InvoiceLine.Price.PriceAmount['@value']
-                        ) *
-                          Number(
-                            dataFields.TaxTotal.TaxSubtotal.TaxCategory
-                              .Percent
-                          )) /
-                          100}
+                        {
+                          ((
+                            Number(dataFields.InvoiceLine.Price.PriceAmount['@value']) 
+                            / 
+                            (Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100 + 1)
+                            *
+                            Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent)
+                          ) /
+                          100).toFixed(2)
+                        }
                       </TableCell>
                       <TableCell>
                         {dataFields.InvoiceLine.LineExtensionAmount['@value']}
@@ -570,7 +580,28 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
     <>
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
 
-        <PageHeader HeaderTitle={`Previewing: ${name}`} BreadcrumbDict={breadcrumbNav} />
+        <PageHeader HeaderTitle={`Invoice Preview`} BreadcrumbDict={breadcrumbNav} />
+
+        <Stack
+          direction='row'
+          spacing={1}
+          sx={{ mt: 3, mb: -2 }}
+          alignItems='center'
+        >
+          <ReceiptIcon />
+          <Typography
+            variant='h5'
+            // component='div'
+            fontWeight={'bold'}
+            sx={{
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {name}
+          </Typography>
+        </Stack>
 
         <Box sx={{ mt: 3 }}>
           {invoiceType === 'JSON' ? (
@@ -596,8 +627,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               startIcon={<DownloadIcon />}
               variant='contained'
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
               }}
             >
               Download Invoice
@@ -615,8 +645,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
               variant='contained'
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
               }}
             >
               Back to Invoice Management

@@ -77,10 +77,11 @@ export default function ResetPassword(props: { token: string }) {
         if (reset_code.length === 0) {
           setOpenError(true);
           setError('Please enter a valid token');
-        } else if (updated_password.length === 0) {
+        } else if (updated_password.length < 0) {
           setOpenError(true);
-          setError('Please enter a valid password');
+          setError('Passwords have a minimum length of 6');
         } else {
+
           try {
             const response = await axios.patch(
               'http://localhost:5000/auth/reset-pw',

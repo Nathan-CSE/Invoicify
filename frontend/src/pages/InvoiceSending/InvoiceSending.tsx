@@ -14,6 +14,7 @@ import SendIcon from '@mui/icons-material/Send';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../../helpers/useAuth';
 import PageHeader from '../../components/PageHeader';
+import ErrorModal from '../../components/ErrorModal';
 
 export default function InvoiceSending(props: { token: string }) {
   // console.log('user token: ', props.token);
@@ -24,6 +25,8 @@ export default function InvoiceSending(props: { token: string }) {
   const [invoices, setInvoices] = React.useState<string[]>([]);
   const [files, setFiles] = React.useState<File[] | null>([]);
   const [availableInvoices, setAvailableInvoices] = React.useState<any[]>([]);
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
 
   const breadcrumbNav = {
     'Dashboard': '/dashboard',
@@ -74,13 +77,19 @@ export default function InvoiceSending(props: { token: string }) {
     event.preventDefault();
 
     if (files === null && invoices.length === 0) {
-      alert("You must either upload a JSON/PDF file or select a UBL invoice to send.");
+      setOpenError(true);
+      setError('You must either upload a JSON/PDF file or select a UBL invoice to send.');
       return;
     }
 
     const formData = new FormData(event.currentTarget);
-    const recipientEmail = formData.get('recipientEmail') || '';
-    const invoiceId = formData.get('select-invoice') || '';
+    const recipientEmail = formData.get('recipientEmail') as string || '';
+
+    if (!recipientEmail.includes('@')) {
+      setOpenError(true);
+      setError('Please provide a valid email address');
+      return;
+    }
 
     console.log('recipient email: ', recipientEmail);
     // console.log('invoice id: ', invoiceId);
@@ -144,16 +153,16 @@ export default function InvoiceSending(props: { token: string }) {
       } else {
         // console.log(response.data);
         // navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
-        alert("Unable to send invoice");
+        setOpenError(true);
+        setError('Unable to send invoice');
       }
     } catch (err) {
       setLoading(false);
       // FIXME:
       // Here temporarily until endpoint has been created for bulk sending
-      alert("Unable to send invoice");
-      // navigate('/invoice-sending-confirmation', { state: { invoiceNames: invoiceNames } });
-      // console.log(err);
-      // alert(err);
+      setOpenError(true);
+      setError('Unable to send invoice');
+
     }
   };
 
@@ -247,8 +256,7 @@ export default function InvoiceSending(props: { token: string }) {
               variant='contained'
               startIcon={<SendIcon style={{ marginTop: 2 }} />}
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
               }}
             >
               Send Invoice(s)
@@ -256,6 +264,11 @@ export default function InvoiceSending(props: { token: string }) {
           </Box>
         </form>
       </Container>
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
     </>
   );
 }

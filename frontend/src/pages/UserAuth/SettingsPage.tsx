@@ -1,7 +1,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { Button, Container, Divider, TextField } from '@mui/material';
+import { Button, Container, Divider, TextField, Snackbar, Alert } from '@mui/material';
 import ErrorModal from '../../components/ErrorModal';
 import SaveIcon from '@mui/icons-material/Save';
 import axios, { AxiosError } from 'axios';
@@ -21,6 +21,13 @@ function SettingsPage(props: { token: string }) {
     'Account Settings': '/settings'
   }
 
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarMessage, setSnackbarMessage] = React.useState('');
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   const changeAccountDetails = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -32,7 +39,12 @@ function SettingsPage(props: { token: string }) {
     const updated_password = data.get('newPassword') as string;
 
     if (password.length === 0 || updated_password.length === 0) {
-      alert('Password fields are empty');
+      setOpenError(true);
+      setError("Password fields are empty");
+      return;
+    } else if (updated_password.length < 6) {
+      setOpenError(true);
+      setError("Passwords have a minimum length of 6");
     } else {
       try {
         console.log(password, updated_password);
@@ -49,7 +61,8 @@ function SettingsPage(props: { token: string }) {
         setLoading(false);
 
         if (response.status === 200) {
-          alert(response.data.message);
+          setSnackbarMessage(response.data.message);
+          setSnackbarOpen(true);
         } else {
           setOpenError(true);
           setError(response.data.message);
@@ -126,6 +139,15 @@ function SettingsPage(props: { token: string }) {
           {error}
         </ErrorModal>
       )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert variant='filled' onClose={handleSnackbarClose} severity="success">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

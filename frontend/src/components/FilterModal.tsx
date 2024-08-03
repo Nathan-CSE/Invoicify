@@ -10,6 +10,8 @@ import {
   FormControlLabel,
   Radio,
   Box,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 
 export interface SimpleDialogProps {
@@ -27,11 +29,10 @@ export default function FilterModal(props: SimpleDialogProps) {
   };
 
   return (
-    <Dialog onClose={onCancel} open={open}>
-      <Box sx={{ width: '24rem', height: '17rem' }}>
-        <DialogTitle>Filter Invoices</DialogTitle>
-        <FormControl sx={{ pl: '2.5rem' }}>
-          {/* <FormLabel id='filter-radial-options'>Filter Options</FormLabel> */}
+    <Dialog onClose={onCancel} open={open} maxWidth='sm'>
+      <DialogTitle fontWeight={'medium'}>Filter Invoices</DialogTitle>
+      <DialogContent>
+        <FormControl>
           <RadioGroup
             aria-labelledby='filter-radial-options'
             name='radio-buttons-group'
@@ -62,24 +63,15 @@ export default function FilterModal(props: SimpleDialogProps) {
             />
           </RadioGroup>
         </FormControl>
-        <Box
-          sx={{
-            flexDirection: 'row',
-            display: 'flex',
-            gap: '0.5rem',
-            pr: '0.5rem',
-            mt: '0.5rem',
-            justifyContent: 'flex-end',
-          }}
-        >
-          <Button variant='contained' onClick={handleClose}>
-            CONFIRM
-          </Button>
-          <Button variant='contained' color='error' onClick={onCancel}>
-            CANCEL
-          </Button>
-        </Box>
-      </Box>
+      </DialogContent>
+      <DialogActions sx={{ m: 1 }}>
+        <Button variant='contained' onClick={handleClose}>
+          CONFIRM
+        </Button>
+        <Button variant='contained' color='error' onClick={onCancel}>
+          CANCEL
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

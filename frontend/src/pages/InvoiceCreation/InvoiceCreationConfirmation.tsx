@@ -143,8 +143,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
               startIcon={<DownloadIcon />}
               variant='contained'
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
               }}
             >
               Download Invoice
@@ -158,8 +157,7 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
               startIcon={<ReplayIcon />}
               variant='contained'
               sx={{
-                height: '50px',
-                padding: '25px',
+                padding: '15px',
               }}
             >
               Create another Invoice

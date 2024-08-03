@@ -73,10 +73,37 @@ export default function ValidationReport(props: { token: string }) {
           </Box>
         ) : (
           <>
-            <Box display="flex" alignItems="center" justifyContent="center" sx={{ maxWidth: '40vh', border: 'solid 0.5px', borderRadius: 4, paddingX: 2, margin: '0 auto' }}>
-              <Stack direction="row" spacing={2} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              sx={{ 
+                maxWidth: '40vh',
+                border: 'solid 0.5px',
+                borderRadius: 4,
+                paddingX: 2,
+                margin: '0 auto' 
+              }}
+            >
+              <Stack
+                direction="row"
+                spacing={2}
+                sx={{
+                  my: 4,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
                 <CancelIcon sx={{ color: 'red', fontSize: '3rem' }} />
-                <Typography>The file {fileName} is invalid. It contains {errorData.firedAssertionErrorsCount} failed assertion(s), check individual reports for details.</Typography>
+                <Typography
+                  sx={{ 
+                    maxWidth: 'calc(100% - 4rem)',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-word'
+                  }}
+                >
+                  The file <b>{fileName}</b> is invalid. It contains {errorData.firedAssertionErrorsCount} failed assertion(s), check individual reports for details.
+                </Typography>
               </Stack>
             </Box>
             <Typography variant='h5' sx={{ mt: 4 }}>Errors</Typography>
@@ -122,7 +149,7 @@ export default function ValidationReport(props: { token: string }) {
 
       <Stack direction="row" spacing={4} sx={{ my: 4, justifyContent: 'center', alignItems: 'center' }}>
         {!isValid && <DownloadReport invoiceName={fileName} currentReport={currentReport} inputDiv={document.getElementById('report-content')} />}
-        <Button component={Link} to='/invoice-validation' startIcon={<ReplayIcon />} variant='contained' sx={{ height: '50px', padding: '25px' }}>
+        <Button component={Link} to='/invoice-validation' startIcon={<ReplayIcon />} variant='contained' sx={{ padding: '15px' }}>
           Validate Another Report
         </Button>
       </Stack>
