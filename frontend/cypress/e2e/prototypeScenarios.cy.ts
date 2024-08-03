@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 const registerDetails = {
   'first-name': 'John',
   'last-name': 'Smith',
@@ -101,5 +103,45 @@ describe('test user login', () => {
 
     cy.url().should('include', 'localhost:3000/dashboard');
 
+  })
+})
+
+describe('test prototype scenarios', () => {
+  beforeEach(() => {
+    cy.visit('localhost:3000');
+
+    cy.intercept('POST', '/auth/login', (req) => {
+      req.reply({
+        statusCode: 200,
+        body: {
+          "message": "User logged in successfully.",
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbmUuc21pdGhAZXhhbXBsZS5jb20ifQ.hRQ0311NXzLtdBwKQk2Iqunxfy0PcVUYQ2xzF6NmfoY"
+        }
+      });
+    });
+
+    cy.get('[data-cy="login"]').click();
+    cy.url().should('include', 'localhost:3000/sign-in');
+
+    cy.get('[data-cy="login-email"]')
+      .find('input')  
+      .focus()
+      .type(registerDetails["email"])
+    ;
+    
+    cy.get('[data-cy="login-password"]')
+      .find('input')  
+      .focus()
+      .type(registerDetails["password"])
+    ;
+
+    cy.get('[data-cy="login-signIn"]').click();
+
+    cy.url().should('include', 'localhost:3000/dashboard');
+
+  });
+
+  it('upload JSON file and send by email', () => {
+    cy.get('[data-cy="invoice-creation"]').click();
   })
 })
