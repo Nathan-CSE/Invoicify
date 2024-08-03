@@ -61,5 +61,13 @@
   "devDependencies": {
     "@svgr/webpack": "^8.1.0",
     "@types/file-saver": "^2.0.7"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!axios)"
+    ]
   }
 }
