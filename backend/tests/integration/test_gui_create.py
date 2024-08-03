@@ -1,12 +1,16 @@
-import base64
-import io
 import json
 import copy
 
-
 from tests.data import TEST_DATA
-from tests.urls import INVOICE_CREATE_PATH, INVOICE_DELETE_PATH, INVOICE_DOWNLOAD_PATH, INVOICE_EDIT_PATH, INVOICE_HISTORY_PATH, INVOICE_SEND_PATH, INVOICE_VALIDATE_PATH
-from models import Invoice
+from tests.urls import (
+    INVOICE_CREATE_PATH, 
+    INVOICE_DELETE_PATH, 
+    INVOICE_DOWNLOAD_PATH, 
+    INVOICE_EDIT_PATH, 
+    INVOICE_HISTORY_PATH, 
+    INVOICE_SEND_PATH, 
+    INVOICE_VALIDATE_PATH
+)
 from tests.fixtures import client, user
 
 # GUI Create -> Validate (Success) -> Send (Success)
