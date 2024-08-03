@@ -61,10 +61,10 @@ export default function InvoiceCreationConfirmation(props: { token: string; }) {
 
         // Tried to change this to use saveAs lib, but ran into a bunch of issues trying to format the 
         // string into a file that was able to be saved
-        const url = window.URL.createObjectURL(new Blob([response.data[0]["message"]]));
+        const url = window.URL.createObjectURL(new Blob([response.data["message"]]));
         const link = document.createElement('a');
         link.href = url;
-        console.log(response.data[0]["message"])
+        console.log(response.data["message"])
         link.setAttribute('download', invoices[currentIndex].filename);
         document.body.appendChild(link);
         link.click();

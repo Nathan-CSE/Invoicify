@@ -57,7 +57,7 @@ class SendUBLAPI(Resource):
         if invoice:
             cs = ConversionService()
             xml = cs.json_to_xml(json.dumps(invoice.fields), "AUNZ_PEPPOL_1_0_10")
-            return make_response(jsonify({"message": xml}, 200))
+            return make_response(jsonify({"message": xml}), 200)
         else:
             return make_response(jsonify({"message": "Article not found"}), 400)
 
@@ -377,7 +377,11 @@ class UploadCreateAPI(Resource):
                 json_str = f.read().decode('utf-8')
                 temp_xml_filename = f.filename.replace('.json', '.xml')
 
-            invoice = Invoice(name=temp_xml_filename, fields=json.loads(json_str), user_id=user.id, is_ready=False)
+            try:
+                invoice = Invoice(name=temp_xml_filename, fields=json.loads(json_str), user_id=user.id, is_ready=False)
+            except json.JSONDecodeError:
+                return make_response(jsonify({"message": f"the file uploaded is not a valid json, please upload a valid file"}), 400)
+
             db_insert(invoice)
             
             ublretval.append({

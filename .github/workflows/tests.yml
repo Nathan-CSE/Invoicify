@@ -21,7 +21,7 @@ jobs:
       with:
         python-version: 3.9
 
-    - name: Run tests
+    - name: Run unit tests
       run: |
           echo "Change directory to backend"
           cd backend
@@ -32,10 +32,48 @@ jobs:
           echo "Load Environment Variables - complete"
 
           echo "Installing dependencies"
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip >> /dev/null
+          pip install -r requirements.txt >> /dev/null
           echo "Installing dependencies - complete"
 
-          echo "Running tests"
-          pytest
-          echo "Running tests - complete"
+          echo "Running unit tests"
+          pytest tests/unit
+          echo "Running unit tests - complete"
+
+    - name: Run integration tests
+      run: |
+          echo "Change directory to backend"
+          cd backend
+          echo "Change directory to backend- complete"
+          
+          echo "Load Environment Variables"
+          echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+          echo "Load Environment Variables - complete"
+
+          echo "Installing dependencies"
+          python -m pip install --upgrade pip >> /dev/null
+          pip install -r requirements.txt >> /dev/null
+          echo "Installing dependencies - complete"
+
+          echo "Running integration tests"
+          pytest tests/integration
+          echo "Running integration tests - complete"
+
+    - name: Run system tests
+      run: |
+          echo "Change directory to backend"
+          cd backend
+          echo "Change directory to backend- complete"
+          
+          echo "Load Environment Variables"
+          echo "${{ secrets.ENV_FILE_CONTENT }}" > .env
+          echo "Load Environment Variables - complete"
+
+          echo "Installing dependencies"
+          python -m pip install --upgrade pip >> /dev/null
+          pip install -r requirements.txt >> /dev/null
+          echo "Installing dependencies - complete"
+
+          echo "Running system tests"
+          pytest tests/system
+          echo "Running system tests - complete"

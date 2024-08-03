@@ -55,31 +55,38 @@ def send_attachment(send_to: list[str], text: str, ubl_data: list[tuple[str, str
     sender_email = os.getenv("EMAIL_USER")
     sender_pass = os.getenv("EMAIL_PASS")
 
+    if len(send_to) == 1 and send_to[0] == "":
+        return True 
+
     msg = MIMEMultipart()
     msg['From'] = sender_email
     msg['To'] = COMMASPACE.join(send_to)
     msg['Date'] = formatdate(localtime=True)
     msg['Subject'] = "Tax Invoice"
-
+    
     msg.attach(MIMEText(text))
-    for ubl in ubl_data:
-        file_data = MIMEApplication(
-            str.encode(ubl[1]),
-            Name=basename(ubl[0])
-        )
-        file_data['Content-Disposition'] = 'attachment; filename="%s"' % basename(ubl[0])
-        msg.attach(file_data)
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        server.ehlo()
+        server.login(sender_email, sender_pass)
+        for ubl in ubl_data:
+            file_data = MIMEApplication(
+                str.encode(ubl[1]),
+                Name=basename(ubl[0])
+            )
+            file_data['Content-Disposition'] = 'attachment; filename="%s"' % basename(ubl[0])
+            msg.attach(file_data)
+            try:
+                server.sendmail(sender_email, send_to, msg.as_string())
+            except:
+                return False
 
-    for f in files:
-        file_data = MIMEApplication(
-            f.read(),
-            Name=f.filename
-        )
-        file_data['Content-Disposition'] = 'attachment; filename="%s"' % f.filename
-        msg.attach(file_data)
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-            server.ehlo()
-            server.login(sender_email, sender_pass)
+        for f in files:
+            file_data = MIMEApplication(
+                f.read(),
+                Name=f.filename
+            )
+            file_data['Content-Disposition'] = 'attachment; filename="%s"' % f.filename
+            msg.attach(file_data)
             try:
                 server.sendmail(sender_email, send_to, msg.as_string())
             except:
