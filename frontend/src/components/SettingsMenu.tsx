@@ -1,19 +1,18 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import { Box, Stack, Typography } from '@mui/material';
 import { ReactComponent as InvoiceSettings } from '../assets/settings_mini.svg';
 import axios, { AxiosError } from 'axios';
 import ErrorModal from './ErrorModal';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import CreateIcon from '@mui/icons-material/Create';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LoadingDialog from './LoadingDialog';
 import ConfirmDialog from './ConfirmationDialog';
 
-export default function SettingsMenu(props: { token: string; details: any }) {
+function SettingsMenu(props: { token: string; details: any }) {
   // Error checking
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -84,7 +83,7 @@ export default function SettingsMenu(props: { token: string; details: any }) {
   };
 
   return (
-    <div>
+    <>
       <ConfirmDialog
         open={openDialog}
         function={handleDelete}
@@ -175,6 +174,8 @@ export default function SettingsMenu(props: { token: string; details: any }) {
           {error}
         </ErrorModal>
       )}
-    </div>
+    </>
   );
 }
+
+export default SettingsMenu;

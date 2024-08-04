@@ -1,0 +1,71 @@
+{
+  "statusCode": 200,
+  "body": {
+    "validationOutcome": [
+      {
+        "data": {
+          "firedAssertionErrors": [
+            {
+              "id": "PEPPOL-EN16931-R003",
+              "location": "Invoice",
+              "text": "A buyer reference or purchase order reference MUST be provided."
+            },
+            {
+              "id": "PEPPOL-EN16931-R053",
+              "location": "Invoice",
+              "text": "Only one tax total with tax subtotals MUST be provided."
+            },
+            {
+              "id": "PEPPOL-EN16931-R051-AUNZ",
+              "location": "Invoice, InvoiceLine, Amount",
+              "text": "All currencyID attributes must have the same value as the invoice currency code (BT-5), except for the invoice total tax amount in accounting currency (BT-111)."
+            },
+            {
+              "id": "PEPPOL-EN16931-R051-AUNZ",
+              "location": "Invoice, InvoiceLine, Amount",
+              "text": "All currencyID attributes must have the same value as the invoice currency code (BT-5), except for the invoice total tax amount in accounting currency (BT-111)."
+            },
+            {
+              "id": "PEPPOL-EN16931-R051-AUNZ",
+              "location": "Invoice, InvoiceLine, Amount",
+              "text": "All currencyID attributes must have the same value as the invoice currency code (BT-5), except for the invoice total tax amount in accounting currency (BT-111)."
+            },
+            {
+              "id": "PEPPOL-EN16931-R051-AUNZ",
+              "location": "Invoice, InvoiceLine, Amount",
+              "text": "All currencyID attributes must have the same value as the invoice currency code (BT-5), except for the invoice total tax amount in accounting currency (BT-111)."
+            },
+            {
+              "id": "PEPPOL-EN16931-CL007",
+              "location": "Invoice, InvoiceLine, Amount",
+              "text": "Currency code must be according to ISO 4217:2005"
+            },
+            {
+              "id": "PEPPOL-EN16931-CL007",
+              "location": "Invoice, InvoiceLine, Amount",
+              "text": "Currency code must be according to ISO 4217:2005"
+            },
+            {
+              "id": "PEPPOL-EN16931-CL007",
+              "location": "Invoice, InvoiceLine, Amount",
+              "text": "Currency code must be according to ISO 4217:2005"
+            },
+            {
+              "id": "PEPPOL-EN16931-CL007",
+              "location": "Invoice, InvoiceLine, Amount",
+              "text": "Currency code must be according to ISO 4217:2005"
+            }
+          ],
+          "firedAssertionErrorsCount": 10,
+          "firedSuccessfulReportsCount": 0,
+          "successful": false,
+          "summary": "Validation failed. Check individual validation reports for details"
+        },
+        "invoiceId": -1,
+        "invoiceName": "OCRinvoice.xml",
+        "rule": "AUNZ_PEPPOL_1_0_10",
+        "validated": false
+      }
+    ]
+  }
+}

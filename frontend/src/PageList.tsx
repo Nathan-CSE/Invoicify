@@ -19,6 +19,7 @@ import InvoiceValidation from './pages/InvoiceValidation/InvoiceValidation';
 import ValidationReport from './pages/InvoiceValidation/ValidationReport';
 import DocPage from './pages/Documentation';
 
+// Component that determines the routes of all the pages
 function PageList() {
   const [token, setToken] = React.useState('');
   React.useEffect(() => {
