@@ -20,7 +20,6 @@ function DashboardPage(props: {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  console.log(props.token);
   useAuth(props.token);
 
   interface dashboardCardInfo {
@@ -71,8 +70,8 @@ function DashboardPage(props: {
   };
 
   // Function to generate the dashboard cards
-  // - Sets up the route, the relevant image and naming
-  function generateOptions(options: dashboardDict): JSX.Element[] {
+  // Sets up the route, the relevant image and naming
+  const generateOptions = (options: dashboardDict): JSX.Element[] => {
     return Object.entries(options).map(([name, items], index) => (
       <Grid key={index} item>
         <Card
@@ -101,7 +100,7 @@ function DashboardPage(props: {
         </Card>
       </Grid>
     ));
-  }
+  };
 
   return (
     <>

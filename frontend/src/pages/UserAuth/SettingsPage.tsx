@@ -1,7 +1,14 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { Button, Container, Divider, TextField, Snackbar, Alert } from '@mui/material';
+import {
+  Button,
+  Container,
+  Divider,
+  TextField,
+  Snackbar,
+  Alert,
+} from '@mui/material';
 import ErrorModal from '../../components/ErrorModal';
 import SaveIcon from '@mui/icons-material/Save';
 import axios, { AxiosError } from 'axios';
@@ -16,10 +23,11 @@ function SettingsPage(props: { token: string }) {
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+
   const breadcrumbNav = {
-    'Dashboard': '/dashboard',
-    'Account Settings': '/settings'
-  }
+    Dashboard: '/dashboard',
+    'Account Settings': '/settings',
+  };
 
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarMessage, setSnackbarMessage] = React.useState('');
@@ -40,14 +48,13 @@ function SettingsPage(props: { token: string }) {
 
     if (password.length === 0 || updated_password.length === 0) {
       setOpenError(true);
-      setError("Password fields are empty");
+      setError('Password fields are empty');
       return;
     } else if (updated_password.length < 6) {
       setOpenError(true);
-      setError("Passwords have a minimum length of 6");
+      setError('Passwords have a minimum length of 6');
     } else {
       try {
-        console.log(password, updated_password);
         setLoading(true);
         const response = await axios.patch(
           'http://localhost:5000/auth/change-pw',
@@ -83,14 +90,14 @@ function SettingsPage(props: { token: string }) {
   return (
     <>
       <LoadingDialog open={loading} message='Changing password...' />
-      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-
-        <PageHeader HeaderTitle={'Account Settings'} BreadcrumbDict={breadcrumbNav} />
+      <Container maxWidth='lg' sx={{ marginTop: 11 }}>
+        <PageHeader
+          HeaderTitle={'Account Settings'}
+          BreadcrumbDict={breadcrumbNav}
+        />
 
         <Box sx={{ mt: 4, width: '100%', mb: -2 }}>
-          <Typography variant='h5'>
-            Email
-          </Typography>
+          <Typography variant='h5'>Email</Typography>
           <TextField
             margin='normal'
             fullWidth
@@ -102,7 +109,7 @@ function SettingsPage(props: { token: string }) {
             }}
           />
 
-        <Typography variant='h5' sx={{ mt: 3 }}>
+          <Typography variant='h5' sx={{ mt: 3 }}>
             Change Password
           </Typography>
           <Box component='form' onSubmit={changeAccountDetails} noValidate>
@@ -127,7 +134,12 @@ function SettingsPage(props: { token: string }) {
               />
             </Box>
             <Box display='flex' justifyContent='center'>
-              <Button type='submit' variant='contained' sx={{ mt: 3, height: '50px', padding: '25px' }} startIcon={<SaveIcon />}>
+              <Button
+                type='submit'
+                variant='contained'
+                sx={{ mt: 3, height: '50px', padding: '25px' }}
+                startIcon={<SaveIcon />}
+              >
                 Save Changes
               </Button>
             </Box>
@@ -144,7 +156,11 @@ function SettingsPage(props: { token: string }) {
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
-        <Alert variant='filled' onClose={handleSnackbarClose} severity="success">
+        <Alert
+          variant='filled'
+          onClose={handleSnackbarClose}
+          severity='success'
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

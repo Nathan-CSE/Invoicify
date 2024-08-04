@@ -15,7 +15,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import LoginIcon from '@mui/icons-material/Login';
 import LoadingDialog from '../../components/LoadingDialog';
 
-export default function SignUp(props: {
+function SignUp(props: {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
@@ -23,8 +23,8 @@ export default function SignUp(props: {
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
   const [loading, setLoading] = React.useState(false);
+
   if (props.token) {
-    console.log('SIGNUP');
     navigate('/dashboard');
   }
 
@@ -73,8 +73,6 @@ export default function SignUp(props: {
             props.setToken(response.data.token);
             localStorage.setItem('token', response.data.token);
 
-            // Temporary Solution before backend TOKEN auth is done
-            // REMOVE WHEN FEATURE IS ADDED
             localStorage.setItem('email', email);
             navigate('/dashboard');
           } else {
@@ -93,7 +91,8 @@ export default function SignUp(props: {
           }
         }
       } else {
-        alert('Passwords do not match');
+        setOpenError(true);
+        setError('Passwords do not match');
       }
     }
   };
@@ -179,7 +178,7 @@ export default function SignUp(props: {
                 />
               </Grid>
             </Grid>
-            <Button 
+            <Button
               data-cy='register-signUp'
               type='submit'
               fullWidth
@@ -212,3 +211,5 @@ export default function SignUp(props: {
     </>
   );
 }
+
+export default SignUp;

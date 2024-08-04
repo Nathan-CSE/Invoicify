@@ -15,7 +15,7 @@ import { Dialog, DialogActions, DialogTitle } from '@mui/material';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import LoginIcon from '@mui/icons-material/Login';
 
-export default function ResetPassword(props: { token: string }) {
+function ResetPassword(props: { token: string }) {
   const navigate = useNavigate();
 
   // Error handling
@@ -81,7 +81,6 @@ export default function ResetPassword(props: { token: string }) {
           setOpenError(true);
           setError('Passwords have a minimum length of 6');
         } else {
-
           try {
             const response = await axios.patch(
               'http://localhost:5000/auth/reset-pw',
@@ -102,6 +101,7 @@ export default function ResetPassword(props: { token: string }) {
               setError(response.data.message);
             }
           } catch (error) {
+            setLoading(false);
             const err = error as AxiosError<{ message: string }>;
             if (err.response) {
               setOpenError(true);
@@ -119,7 +119,6 @@ export default function ResetPassword(props: { token: string }) {
         setError('Please fill in all fields');
       }
     } else if (email) {
-      console.log('Checkpt');
       if (email.length === 0) {
         setOpenError(true);
         setError('Please enter a valid email');
@@ -142,6 +141,7 @@ export default function ResetPassword(props: { token: string }) {
             setError(response.data.message);
           }
         } catch (error) {
+          setLoading(false);
           const err = error as AxiosError<{ message: string }>;
           if (err.response) {
             setOpenError(true);
@@ -316,3 +316,5 @@ export default function ResetPassword(props: { token: string }) {
     </>
   );
 }
+
+export default ResetPassword;

@@ -14,7 +14,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import LoadingDialog from '../../components/LoadingDialog';
 
-export default function SignIn(props: {
+function SignIn(props: {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
@@ -26,6 +26,7 @@ export default function SignIn(props: {
   if (props.token) {
     navigate('/dashboard');
   }
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -38,20 +39,18 @@ export default function SignIn(props: {
       setError('Fill out all required fields');
     } else {
       try {
-        // setLoading(true);
+        setLoading(true);
         const response = await axios.post('http://localhost:5000/auth/login', {
           email,
           password,
         });
 
-        // setLoading(false);
+        setLoading(false);
 
         if (response.status === 200) {
           props.setToken(response.data.token);
           localStorage.setItem('token', response.data.token);
 
-          // Temporary Solution before backend TOKEN auth is done
-          // REMOVE WHEN FEATURE IS ADDED
           localStorage.setItem('email', email);
           navigate('/dashboard');
         } else {
@@ -59,6 +58,7 @@ export default function SignIn(props: {
           setError(response.data.message);
         }
       } catch (error) {
+        setLoading(false);
         const err = error as AxiosError<{ message: string }>;
         if (err.response) {
           setOpenError(true);
@@ -162,9 +162,8 @@ export default function SignIn(props: {
           {error}
         </ErrorModal>
       )}
-      {/* <Box sx={{ position: 'fixed', bottom: 20, left: 10, width: '40%' }}>
-        {openError && <ErrorModal setOpen={setOpenError}>{error}</ErrorModal>}
-      </Box> */}
     </>
   );
 }
+
+export default SignIn;
