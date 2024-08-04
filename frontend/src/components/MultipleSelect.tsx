@@ -27,6 +27,7 @@ function MultipleSelect(props: {
           Select Invoice
         </InputLabel>
         <Select
+          data-cy='multiple-select'
           labelId='select-invoice-label'
           id='select-invoice'
           name='select-invoice'
@@ -68,6 +69,7 @@ function MultipleSelect(props: {
           {availableInvoices.map((invoice) => {
             return (
               <MenuItem
+                data-cy={invoice.name}
                 key={invoice.invoiceId}
                 value={invoice.invoiceId.toString()}
               >

@@ -1,0 +1,192 @@
+{
+  "statusCode": 200,
+  "body": [
+    {
+      "completed_ubl": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48SW52b2ljZSB4bWxuczpjYWM9InVybjpvYXNpczpuYW1lczpzcGVjaWZpY2F0aW9uOnVibDpzY2hlbWE6eHNkOkNvbW1vbkFnZ3JlZ2F0ZUNvbXBvbmVudHMtMiIgeG1sbnM6Y2JjPSJ1cm46b2FzaXM6bmFtZXM6c3BlY2lmaWNhdGlvbjp1Ymw6c2NoZW1hOnhzZDpDb21tb25CYXNpY0NvbXBvbmVudHMtMiIgeG1sbnM9InVybjpvYXNpczpuYW1lczpzcGVjaWZpY2F0aW9uOnVibDpzY2hlbWE6eHNkOkludm9pY2UtMiI+PGNiYzpDdXN0b21pemF0aW9uSUQ+dXJuOmNlbi5ldTplbjE2OTMxOjIwMTcjY29uZm9ybWFudCN1cm46ZmRjOnBlcHBvbC5ldToyMDE3OnBvYWNjOmJpbGxpbmc6aW50ZXJuYXRpb25hbDphdW56OjMuMDwvY2JjOkN1c3RvbWl6YXRpb25JRD48Y2JjOlByb2ZpbGVJRD51cm46ZmRjOnBlcHBvbC5ldToyMDE3OnBvYWNjOmJpbGxpbmc6MDE6MS4wPC9jYmM6UHJvZmlsZUlEPjxjYmM6SUQ+SW52b2ljZTAzPC9jYmM6SUQ+PGNiYzpJc3N1ZURhdGU+MjAyMi0wNy0zMTwvY2JjOklzc3VlRGF0ZT48Y2JjOkludm9pY2VUeXBlQ29kZT4zODA8L2NiYzpJbnZvaWNlVHlwZUNvZGU+PGNiYzpOb3RlPkFkanVzdG1lbnQgbm90ZSB0byByZXZlcnNlIHByaW9yIGJpbGwgSW52b2ljZTAxLiBGcmVlIHRleHQgZmllbGQgY2FuIGJyaW5nIGF0dGVudGlvbiB0byByZWFzb24gZm9yIGNyZWRpdCBldGMuPC9jYmM6Tm90ZT48Y2JjOkRvY3VtZW50Q3VycmVuY3lDb2RlPkFVRDwvY2JjOkRvY3VtZW50Q3VycmVuY3lDb2RlPjxjYmM6QnV5ZXJSZWZlcmVuY2U+U2ltcGxlIHNvbGFyIHBsYW48L2NiYzpCdXllclJlZmVyZW5jZT48Y2FjOkludm9pY2VQZXJpb2Q+PGNiYzpTdGFydERhdGU+MjAyMi0wNi0xNTwvY2JjOlN0YXJ0RGF0ZT48Y2JjOkVuZERhdGU+MjAyMi0wNy0xNTwvY2JjOkVuZERhdGU+PC9jYWM6SW52b2ljZVBlcmlvZD48Y2FjOkJpbGxpbmdSZWZlcmVuY2U+PGNhYzpJbnZvaWNlRG9jdW1lbnRSZWZlcmVuY2U+PGNiYzpJRD5JbnZvaWNlMDE8L2NiYzpJRD48Y2JjOklzc3VlRGF0ZT4yMDIyLTA3LTI5PC9jYmM6SXNzdWVEYXRlPjwvY2FjOkludm9pY2VEb2N1bWVudFJlZmVyZW5jZT48L2NhYzpCaWxsaW5nUmVmZXJlbmNlPjxjYWM6QWRkaXRpb25hbERvY3VtZW50UmVmZXJlbmNlPjxjYmM6SUQ+SW52b2ljZTAzLnBkZjwvY2JjOklEPjxjYWM6QXR0YWNobWVudD48Y2JjOkVtYmVkZGVkRG9jdW1lbnRCaW5hcnlPYmplY3QgbWltZUNvZGU9ImFwcGxpY2F0aW9uL3BkZiIgZmlsZW5hbWU9Ikludm9pY2UwMy5wZGYiPlVHeGhhVzRnZEdWNGRDQnBiaUJ3YkdGalpTQnZaaUJ3WkdZZ1lYUjBZV05vYldWdWRDQm1iM0lnYzJGdGNHeGxJR2x1ZG05cFkyVno8L2NiYzpFbWJlZGRlZERvY3VtZW50QmluYXJ5T2JqZWN0PjwvY2FjOkF0dGFjaG1lbnQ+PC9jYWM6QWRkaXRpb25hbERvY3VtZW50UmVmZXJlbmNlPjxjYWM6QWNjb3VudGluZ1N1cHBsaWVyUGFydHk+PGNhYzpQYXJ0eT48Y2JjOkVuZHBvaW50SUQgc2NoZW1lSUQ9IjAxNTEiPjQ3NTU1MjIyMDAwPC9jYmM6RW5kcG9pbnRJRD48Y2FjOlBvc3RhbEFkZHJlc3M+PGNiYzpDaXR5TmFtZT5IYXJyaXNvbjwvY2JjOkNpdHlOYW1lPjxjYmM6UG9zdGFsWm9uZT4yOTEyPC9jYmM6UG9zdGFsWm9uZT48Y2JjOkNvdW50cnlTdWJlbnRpdHk+TlNXPC9jYmM6Q291bnRyeVN1YmVudGl0eT48Y2FjOkNvdW50cnk+PGNiYzpJZGVudGlmaWNhdGlvbkNvZGU+QVU8L2NiYzpJZGVudGlmaWNhdGlvbkNvZGU+PC9jYWM6Q291bnRyeT48L2NhYzpQb3N0YWxBZGRyZXNzPjxjYWM6UGFydHlMZWdhbEVudGl0eT48Y2JjOlJlZ2lzdHJhdGlvbk5hbWU+R3JleSBSb28gRW5lcmd5PC9jYmM6UmVnaXN0cmF0aW9uTmFtZT48Y2JjOkNvbXBhbnlJRCBzY2hlbWVJRD0iMDE1MSI+NDc1NTUyMjIwMDA8L2NiYzpDb21wYW55SUQ+PC9jYWM6UGFydHlMZWdhbEVudGl0eT48L2NhYzpQYXJ0eT48L2NhYzpBY2NvdW50aW5nU3VwcGxpZXJQYXJ0eT48Y2FjOkFjY291bnRpbmdDdXN0b21lclBhcnR5PjxjYWM6UGFydHk+PGNiYzpFbmRwb2ludElEIHNjaGVtZUlEPSIwMTUxIj40NzU1NTIyMjAwMDwvY2JjOkVuZHBvaW50SUQ+PGNhYzpQYXJ0eUlkZW50aWZpY2F0aW9uPjxjYmM6SUQ+QWNjb3VudE51bWJlcjEyMzwvY2JjOklEPjwvY2FjOlBhcnR5SWRlbnRpZmljYXRpb24+PGNhYzpQb3N0YWxBZGRyZXNzPjxjYmM6U3RyZWV0TmFtZT4xMDAgUXVlZW4gU3RyZWV0PC9jYmM6U3RyZWV0TmFtZT48Y2JjOkNpdHlOYW1lPlN5ZG5leTwvY2JjOkNpdHlOYW1lPjxjYmM6UG9zdGFsWm9uZT4yMDAwPC9jYmM6UG9zdGFsWm9uZT48Y2JjOkNvdW50cnlTdWJlbnRpdHk+TlNXPC9jYmM6Q291bnRyeVN1YmVudGl0eT48Y2FjOkNvdW50cnk+PGNiYzpJZGVudGlmaWNhdGlvbkNvZGU+QVU8L2NiYzpJZGVudGlmaWNhdGlvbkNvZGU+PC9jYWM6Q291bnRyeT48L2NhYzpQb3N0YWxBZGRyZXNzPjxjYWM6UGFydHlMZWdhbEVudGl0eT48Y2JjOlJlZ2lzdHJhdGlvbk5hbWU+VHJvdHRlcnMgSW5jb3Jwb3JhdGVkPC9jYmM6UmVnaXN0cmF0aW9uTmFtZT48Y2JjOkNvbXBhbnlJRCBzY2hlbWVJRD0iMDE1MSI+OTE4ODgyMjIwMDA8L2NiYzpDb21wYW55SUQ+PC9jYWM6UGFydHlMZWdhbEVudGl0eT48Y2FjOkNvbnRhY3Q+PGNiYzpOYW1lPkxpc2EgSm9obnNvbjwvY2JjOk5hbWU+PC9jYWM6Q29udGFjdD48L2NhYzpQYXJ0eT48L2NhYzpBY2NvdW50aW5nQ3VzdG9tZXJQYXJ0eT48Y2FjOlRheFRvdGFsPjxjYmM6VGF4QW1vdW50IGN1cnJlbmN5SUQ9IkFVRCI+LTE1Ljk0PC9jYmM6VGF4QW1vdW50PjxjYWM6VGF4U3VidG90YWw+PGNiYzpUYXhhYmxlQW1vdW50IGN1cnJlbmN5SUQ9IkFVRCI+LTE1OS40MzwvY2JjOlRheGFibGVBbW91bnQ+PGNiYzpUYXhBbW91bnQgY3VycmVuY3lJRD0iQVVEIj4tMTUuOTQ8L2NiYzpUYXhBbW91bnQ+PGNhYzpUYXhDYXRlZ29yeT48Y2JjOklEPlM8L2NiYzpJRD48Y2JjOlBlcmNlbnQ+MTA8L2NiYzpQZXJjZW50PjxjYWM6VGF4U2NoZW1lPjxjYmM6SUQ+R1NUPC9jYmM6SUQ+PC9jYWM6VGF4U2NoZW1lPjwvY2FjOlRheENhdGVnb3J5PjwvY2FjOlRheFN1YnRvdGFsPjwvY2FjOlRheFRvdGFsPjxjYWM6TGVnYWxNb25ldGFyeVRvdGFsPjxjYmM6TGluZUV4dGVuc2lvbkFtb3VudCBjdXJyZW5jeUlEPSJBVUQiPi0xNTkuNDM8L2NiYzpMaW5lRXh0ZW5zaW9uQW1vdW50PjxjYmM6VGF4RXhjbHVzaXZlQW1vdW50IGN1cnJlbmN5SUQ9IkFVRCI+LTE1OS40MzwvY2JjOlRheEV4Y2x1c2l2ZUFtb3VudD48Y2JjOlRheEluY2x1c2l2ZUFtb3VudCBjdXJyZW5jeUlEPSJBVUQiPi0xNzUuMzc8L2NiYzpUYXhJbmNsdXNpdmVBbW91bnQ+PGNiYzpQYXlhYmxlQW1vdW50IGN1cnJlbmN5SUQ9IkFVRCI+LTE3NS4zNzwvY2JjOlBheWFibGVBbW91bnQ+PC9jYWM6TGVnYWxNb25ldGFyeVRvdGFsPjxjYWM6SW52b2ljZUxpbmU+PGNiYzpJRD4xPC9jYmM6SUQ+PGNiYzpJbnZvaWNlZFF1YW50aXR5IHVuaXRDb2RlPSJLV0giPi0zMjUuMjwvY2JjOkludm9pY2VkUXVhbnRpdHk+PGNiYzpMaW5lRXh0ZW5zaW9uQW1vdW50IGN1cnJlbmN5SUQ9IkFVRCI+LTEyOS4wNDwvY2JjOkxpbmVFeHRlbnNpb25BbW91bnQ+PGNhYzpJdGVtPjxjYmM6TmFtZT5BZGp1c3RtZW50IC0gcmV2ZXJzZSBwcmlvciBFbGVjdHJpY2l0eSBjaGFyZ2VzIC0gYWxsIGRheSByYXRlIE5NSSA5MDAwMDc0Njc3PC9jYmM6TmFtZT48Y2FjOkNsYXNzaWZpZWRUYXhDYXRlZ29yeT48Y2JjOklEPlM8L2NiYzpJRD48Y2JjOlBlcmNlbnQ+MTA8L2NiYzpQZXJjZW50PjxjYWM6VGF4U2NoZW1lPjxjYmM6SUQ+R1NUPC9jYmM6SUQ+PC9jYWM6VGF4U2NoZW1lPjwvY2FjOkNsYXNzaWZpZWRUYXhDYXRlZ29yeT48L2NhYzpJdGVtPjxjYWM6UHJpY2U+PGNiYzpQcmljZUFtb3VudCBjdXJyZW5jeUlEPSJBVUQiPjAuMzk2ODwvY2JjOlByaWNlQW1vdW50PjwvY2FjOlByaWNlPjwvY2FjOkludm9pY2VMaW5lPjxjYWM6SW52b2ljZUxpbmU+PGNiYzpJRD4yPC9jYmM6SUQ+PGNiYzpJbnZvaWNlZFF1YW50aXR5IHVuaXRDb2RlPSJEQVkiPi0zMTwvY2JjOkludm9pY2VkUXVhbnRpdHk+PGNiYzpMaW5lRXh0ZW5zaW9uQW1vdW50IGN1cnJlbmN5SUQ9IkFVRCI+LTMwLjM5PC9jYmM6TGluZUV4dGVuc2lvbkFtb3VudD48Y2FjOkl0ZW0+PGNiYzpOYW1lPkFkanVzdG1lbnQgLSByZXZlcnNlIHByaW9yIFN1cHBseSBjaGFyZ2U8L2NiYzpOYW1lPjxjYWM6Q2xhc3NpZmllZFRheENhdGVnb3J5PjxjYmM6SUQ+UzwvY2JjOklEPjxjYmM6UGVyY2VudD4xMDwvY2JjOlBlcmNlbnQ+PGNhYzpUYXhTY2hlbWU+PGNiYzpJRD5HU1Q8L2NiYzpJRD48L2NhYzpUYXhTY2hlbWU+PC9jYWM6Q2xhc3NpZmllZFRheENhdGVnb3J5PjwvY2FjOkl0ZW0+PGNhYzpQcmljZT48Y2JjOlByaWNlQW1vdW50IGN1cnJlbmN5SUQ9IkFVRCI+MC45ODAzPC9jYmM6UHJpY2VBbW91bnQ+PC9jYWM6UHJpY2U+PC9jYWM6SW52b2ljZUxpbmU+PC9JbnZvaWNlPg==",
+      "fields": {
+        "AccountingCustomerParty": {
+          "Party": {
+            "Contact": {
+              "Name": "Lisa Johnson"
+            },
+            "EndpointID": {
+              "@value": "47555222000",
+              "schemeID": "0151"
+            },
+            "PartyIdentification": {
+              "ID": "AccountNumber123"
+            },
+            "PartyLegalEntity": {
+              "CompanyID": {
+                "@value": "91888222000",
+                "schemeID": "0151"
+              },
+              "RegistrationName": "Trotters Incorporated"
+            },
+            "PostalAddress": {
+              "CityName": "Sydney",
+              "Country": {
+                "IdentificationCode": "AU"
+              },
+              "CountrySubentity": "NSW",
+              "PostalZone": "2000",
+              "StreetName": "100 Queen Street"
+            }
+          }
+        },
+        "AccountingSupplierParty": {
+          "Party": {
+            "EndpointID": {
+              "@value": "47555222000",
+              "schemeID": "0151"
+            },
+            "PartyLegalEntity": {
+              "CompanyID": {
+                "@value": "47555222000",
+                "schemeID": "0151"
+              },
+              "RegistrationName": "Grey Roo Energy"
+            },
+            "PostalAddress": {
+              "CityName": "Harrison",
+              "Country": {
+                "IdentificationCode": "AU"
+              },
+              "CountrySubentity": "NSW",
+              "PostalZone": "2912"
+            }
+          }
+        },
+        "AdditionalDocumentReference": {
+          "Attachment": {
+            "EmbeddedDocumentBinaryObject": {
+              "@value": "UGxhaW4gdGV4dCBpbiBwbGFjZSBvZiBwZGYgYXR0YWNobWVudCBmb3Igc2FtcGxlIGludm9pY2Vz",
+              "filename": "Invoice03.pdf",
+              "mimeCode": "application/pdf"
+            }
+          },
+          "ID": "Invoice03.pdf"
+        },
+        "BillingReference": {
+          "InvoiceDocumentReference": {
+            "ID": "Invoice01",
+            "IssueDate": "2022-07-29"
+          }
+        },
+        "BuyerReference": "Simple solar plan",
+        "DocumentCurrencyCode": "AUD",
+        "ID": "Invoice03",
+        "InvoiceLine": [
+          {
+            "ID": "1",
+            "InvoicedQuantity": {
+              "@value": "-325.2",
+              "unitCode": "KWH"
+            },
+            "Item": {
+              "ClassifiedTaxCategory": {
+                "ID": "S",
+                "Percent": "10",
+                "TaxScheme": {
+                  "ID": "GST"
+                }
+              },
+              "Name": "Adjustment - reverse prior Electricity charges - all day rate NMI 9000074677"
+            },
+            "LineExtensionAmount": {
+              "@value": "-129.04",
+              "currencyID": "AUD"
+            },
+            "Price": {
+              "PriceAmount": {
+                "@value": "0.3968",
+                "currencyID": "AUD"
+              }
+            }
+          },
+          {
+            "ID": "2",
+            "InvoicedQuantity": {
+              "@value": "-31",
+              "unitCode": "DAY"
+            },
+            "Item": {
+              "ClassifiedTaxCategory": {
+                "ID": "S",
+                "Percent": "10",
+                "TaxScheme": {
+                  "ID": "GST"
+                }
+              },
+              "Name": "Adjustment - reverse prior Supply charge"
+            },
+            "LineExtensionAmount": {
+              "@value": "-30.39",
+              "currencyID": "AUD"
+            },
+            "Price": {
+              "PriceAmount": {
+                "@value": "0.9803",
+                "currencyID": "AUD"
+              }
+            }
+          }
+        ],
+        "InvoicePeriod": {
+          "EndDate": "2022-07-15",
+          "StartDate": "2022-06-15"
+        },
+        "InvoiceTypeCode": "380",
+        "IssueDate": "2022-07-31",
+        "LegalMonetaryTotal": {
+          "LineExtensionAmount": {
+            "@value": "-159.43",
+            "currencyID": "AUD"
+          },
+          "PayableAmount": {
+            "@value": "-175.37",
+            "currencyID": "AUD"
+          },
+          "TaxExclusiveAmount": {
+            "@value": "-159.43",
+            "currencyID": "AUD"
+          },
+          "TaxInclusiveAmount": {
+            "@value": "-175.37",
+            "currencyID": "AUD"
+          }
+        },
+        "Note": "Adjustment note to reverse prior bill Invoice01. Free text field can bring attention to reason for credit etc.",
+        "TaxTotal": {
+          "TaxAmount": {
+            "@value": "-15.94",
+            "currencyID": "AUD"
+          },
+          "TaxSubtotal": {
+            "TaxAmount": {
+              "@value": "-15.94",
+              "currencyID": "AUD"
+            },
+            "TaxCategory": {
+              "ID": "S",
+              "Percent": "10",
+              "TaxScheme": {
+                "ID": "GST"
+              }
+            },
+            "TaxableAmount": {
+              "@value": "-159.43",
+              "currencyID": "AUD"
+            }
+          }
+        }
+      },
+      "id": 2,
+      "is_gui": false,
+      "is_ready": true,
+      "name": "uploadInvoice.xml",
+      "rule": "AUNZ_PEPPOL_1_0_10",
+      "user_id": 1
+    }
+  ]  
+}
