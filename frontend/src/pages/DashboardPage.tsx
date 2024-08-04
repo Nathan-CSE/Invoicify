@@ -16,47 +16,66 @@ import { ReactComponent as CogSvg } from '../assets/settings.svg';
 import { ReactComponent as DocSvg } from '../assets/documentation.svg';
 import PageHeader from '../components/PageHeader';
 
-// Current Idea -> For loop to create each grid item and card to make it so we dont have to repeat code
-// Wow yeap
-// - The svgs have the name corresponding to the options -> just make it lower
-// - Assign a custom string based on the option value -> Switch case
-// - Issue: Have to integrate cardaction and usenavigate here... so?? figure that out yeah
-
 function DashboardPage(props: {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  console.log(props.token);
   useAuth(props.token);
 
   interface dashboardCardInfo {
     svg: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
     route: string;
+    cy: string;
   }
 
   interface dashboardDict {
     [key: string]: dashboardCardInfo;
   }
 
-  // REPLACE your route to the page when implemented
   const options = {
-    'Create/Upload an Invoice': { svg: PenSvg, route: '/invoice-creation' },
-    'Validate an Invoice': { svg: TickSvg, route: '/invoice-validation' },
-    'Send an Invoice': { svg: SendSvg, route: '/invoice-sending' },
-    'Manage Invoices': { svg: ManageSvg, route: '/invoice-management' },
-    'Account Settings': { svg: CogSvg, route: '/settings' },
-    'Documentation Info': { svg: DocSvg, route: '/documentation' },
+    'Create/Upload an Invoice': {
+      svg: PenSvg,
+      route: '/invoice-creation',
+      cy: 'dashboard-creation',
+    },
+    'Validate an Invoice': {
+      svg: TickSvg,
+      route: '/invoice-validation',
+      cy: 'dashboard-validation',
+    },
+    'Send an Invoice': {
+      svg: SendSvg,
+      route: '/invoice-sending',
+      cy: 'dashboard-sending',
+    },
+    'Manage Invoices': {
+      svg: ManageSvg,
+      route: '/invoice-management',
+      cy: 'dashboard-management',
+    },
+    'Account Settings': {
+      svg: CogSvg,
+      route: '/settings',
+      cy: 'dashboard-settings',
+    },
+    'Documentation Info': {
+      svg: DocSvg,
+      route: '/documentation',
+      cy: 'dashboard-documentation',
+    },
   };
 
   const breadcrumbNav = {
-    'Dashboard': '/dashboard'
-  }
+    Dashboard: '/dashboard',
+  };
 
-  // Function to generate the dashboard card
-  function generateOptions(options: dashboardDict): JSX.Element[] {
+  // Function to generate the dashboard cards
+  // Sets up the route, the relevant image and naming
+  const generateOptions = (options: dashboardDict): JSX.Element[] => {
     return Object.entries(options).map(([name, items], index) => (
       <Grid key={index} item>
         <Card
+          data-cy={items.cy}
           component={Link}
           to={items.route}
           sx={{
@@ -81,12 +100,11 @@ function DashboardPage(props: {
         </Card>
       </Grid>
     ));
-  }
+  };
 
   return (
     <>
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-
         <PageHeader HeaderTitle={'Welcome!'} BreadcrumbDict={breadcrumbNav} />
 
         <Grid

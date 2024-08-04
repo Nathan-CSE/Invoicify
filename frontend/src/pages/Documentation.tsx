@@ -1,23 +1,20 @@
-import {
-  Box,
-  Container,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Box, Container, Stack, Typography } from '@mui/material';
 import useAuth from '../helpers/useAuth';
 import PageHeader from '../components/PageHeader';
 
 function DocPage(props: { token: string }) {
   useAuth(props.token);
   const breadcrumbNav = {
-    'Dashboard': '/dashboard',
-    'Documentation': '/documentation'
-  }
+    Dashboard: '/dashboard',
+    Documentation: '/documentation',
+  };
 
   return (
     <Container maxWidth='lg' sx={{ mt: 11 }}>
-
-      <PageHeader HeaderTitle={'Documentation'} BreadcrumbDict={breadcrumbNav} />
+      <PageHeader
+        HeaderTitle={'Documentation'}
+        BreadcrumbDict={breadcrumbNav}
+      />
 
       <Stack spacing={3} sx={{ mt: 5, mb: 10 }}>
         <Typography variant='h4' gutterBottom>

@@ -1,0 +1,243 @@
+{
+  "statusCode": 200,
+  "body": [
+    {
+      "completed_ubl": null,
+      "fields": {
+        "BillingAddress": "Street Address Line 01, Street Address Line 02",
+        "BillingName": "CUSTOMER NAME",
+        "CustomerName": "CUSTOMER NAME",
+        "InvoiceDate": "MM/DD/YYYY",
+        "InvoiceId": "0000",
+        "InvoiceLine": [
+          {
+            "Amount": "000",
+            "Description": "Text",
+            "Quantity": "000",
+            "Tax": "$00.00",
+            "UnitPrice": "000"
+          },
+          {
+            "Amount": "000",
+            "Description": "Text",
+            "Quantity": "000",
+            "Tax": "$00.00",
+            "UnitPrice": "000"
+          },
+          {
+            "Amount": "000",
+            "Description": "Text",
+            "Quantity": "000",
+            "Tax": "$00.00",
+            "UnitPrice": "000"
+          },
+          {
+            "Amount": "000",
+            "Description": "Text",
+            "Quantity": "000",
+            "Tax": "$00.00",
+            "UnitPrice": "000"
+          }
+        ],
+        "PaymentTerms": "Text Here",
+        "TotalAmount": "$00.00",
+        "TotalTaxorVAT": "$00.00",
+        "VendorAddress": "Street Address Line 01, Street Address Line 02",
+        "VendorName": "Your Company"
+      },
+      "id": 1,
+      "is_gui": false,
+      "is_ready": false,
+      "name": "OCRinvoice.xml",
+      "rule": null,
+      "user_id": 1
+    },
+    {
+      "completed_ubl": null,
+      "fields": {
+        "AccountingCustomerParty": {
+          "Party": {
+            "Contact": {
+              "Name": "Lisa Johnson"
+            },
+            "EndpointID": {
+              "@value": "47555222000",
+              "schemeID": "0151"
+            },
+            "PartyIdentification": {
+              "ID": "AccountNumber123"
+            },
+            "PartyLegalEntity": {
+              "CompanyID": {
+                "@value": "91888222000",
+                "schemeID": "0151"
+              },
+              "RegistrationName": "Trotters Incorporated"
+            },
+            "PostalAddress": {
+              "CityName": "Sydney",
+              "Country": {
+                "IdentificationCode": "AU"
+              },
+              "CountrySubentity": "NSW",
+              "PostalZone": "2000",
+              "StreetName": "100 Queen Street"
+            }
+          }
+        },
+        "AccountingSupplierParty": {
+          "Party": {
+            "EndpointID": {
+              "@value": "47555222000",
+              "schemeID": "0151"
+            },
+            "PartyLegalEntity": {
+              "CompanyID": {
+                "@value": "47555222000",
+                "schemeID": "0151"
+              },
+              "RegistrationName": "Grey Roo Energy"
+            },
+            "PostalAddress": {
+              "CityName": "Harrison",
+              "Country": {
+                "IdentificationCode": "AU"
+              },
+              "CountrySubentity": "NSW",
+              "PostalZone": "2912"
+            }
+          }
+        },
+        "AdditionalDocumentReference": {
+          "Attachment": {
+            "EmbeddedDocumentBinaryObject": {
+              "@value": "UGxhaW4gdGV4dCBpbiBwbGFjZSBvZiBwZGYgYXR0YWNobWVudCBmb3Igc2FtcGxlIGludm9pY2Vz",
+              "filename": "Invoice03.pdf",
+              "mimeCode": "application/pdf"
+            }
+          },
+          "ID": "Invoice03.pdf"
+        },
+        "BillingReference": {
+          "InvoiceDocumentReference": {
+            "ID": "Invoice01",
+            "IssueDate": "2022-07-29"
+          }
+        },
+        "BuyerReference": "Simple solar plan",
+        "DocumentCurrencyCode": "AUD",
+        "ID": "Invoice03",
+        "InvoiceLine": [
+          {
+            "ID": "1",
+            "InvoicedQuantity": {
+              "@value": "-325.2",
+              "unitCode": "KWH"
+            },
+            "Item": {
+              "ClassifiedTaxCategory": {
+                "ID": "S",
+                "Percent": "10",
+                "TaxScheme": {
+                  "ID": "GST"
+                }
+              },
+              "Name": "Adjustment - reverse prior Electricity charges - all day rate NMI 9000074677"
+            },
+            "LineExtensionAmount": {
+              "@value": "-129.04",
+              "currencyID": "AUD"
+            },
+            "Price": {
+              "PriceAmount": {
+                "@value": "0.3968",
+                "currencyID": "AUD"
+              }
+            }
+          },
+          {
+            "ID": "2",
+            "InvoicedQuantity": {
+              "@value": "-31",
+              "unitCode": "DAY"
+            },
+            "Item": {
+              "ClassifiedTaxCategory": {
+                "ID": "S",
+                "Percent": "10",
+                "TaxScheme": {
+                  "ID": "GST"
+                }
+              },
+              "Name": "Adjustment - reverse prior Supply charge"
+            },
+            "LineExtensionAmount": {
+              "@value": "-30.39",
+              "currencyID": "AUD"
+            },
+            "Price": {
+              "PriceAmount": {
+                "@value": "0.9803",
+                "currencyID": "AUD"
+              }
+            }
+          }
+        ],
+        "InvoicePeriod": {
+          "EndDate": "2022-07-15",
+          "StartDate": "2022-06-15"
+        },
+        "InvoiceTypeCode": "380",
+        "IssueDate": "2022-07-31",
+        "LegalMonetaryTotal": {
+          "LineExtensionAmount": {
+            "@value": "-159.43",
+            "currencyID": "AUD"
+          },
+          "PayableAmount": {
+            "@value": "-175.37",
+            "currencyID": "AUD"
+          },
+          "TaxExclusiveAmount": {
+            "@value": "-159.43",
+            "currencyID": "AUD"
+          },
+          "TaxInclusiveAmount": {
+            "@value": "-175.37",
+            "currencyID": "AUD"
+          }
+        },
+        "Note": "Adjustment note to reverse prior bill Invoice01. Free text field can bring attention to reason for credit etc.",
+        "TaxTotal": {
+          "TaxAmount": {
+            "@value": "-15.94",
+            "currencyID": "AUD"
+          },
+          "TaxSubtotal": {
+            "TaxAmount": {
+              "@value": "-15.94",
+              "currencyID": "AUD"
+            },
+            "TaxCategory": {
+              "ID": "S",
+              "Percent": "10",
+              "TaxScheme": {
+                "ID": "GST"
+              }
+            },
+            "TaxableAmount": {
+              "@value": "-159.43",
+              "currencyID": "AUD"
+            }
+          }
+        }
+      },
+      "id": 2,
+      "is_gui": false,
+      "is_ready": false,
+      "name": "uploadInvoice.xml",
+      "rule": null,
+      "user_id": 1
+    }
+  ]
+}

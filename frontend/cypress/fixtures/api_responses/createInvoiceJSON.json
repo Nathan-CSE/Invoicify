@@ -1,0 +1,9 @@
+{
+  "data": [
+    {
+      "filename": "uploadInvoice.xml",
+      "invoiceId": 2
+    }
+  ],
+  "message": "Invoice(s) created successfully"
+}

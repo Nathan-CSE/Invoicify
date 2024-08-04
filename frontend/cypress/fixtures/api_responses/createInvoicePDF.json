@@ -1,0 +1,9 @@
+{
+  "data": [
+    {
+      "filename": "OCRinvoice.xml",
+      "invoiceId": 1
+    }
+  ],
+  "message": "Invoice(s) created successfully"
+}

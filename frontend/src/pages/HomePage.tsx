@@ -14,7 +14,6 @@ function HomePage(props: { token: string }) {
   checkAuth(props.token);
 
   React.useEffect(() => {
-    console.log('HOME');
     props.token === '' ? navigate('/') : navigate('/dashboard');
   }, [props.token]);
 
@@ -27,13 +26,13 @@ function HomePage(props: { token: string }) {
               About us
             </Typography>
             <Typography variant='body1' gutterBottom>
-              Invoicify is an invoicing web service to streamline 
-              the logistics of payments for vendors. Our solution is 
-              targeted towards the SMEs who lack reliable modern solutions for 
-              e-invoice creation, validation, and sending. 
-              Invoicify is a one stop ecosystem, we will handle everything 
-              a user can do with invoices, from creation from the seller’s extracted data, 
-              to sending it to the recipient’s email address.
+              Invoicify is an invoicing web service to streamline the logistics
+              of payments for vendors. Our solution is targeted towards the SMEs
+              who lack reliable modern solutions for e-invoice creation,
+              validation, and sending. Invoicify is a one stop ecosystem, we
+              will handle everything a user can do with invoices, from creation
+              from the seller’s extracted data, to sending it to the recipient’s
+              email address.
             </Typography>
           </Box>
           <Box>
@@ -69,10 +68,7 @@ function HomePage(props: { token: string }) {
             >
               <PenSvg />
             </Box>
-            <Typography
-              variant='subtitle1'
-              sx={{ fontWeight: 'bold', mt: 2 }}
-            >
+            <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mt: 2 }}>
               INVOICE CREATION
             </Typography>
           </Box>
@@ -91,15 +87,10 @@ function HomePage(props: { token: string }) {
             >
               <TickSvg />
             </Box>
-            <Typography
-              variant='subtitle1'
-              sx={{ fontWeight: 'bold', mt: 2 }}
-            >
+            <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mt: 2 }}>
               INVOICE VALIDATION
             </Typography>
           </Box>
-
-
 
           <Box sx={{ alignContent: 'center', textAlign: 'center' }}>
             <Box
@@ -115,15 +106,11 @@ function HomePage(props: { token: string }) {
             >
               <SendSvg />
             </Box>
-            <Typography
-              variant='subtitle1'
-              sx={{ fontWeight: 'bold', mt: 2 }}
-            >
+            <Typography variant='subtitle1' sx={{ fontWeight: 'bold', mt: 2 }}>
               INVOICE SENDING
             </Typography>
           </Box>
         </Box>
-
       </Container>
     </>
   );

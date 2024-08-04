@@ -4,44 +4,39 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
-import LayersIcon from '@mui/icons-material/Layers';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
 import HomeIcon from '@mui/icons-material/Home';
 
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import TemporaryDrawer from './Drawer';
 
 function Navbar(props: {
   token: string;
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
-  const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
 
-  // Replace with API call later
-  function logout() {
+  const logout = () => {
     localStorage.removeItem('token');
     props.setToken('');
-    // Temporary Solution before backend TOKEN auth is done
-    // REMOVE WHEN FEATURE IS ADDED
     localStorage.removeItem('email');
-  }
+  };
+
   // Creates the Login OR logout button dynamically
-  function buttonCreation() {
+  const buttonCreation = () => {
     if (props.token) {
       return (
         <Button
+          data-cy='logout'
           component={Link}
           to='/sign-in'
           startIcon={<LogoutIcon />}
           variant='contained'
           color='secondary'
           onClick={logout}
-      >
+        >
           Logout
         </Button>
       );
@@ -49,6 +44,8 @@ function Navbar(props: {
       if (currentPath == '/') {
         return (
           <Button
+            data-cy='login'
+            title='LoginButton'
             component={Link}
             to='/sign-in'
             startIcon={<LoginIcon />}
@@ -70,10 +67,9 @@ function Navbar(props: {
             Back to home page
           </Button>
         );
-
       }
     }
-  }
+  };
 
   return (
     <Box
@@ -95,7 +91,12 @@ function Navbar(props: {
             <></>
           )}
 
-          <Typography variant='h4' fontWeight={"bold"} component='div' sx={{ flexGrow: 1 }}>
+          <Typography
+            variant='h4'
+            fontWeight={'bold'}
+            component='div'
+            sx={{ flexGrow: 1 }}
+          >
             Invoicify
           </Typography>
           {buttonCreation()}

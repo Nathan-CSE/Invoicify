@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -12,35 +11,40 @@ import SendIcon from '@mui/icons-material/Send';
 import useAuth from '../../helpers/useAuth';
 import PageHeader from '../../components/PageHeader';
 
-export default function InvoiceSending(props: { token: string; }) {
+function InvoiceSending(props: { token: string }) {
   useAuth(props.token);
   const breadcrumbNav = {
-    'Dashboard': '/dashboard',
+    Dashboard: '/dashboard',
     'Invoice Sending': '/invoice-sending',
-    'Invoice Sending Confirmation': '/invoice-sending-confirmation'
-  }
-  
-  console.log('user token: ', props.token);
-  console.log("location state: ", useLocation().state);
+    'Invoice Sending Confirmation': '/invoice-sending-confirmation',
+  };
+
   const { invoiceNames, recipientEmail } = useLocation().state;
 
   return (
     <>
-     
-      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-
-        <PageHeader HeaderTitle={'Invoice Sending Confirmation'} BreadcrumbDict={breadcrumbNav} />
+      <Container maxWidth='lg' sx={{ marginTop: 11 }}>
+        <PageHeader
+          HeaderTitle={'Invoice Sending Confirmation'}
+          BreadcrumbDict={breadcrumbNav}
+        />
 
         <Box textAlign='center' sx={{ mt: 5 }}>
-          <Typography variant='h4' sx={{ mb: 1 }}>
+          <Typography data-cy='send-confirmation' variant='h4' sx={{ mb: 1 }}>
             Your file(s) have been sent!
           </Typography>
           <Typography variant='h6'>
-            <SendIcon style={{ marginBottom: -5, marginRight: 10 }}/>{recipientEmail}
+            <SendIcon style={{ marginBottom: -5, marginRight: 10 }} />
+            {recipientEmail}
           </Typography>
         </Box>
 
-        <Grid container spacing={4} sx={{ mt: 1, mb: 5 }} justifyContent="center">
+        <Grid
+          container
+          spacing={4}
+          sx={{ mt: 1, mb: 5 }}
+          justifyContent='center'
+        >
           {invoiceNames.map((invoice: string, index: number) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card
@@ -55,25 +59,31 @@ export default function InvoiceSending(props: { token: string; }) {
                 }}
               >
                 <CardContent>
-                  <InvoiceSvg style={{ width: '100px', height: '100px', marginBottom: '16px' }} />
+                  <InvoiceSvg
+                    style={{
+                      width: '100px',
+                      height: '100px',
+                      marginBottom: '16px',
+                    }}
+                  />
                   <Typography variant='h6' component='div'>
                     {invoice}
                   </Typography>
-                </CardContent> 
+                </CardContent>
               </Card>
             </Grid>
           ))}
         </Grid>
 
-        <Divider 
-          sx={{ 
+        <Divider
+          sx={{
             mt: 6,
             mb: 4,
             borderBottomWidth: 2,
           }}
         />
 
-        <Grid container justifyContent="center" spacing={6}>
+        <Grid container justifyContent='center' spacing={6}>
           <Grid item>
             <Button
               component={Link}
@@ -89,7 +99,8 @@ export default function InvoiceSending(props: { token: string; }) {
           </Grid>
         </Grid>
       </Container>
-      
     </>
   );
 }
+
+export default InvoiceSending;

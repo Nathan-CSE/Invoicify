@@ -1,21 +1,14 @@
 import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+// Helper function to check the user is authenticated to redirect them if necessary
 const useAuth = (token: string) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   const checktoken = localStorage.getItem('token');
 
-  const unAuthRoutes = ['/', '/sign-in', '/sign-up', '/reset-pw']
-
-  // useEffect(() => {
-  //   if (!token) {
-  //     navigate('/sign-in');
-  //   } else if (token && unAuthRoutes.includes(location.pathname)) {
-  //     navigate('/dashboard');
-  //   }
-  // }, [token, navigate]);
+  const unAuthRoutes = ['/', '/sign-in', '/sign-up', '/reset-pw'];
 
   useEffect(() => {
     if (!checktoken) {

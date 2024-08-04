@@ -27,9 +27,10 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import RuleIcon from '@mui/icons-material/Rule';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EditIcon from '@mui/icons-material/Edit';
+import useAuth from '../../helpers/useAuth';
 
-export default function InvoiceManagement(props: { token: string }) {
-  // useAuth(props.token);
+function InvoiceManagement(props: { token: string }) {
+  useAuth(props.token);
 
   const navigate = useNavigate();
   const [loading, setLoading] = React.useState(false);
@@ -75,11 +76,7 @@ export default function InvoiceManagement(props: { token: string }) {
 
   const handleCardClick =
     (id: number) => (event: React.MouseEvent<HTMLButtonElement>) => {
-      // alert(1);
-      // console.log(id);
       let cardDetails = details.get(id);
-      console.log(cardDetails);
-      console.log(details);
       let cardFields = cardDetails?.fields;
       navigate('/invoice-preview-history', {
         state: {
@@ -90,6 +87,7 @@ export default function InvoiceManagement(props: { token: string }) {
         },
       });
     };
+
   // Just to fetch data on load
   const getDetails = async () => {
     setLoading(true);
@@ -154,16 +152,17 @@ export default function InvoiceManagement(props: { token: string }) {
     }
   };
 
-  function generateInvoiceCards(): JSX.Element[] {
-    // Object.values(details).map((items
+  // Generates Invoice detail cards based on the retrieved data
+  const generateInvoiceCards = (): JSX.Element[] => {
     return Array.from(details.values()).map((items) => (
       <Grid key={items.id} item>
         <Card
+          data-cy='invoice-card'
           sx={{
             border: 1,
             borderRadius: '16px',
             width: '20rem',
-            height: '24rem',
+            height: '28rem',
             alignContent: 'center',
             textAlign: 'center',
             display: 'flex',
@@ -216,11 +215,14 @@ export default function InvoiceManagement(props: { token: string }) {
                   </Typography>
                 </Stack>
 
-
-
                 {items.is_gui && (
                   <>
-                    <Stack direction='row' spacing={1} sx={{ my: 1 }} alignItems="center">
+                    <Stack
+                      direction='row'
+                      spacing={1}
+                      sx={{ my: 1 }}
+                      alignItems='center'
+                    >
                       <EditIcon />
                       <Typography variant='subtitle1' gutterBottom>
                         Editable
@@ -228,7 +230,6 @@ export default function InvoiceManagement(props: { token: string }) {
                     </Stack>
                   </>
                 )}
-
 
                 {items.is_ready ? (
                   <>
@@ -277,7 +278,7 @@ export default function InvoiceManagement(props: { token: string }) {
         </Card>
       </Grid>
     ));
-  }
+  };
 
   React.useEffect(() => {
     setFilterValue('id');
@@ -340,7 +341,6 @@ export default function InvoiceManagement(props: { token: string }) {
           container
           spacing={9}
           alignItems='center'
-          // justifyContent='center'
           sx={{
             mt: 0,
             display: 'flex',
@@ -358,3 +358,5 @@ export default function InvoiceManagement(props: { token: string }) {
     </>
   );
 }
+
+export default InvoiceManagement;

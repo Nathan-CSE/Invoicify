@@ -1,0 +1,14 @@
+{
+  "statusCode": 200,
+  "body": {
+    "validationOutcome": [
+      {
+        "data": "Invoice validated successfully",
+        "invoiceId": 2,
+        "invoiceName": "uploadInvoice.xml",
+        "rule": "AUNZ_PEPPOL_1_0_10",
+        "validated": true
+      }
+    ]
+  }
+}

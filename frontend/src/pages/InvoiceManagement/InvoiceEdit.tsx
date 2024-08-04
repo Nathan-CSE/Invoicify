@@ -3,7 +3,7 @@ import CreationGUI from '../InvoiceCreation/CreationGUI';
 import { useLocation } from 'react-router-dom';
 import useAuth from '../../helpers/useAuth';
 
-export default function InvoiceEdit(props: { token: string }) {
+function InvoiceEdit(props: { token: string }) {
   useAuth(props.token);
   const location = useLocation();
 
@@ -20,3 +20,5 @@ export default function InvoiceEdit(props: { token: string }) {
     </>
   );
 }
+
+export default InvoiceEdit;
