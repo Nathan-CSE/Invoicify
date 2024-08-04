@@ -251,7 +251,9 @@ def test_pdf_create_sequence(client):
     assert res.status_code == 201
     user_token = res.json["token"]
 
-    data['files'] = [(io.BytesIO(base64.b64decode(TEST_DATA["PDF_1"])), 'test.pdf')]
+    data = {
+        "files": [(io.BytesIO(base64.b64decode(TEST_DATA["PDF_1"])), 'test.pdf')]
+    } 
 
     res = client.post(
         INVOICE_UPLOAD_CREATE_PATH,
