@@ -55,7 +55,7 @@ def send_attachment(send_to: list[str], text: str, ubl_data: list[tuple[str, str
     sender_email = os.getenv("EMAIL_USER")
     sender_pass = os.getenv("EMAIL_PASS")
 
-    if len(send_to) == 1 and send_to[0] == "":
+    if len(send_to) == 1 and send_to[0] == "TEST":
         return True 
 
     msg = MIMEMultipart()
@@ -93,43 +93,3 @@ def send_attachment(send_to: list[str], text: str, ubl_data: list[tuple[str, str
                 return False
         
     return True
-        
-def send_xml(send_to: list[str], text: str, file_name: str):
-    '''
-    Sends an email with an attachment
-
-    Arguments:
-        text (string)       - UBL
-        file_name (string)  - Attachment name
-
-    Return Value:
-        Returns 0 on success
-        -1 on fail
-    '''
-    load_dotenv()
-    context = ssl.create_default_context()
-    sender_email = os.getenv("EMAIL_USER")
-    sender_pass = os.getenv("EMAIL_PASS")
-
-    msg = MIMEMultipart()
-    msg['From'] = sender_email
-    msg['To'] = COMMASPACE.join(send_to)
-    msg['Date'] = formatdate(localtime=True)
-    msg['Subject'] = "Tax Invoice"
-
-    msg.attach(MIMEText(text))
-
-    file_data = MIMEApplication(
-        str.encode(text),
-        Name=basename(file_name)
-    )
-    file_data['Content-Disposition'] = 'attachment; filename="%s"' % basename(file_name)
-    msg.attach(file_data)
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
-        server.ehlo()
-        server.login(sender_email, sender_pass)
-        server.sendmail(sender_email, send_to, msg.as_string())
-
-    return 0
-if __name__ == "__main__":
-    send_xml([""], "Hey Loser", "test")

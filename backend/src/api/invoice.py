@@ -99,24 +99,6 @@ class SendEmailAPI(Resource):
             return make_response(jsonify({"message": "Successfully sent"}), 200)
         else:
             return make_response(jsonify({"message": "Was unable to be sent"}), 400)
-        
-        
-@invoice_ns.route("/save")
-class SaveAPI(Resource):
-    @invoice_ns.doc(
-        description="Ability to save UBLs from GUI",
-        body=invoice_ns.get_save_ubl_fields(),
-        responses={
-            201: 'Saved Successfully',
-            400: 'Bad request',
-        },
-    )
-    @token_required
-    def post(self, user: User) -> Response:
-        data = request.json
-        db_insert(Invoice(name=data["name"], fields=data["fields"], rule="AUNZ_PEPPOL_1_0_10", user_id=user.id, is_ready=False))
-        
-        return make_response(jsonify({"message": "UBL saved successfully"}), 201)
 
 @invoice_ns.route("/edit/<int:id>")
 class EditAPI(Resource):

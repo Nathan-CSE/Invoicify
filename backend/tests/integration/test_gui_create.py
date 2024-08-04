@@ -41,7 +41,7 @@ def test_gui_create_validate_send_interaction(client, user):
     assert res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -81,7 +81,7 @@ def test_gui_create_validate_fail_send_fail_interaction(client, user):
     assert not res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -149,7 +149,7 @@ def test_gui_create_validate_fail_edit_validate_send_interaction(client, user):
     assert res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -206,7 +206,7 @@ def test_gui_create_edit_validate_send_interaction(client, user):
     assert res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -263,7 +263,7 @@ def test_gui_create_edit_validate_fail_send_fail_interaction(client, user):
     assert not res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -332,7 +332,7 @@ def test_gui_create_validate_edit_validate_fail_send_fail_interaction(client, us
     assert not res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -390,7 +390,7 @@ def test_gui_create_validate_edit_send_fail_interaction(client, user):
     assert res.status_code == 204
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
