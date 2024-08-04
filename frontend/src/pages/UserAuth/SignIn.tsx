@@ -19,9 +19,11 @@ function SignIn(props: {
   setToken: React.Dispatch<React.SetStateAction<string>>;
 }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(false);
+
+  // Error handling
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
 
   if (props.token) {
     navigate('/dashboard');

@@ -1,14 +1,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import {
-  Button,
-  Container,
-  Divider,
-  TextField,
-  Snackbar,
-  Alert,
-} from '@mui/material';
+import { Button, Container, TextField, Snackbar, Alert } from '@mui/material';
 import ErrorModal from '../../components/ErrorModal';
 import SaveIcon from '@mui/icons-material/Save';
 import axios, { AxiosError } from 'axios';
@@ -18,11 +11,11 @@ import PageHeader from '../../components/PageHeader';
 
 function SettingsPage(props: { token: string }) {
   useAuth(props.token);
+  const [loading, setLoading] = React.useState(false);
 
   // Error Handling
   const [openError, setOpenError] = React.useState(false);
   const [error, setError] = React.useState('');
-  const [loading, setLoading] = React.useState(false);
 
   const breadcrumbNav = {
     Dashboard: '/dashboard',

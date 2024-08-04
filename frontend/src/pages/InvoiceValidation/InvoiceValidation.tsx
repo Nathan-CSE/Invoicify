@@ -8,106 +8,113 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { DropzoneArea } from "mui-file-dropzone";
-import axios from 'axios';
+import { DropzoneArea } from 'mui-file-dropzone';
+import axios, { AxiosError } from 'axios';
 import MultipleSelect from '../../components/MultipleSelect';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../../helpers/useAuth';
 import PageHeader from '../../components/PageHeader';
+import ErrorModal from '../../components/ErrorModal';
 
-export default function InvoiceValidation(props: { token: string; }) {
+function InvoiceValidation(props: { token: string }) {
   useAuth(props.token);
 
-  console.log('user token: ', props.token);
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
-  // const [invoice, setInvoice] = React.useState('');
   const [invoices, setInvoices] = React.useState<string[]>([]);
   const [ruleSet, setRuleSet] = React.useState<string[]>([]);
   const [files, setFiles] = React.useState<File[] | null>([]);
-  const [availableInvoices, setAvailableInvoices] = React.useState<{ invoiceId: number; name: string; }[]>([]);
+  const [availableInvoices, setAvailableInvoices] = React.useState<
+    { invoiceId: number; name: string }[]
+  >([]);
+
+  // Error handling
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
 
   const breadcrumbNav = {
-    'Dashboard': '/dashboard',
-    'Invoice Validation': '/invoice-validation'
-  }
+    Dashboard: '/dashboard',
+    'Invoice Validation': '/invoice-validation',
+  };
 
   const handleChange = (event: SelectChangeEvent<string[]>) => {
-    console.log('this is event.target: ', event.target);
     const { name, value } = event.target;
 
     if (name === 'rule-set') {
       setRuleSet(value as string[]);
     } else {
-      setInvoices( typeof value === 'string' ? value.split(',') : value);
+      setInvoices(typeof value === 'string' ? value.split(',') : value);
     }
-
   };
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
     if (files === null && invoices.length === 0) {
-      alert("You must either upload or select an xml file to create an invoice.");
+      setOpenError(true);
+      setError(
+        'You must either upload or select an xml file to create an invoice.'
+      );
+
       return;
     }
 
     const formData = new FormData();
 
     if (files) {
-      files.forEach(item => {
-        formData.append("files", item);
+      files.forEach((item) => {
+        formData.append('files', item);
       });
     }
 
-    console.log('this is formData: ', formData);
-    console.log('this is the rule set: ', ruleSet);
-    console.log('this is invoiceId: ', invoices);
-
     try {
-      // Placeholder until backend endpoint has been created
       var response;
       setLoading(true);
 
       if (files) {
-        response = await axios.post(`http://localhost:5000/invoice/uploadValidate?rules=${ruleSet}`, formData, {
-          headers: {
-            'Authorisation': `${props.token}`,
-            'Content-Type': 'multipart/form-data'
+        response = await axios.post(
+          `http://localhost:5000/invoice/uploadValidate?rules=${ruleSet}`,
+          formData,
+          {
+            headers: {
+              Authorisation: `${props.token}`,
+              'Content-Type': 'multipart/form-data',
+            },
           }
-        });
+        );
       } else {
-        response = await axios.get(`http://localhost:5000/invoice/validate?rules=${ruleSet}&id=${invoices}`, {
-          headers: {
-            'Authorisation': `${props.token}`,
+        response = await axios.get(
+          `http://localhost:5000/invoice/validate?rules=${ruleSet}&id=${invoices}`,
+          {
+            headers: {
+              Authorisation: `${props.token}`,
+            },
           }
-        });
-
+        );
       }
-      
+
       setLoading(false);
-      
+
       if (response.status === 200) {
-        console.log("api resonse: ", response);
-        // navigate('/invoice-validation-report', { state: { fileName: files && files[0].name, ruleSet: ruleSet } });
-        navigate('/invoice-validation-report', { state: { response: response.data, ruleSet: ruleSet } });
-        
+        navigate('/invoice-validation-report', {
+          state: { response: response.data, ruleSet: ruleSet },
+        });
       } else {
-        console.log("api resonse: ", response);
-        navigate('/invoice-validation-report', { state: { response: response.data, ruleSet: ruleSet } });
+        navigate('/invoice-validation-report', {
+          state: { response: response.data, ruleSet: ruleSet },
+        });
       }
     } catch (err) {
       setLoading(false);
-      console.error(err);
-      alert("Unable to validate invoice. Make sure the XML file itself is complete and has no syntactic errors.");
+      setOpenError(true);
+      setError(
+        'Unable to validate invoice. Make sure the XML file itself is complete and has no syntactic errors.'
+      );
     }
-
   };
 
   const handleFileChange = (loadedFiles: File[]) => {
-    console.log('Currently loaded:', loadedFiles);
     if (loadedFiles.length > 0) {
       setFiles(loadedFiles);
       setInvoices([]); // Clear invoice selection if a file is uploaded
@@ -119,47 +126,56 @@ export default function InvoiceValidation(props: { token: string; }) {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-
-        const response = await axios.get('http://localhost:5000/invoice/history?is_ready=false', {
-          headers: {
-            'Authorisation': `${props.token}`,
+        const response = await axios.get(
+          'http://localhost:5000/invoice/history?is_ready=false',
+          {
+            headers: {
+              Authorisation: `${props.token}`,
+            },
           }
-        });
-        
+        );
+
         var allInvoices = [];
-        
+
         if (response.status === 200) {
           for (let i = 0; i < response.data.length; i++) {
             var invoiceInfo = {
               name: response.data[i].name,
-              invoiceId: response.data[i].id
-            }
-           
-            allInvoices.push(invoiceInfo);
-          } 
-          console.log(response.data);
-          setAvailableInvoices(allInvoices);
+              invoiceId: response.data[i].id,
+            };
 
+            allInvoices.push(invoiceInfo);
+          }
+
+          setAvailableInvoices(allInvoices);
         } else {
-          console.log(response);
-          alert("Unable to retrieve valid invoices");
+          setOpenError(true);
+          setError('Unable to retrieve valid invoices');
         }
-      } catch (err) {
+      } catch (error) {
         setLoading(false);
-        alert(err);
+        const err = error as AxiosError<{ message: string }>;
+        if (err.response) {
+          setOpenError(true);
+          setError(err.response.data.message);
+        } else if (error instanceof Error) {
+          setOpenError(true);
+          setError(error.message);
+        }
       }
     };
-  
+
     fetchData();
   }, []);
-
 
   return (
     <>
       <LoadingDialog open={loading} message='Validating invoice(s)...' />
-      <Container maxWidth="lg" sx={{ marginTop: 11 }}>
-
-        <PageHeader HeaderTitle={'Invoice Validation'} BreadcrumbDict={breadcrumbNav} />
+      <Container maxWidth='lg' sx={{ marginTop: 11 }}>
+        <PageHeader
+          HeaderTitle={'Invoice Validation'}
+          BreadcrumbDict={breadcrumbNav}
+        />
 
         <form onSubmit={handleSubmit}>
           <Box sx={{ my: 5 }}>
@@ -176,28 +192,45 @@ export default function InvoiceValidation(props: { token: string; }) {
             OR
           </Typography>
 
-          <MultipleSelect invoices={invoices} availableInvoices={availableInvoices} file={files} handleChange={handleChange} />
+          <MultipleSelect
+            invoices={invoices}
+            availableInvoices={availableInvoices}
+            file={files}
+            handleChange={handleChange}
+          />
 
           <Box sx={{ minWidth: 120, my: 3 }}>
-            <FormControl variant="standard" fullWidth>
-              <InputLabel id="select-rule-set">Rule Set</InputLabel>
+            <FormControl variant='standard' fullWidth>
+              <InputLabel id='select-rule-set'>Rule Set</InputLabel>
               <Select
                 data-cy='validation-select'
                 labelId='select-rule-set'
                 id='rule-set'
                 name='rule-set'
                 value={ruleSet}
-                label="Rule Set"
+                label='Rule Set'
                 onChange={handleChange}
                 required
               >
-                <MenuItem value={'AUNZ_PEPPOL_1_0_10'}>AUNZ_PEPPOL_1_0_10</MenuItem>
-                <MenuItem value={'AUNZ_PEPPOL_SB_1_0_10'}>AUNZ_PEPPOL_SB_1_0_10</MenuItem>
+                <MenuItem value={'AUNZ_PEPPOL_1_0_10'}>
+                  AUNZ_PEPPOL_1_0_10
+                </MenuItem>
+                <MenuItem value={'AUNZ_PEPPOL_SB_1_0_10'}>
+                  AUNZ_PEPPOL_SB_1_0_10
+                </MenuItem>
                 <MenuItem value={'AUNZ_UBL_1_0_10'}>AUNZ_UBL_1_0_10</MenuItem>
-                <MenuItem value={'FR_EN16931_CII_1_3_11'}>FR_EN16931_CII_1_3_11</MenuItem>
-                <MenuItem value={'FR_EN16931_UBL_1_3_11'}>FR_EN16931_UBL_1_3_11</MenuItem>
-                <MenuItem value={'RO_RO16931_UBL_1_0_8_EN16931'}>RO_RO16931_UBL_1_0_8_EN16931</MenuItem>
-                <MenuItem value={'RO_RO16931_UBL_1_0_8_CIUS_RO'}>RO_RO16931_UBL_1_0_8_CIUS_RO</MenuItem>
+                <MenuItem value={'FR_EN16931_CII_1_3_11'}>
+                  FR_EN16931_CII_1_3_11
+                </MenuItem>
+                <MenuItem value={'FR_EN16931_UBL_1_3_11'}>
+                  FR_EN16931_UBL_1_3_11
+                </MenuItem>
+                <MenuItem value={'RO_RO16931_UBL_1_0_8_EN16931'}>
+                  RO_RO16931_UBL_1_0_8_EN16931
+                </MenuItem>
+                <MenuItem value={'RO_RO16931_UBL_1_0_8_CIUS_RO'}>
+                  RO_RO16931_UBL_1_0_8_CIUS_RO
+                </MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -217,7 +250,13 @@ export default function InvoiceValidation(props: { token: string; }) {
           </Box>
         </form>
       </Container>
-      
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
     </>
   );
 }
+
+export default InvoiceValidation;

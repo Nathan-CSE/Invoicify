@@ -20,27 +20,32 @@ import * as React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import DownloadIcon from '@mui/icons-material/Download';
 import { ReactComponent as ManageSvg } from '../../assets/manage.svg';
 import useAuth from '../../helpers/useAuth';
 import PageHeader from '../../components/PageHeader';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import ErrorModal from '../../components/ErrorModal';
 
-
-export default function HistoryPreviewInvoice(props: { token: string }) {
+function HistoryPreviewInvoice(props: { token: string }) {
   useAuth(props.token);
   const location = useLocation();
-  console.log('this is location: ', location);
   const name = location.state.name;
 
-  const [isSmallScreen, setIsSmallScreen] = React.useState(window.innerWidth <= 900);
+  const [isSmallScreen, setIsSmallScreen] = React.useState(
+    window.innerWidth <= 900
+  );
 
   const breadcrumbNav = {
-    'Dashboard': '/dashboard',
+    Dashboard: '/dashboard',
     'Invoice Management': '/invoice-management',
-    'Invoice Preview': '/invoice-preview-history'
-  }
+    'Invoice Preview': '/invoice-preview-history',
+  };
+
+  // Error handling
+  const [openError, setOpenError] = React.useState(false);
+  const [error, setError] = React.useState('');
 
   // Popover Info
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
@@ -71,12 +76,12 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
 
   const openPopover = Boolean(anchorEl);
   const id = openPopover ? 'simple-popover' : undefined;
-  console.log('this is invoice id: ', id);
+
   const [dataFields, setDataFields] = React.useState(location.state.fields);
-  console.log(dataFields);
+  // Checks if its a GUI made one or another file so we can display them
   const [invoiceType, setInvoiceType] = React.useState('JSON');
+
   React.useEffect(() => {
-    console.log(location.state);
     setInvoiceId(location.state.invoiceId);
     if (location.state.status) {
       const data = location.state.fields;
@@ -94,9 +99,6 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
 
   const handleDownload = async (event: any) => {
     event.preventDefault();
-
-    console.log('this is invoiceId, ', invoiceId);
-
     try {
       const response = await axios.post(
         `http://localhost:5000/invoice/download/${invoiceId}`,
@@ -117,18 +119,24 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
         );
         const link = document.createElement('a');
         link.href = url;
-        console.log(response.data['message']);
+
         link.setAttribute('download', name);
         document.body.appendChild(link);
         link.click();
         link.remove();
       } else {
-        console.log(response);
-        alert('Unable to create invoice');
+        setOpenError(true);
+        setError('Unable to download invoice');
       }
-    } catch (err) {
-      console.error(err);
-      alert(err);
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      if (err.response) {
+        setOpenError(true);
+        setError(err.response.data.message);
+      } else if (error instanceof Error) {
+        setOpenError(true);
+        setError(error.message);
+      }
     }
   };
 
@@ -148,7 +156,6 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
           )}`;
         } else {
           const val = value ? value : '';
-          // console.log(val);
           formattedString += `${indent}${key}: ${val}\n`;
         }
       }
@@ -160,7 +167,6 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
     console.log(dataFields);
     return (
       <>
-        {/* <Container maxWidth="lg" sx={{ marginTop: 11 }}> */}
         <Typography variant='h5' sx={{ mt: 4 }}>
           Invoice Header
         </Typography>
@@ -195,11 +201,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               Seller Information
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               ABN:{' '}
               {
                 dataFields.AccountingSupplierParty.Party.PartyLegalEntity
@@ -207,11 +209,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Company:{' '}
               {
                 dataFields.AccountingSupplierParty.Party.PartyLegalEntity
@@ -219,11 +217,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               {/* Address: {sellerInfo.companyAddress} */}
             </Typography>
 
@@ -231,11 +225,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               Postal Address
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Street Name:{' '}
               {
                 dataFields.AccountingSupplierParty.Party.PostalAddress
@@ -243,11 +233,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Additional Street Name:{' '}
               {
                 dataFields.AccountingSupplierParty.Party.PostalAddress
@@ -255,23 +241,12 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               City Name:{' '}
-              {
-                dataFields.AccountingSupplierParty.Party.PostalAddress
-                  .CityName
-              }
+              {dataFields.AccountingSupplierParty.Party.PostalAddress.CityName}
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Postal Code:{' '}
               {
                 dataFields.AccountingSupplierParty.Party.PostalAddress
@@ -279,11 +254,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Country:{' '}
               {
                 dataFields.AccountingSupplierParty.Party.PostalAddress.Country
@@ -292,26 +263,12 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
             </Typography>
           </Grid>
 
-          {/* <Grid item xs={0}>
-            <Divider orientation='vertical' sx={{ height: '90%', mt: 6 }} />
-          </Grid> */}
-
-          {/* {!isSmallScreen && (
-            <Grid item xs={0}>
-              <Divider orientation='vertical' sx={{ height: '90%', mt: 6 }} />
-            </Grid>
-          )} */}
-
           <Grid item xs={12} md={6}>
             <Typography variant='h5' sx={{ mt: 4 }}>
               Buyer Information
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               ABN:{' '}
               {
                 dataFields.AccountingCustomerParty.Party.PartyLegalEntity
@@ -319,11 +276,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Company:{' '}
               {
                 dataFields.AccountingCustomerParty.Party.PartyLegalEntity
@@ -331,11 +284,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               {/* Address: {buyerInfo.companyAddress} */}
             </Typography>
 
@@ -343,11 +292,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               Postal Address
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Street Name:{' '}
               {
                 dataFields.AccountingCustomerParty.Party.PostalAddress
@@ -355,11 +300,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Additional Street Name:{' '}
               {
                 dataFields.AccountingCustomerParty.Party.PostalAddress
@@ -367,23 +308,12 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               City Name:{' '}
-              {
-                dataFields.AccountingCustomerParty.Party.PostalAddress
-                  .CityName
-              }
+              {dataFields.AccountingCustomerParty.Party.PostalAddress.CityName}
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Postal Code:{' '}
               {
                 dataFields.AccountingCustomerParty.Party.PostalAddress
@@ -391,11 +321,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               }
             </Typography>
 
-            <Typography
-              margin='normal'
-              component='div'
-              sx={{ width: '100%' }}
-            >
+            <Typography margin='normal' component='div' sx={{ width: '100%' }}>
               Country:{' '}
               {
                 dataFields.AccountingSupplierParty.Party.PostalAddress.Country
@@ -426,27 +352,29 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
               <TableBody>
                 {Array.isArray(dataFields.InvoiceLine) ? (
                   dataFields.InvoiceLine.map((item: any, index: number) => {
-                    let baseAmount = (Number(item.Price.PriceAmount['@value']) / 
-                    (1 + Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100))
+                    let baseAmount =
+                      Number(item.Price.PriceAmount['@value']) /
+                      (1 +
+                        Number(
+                          dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent
+                        ) /
+                          100);
                     return (
                       <TableRow key={index}>
-                        <TableCell>
-                          {item.InvoicedQuantity['@value']}
-                        </TableCell>
-                        <TableCell>
-                          {item.InvoicedQuantity.unitCode}
-                        </TableCell>
+                        <TableCell>{item.InvoicedQuantity['@value']}</TableCell>
+                        <TableCell>{item.InvoicedQuantity.unitCode}</TableCell>
                         <TableCell>{item?.Item.Name || ''}</TableCell>
                         <TableCell>{item?.Item.Description || ''}</TableCell>
+                        <TableCell>{baseAmount.toFixed(2)}</TableCell>
                         <TableCell>
-                          {baseAmount.toFixed(2)}
-                        </TableCell>
-                        <TableCell>
-                          {((baseAmount *
-                            Number(
-                              dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent
-                            )) /
-                            100).toFixed(2)}
+                          {(
+                            (baseAmount *
+                              Number(
+                                dataFields.TaxTotal.TaxSubtotal.TaxCategory
+                                  .Percent
+                              )) /
+                            100
+                          ).toFixed(2)}
                         </TableCell>
                         <TableCell>
                           {item.LineExtensionAmount['@value']}
@@ -470,24 +398,34 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                         {dataFields?.InvoiceLine.Item.Description || ''}
                       </TableCell>
                       <TableCell>
-                        {/* Total Price / Tax Percent = Price before tax */}
-                        {
-                          (Number(dataFields.InvoiceLine.Price.PriceAmount['@value']) 
-                          / 
-                          (Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100 + 1)).toFixed(2)
-                        }
+                        {(
+                          Number(
+                            dataFields.InvoiceLine.Price.PriceAmount['@value']
+                          ) /
+                          (Number(
+                            dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent
+                          ) /
+                            100 +
+                            1)
+                        ).toFixed(2)}
                       </TableCell>
                       <TableCell>
-                        {
-                          ((
-                            Number(dataFields.InvoiceLine.Price.PriceAmount['@value']) 
-                            / 
-                            (Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100 + 1)
-                            *
-                            Number(dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent)
+                        {(
+                          ((Number(
+                            dataFields.InvoiceLine.Price.PriceAmount['@value']
                           ) /
-                          100).toFixed(2)
-                        }
+                            (Number(
+                              dataFields.TaxTotal.TaxSubtotal.TaxCategory
+                                .Percent
+                            ) /
+                              100 +
+                              1)) *
+                            Number(
+                              dataFields.TaxTotal.TaxSubtotal.TaxCategory
+                                .Percent
+                            )) /
+                          100
+                        ).toFixed(2)}
                       </TableCell>
                       <TableCell>
                         {dataFields.InvoiceLine.LineExtensionAmount['@value']}
@@ -534,12 +472,7 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
                       {dataFields.TaxTotal.TaxSubtotal.TaxCategory.Percent}%):{' '}
                     </TableCell>
                     <TableCell align='right'>
-                      $
-                      {
-                        dataFields.TaxTotal.TaxSubtotal.TaxableAmount[
-                          '@value'
-                        ]
-                      }
+                      ${dataFields.TaxTotal.TaxSubtotal.TaxableAmount['@value']}
                     </TableCell>
                   </TableRow>
 
@@ -571,7 +504,6 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
             </TableContainer>
           </Grid>
         </Grid>
-        {/* </Container> */}
       </>
     );
   };
@@ -579,8 +511,10 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
   return (
     <>
       <Container maxWidth='lg' sx={{ marginTop: 11 }}>
-
-        <PageHeader HeaderTitle={`Invoice Preview`} BreadcrumbDict={breadcrumbNav} />
+        <PageHeader
+          HeaderTitle={`Invoice Preview`}
+          BreadcrumbDict={breadcrumbNav}
+        />
 
         <Stack
           direction='row'
@@ -612,15 +546,15 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
             formatGUI(dataFields)
           )}
         </Box>
-        
-        <Divider 
-          sx={{ 
+
+        <Divider
+          sx={{
             my: 4,
             borderBottomWidth: 2,
           }}
         />
 
-        <Grid container justifyContent="center" spacing={6}>
+        <Grid container justifyContent='center' spacing={6}>
           <Grid item>
             <Button
               onClick={handleDownload}
@@ -653,6 +587,13 @@ export default function HistoryPreviewInvoice(props: { token: string }) {
           </Grid>
         </Grid>
       </Container>
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
     </>
   );
 }
+
+export default HistoryPreviewInvoice;
