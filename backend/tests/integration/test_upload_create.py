@@ -102,7 +102,7 @@ def test_json_create_validate_send_interaction(client, user):
     assert res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -141,7 +141,7 @@ def test_json_create_validate_fail_send_fail_interaction(client, user):
     assert not res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -181,7 +181,7 @@ def _test_pdf_create_validate_fail_send_fail_interaction(client, user):
     assert not res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -211,7 +211,7 @@ def test_xml_validate_send_interaction(client, user):
     invoice_id = res.json['validationOutcome'][0]['invoiceId']
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"
@@ -241,7 +241,7 @@ def test_xml_validate_fail_send_fail_interaction(client, user):
     invoice_id = res.json['validationOutcome'][0]['invoiceId']
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"

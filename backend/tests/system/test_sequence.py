@@ -110,7 +110,7 @@ def test_gui_create_sequence(client):
     assert res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user_token,
             "Content-Type": "application/json"
@@ -205,7 +205,7 @@ def test_json_create_sequence(client):
     assert res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user_token,
             "Content-Type": "application/json"
@@ -300,7 +300,7 @@ def _test_pdf_create_sequence(client):
     assert res.json["validationOutcome"][0]["validated"]
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user_token,
             "Content-Type": "application/json"
@@ -376,7 +376,7 @@ def test_upload_xml_sequence(client):
     assert len(res.json) == 1
 
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_id}&target_email=TEST",
         headers={
             "Authorisation": user_token,
             "Content-Type": "application/json"

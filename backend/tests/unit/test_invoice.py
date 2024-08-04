@@ -132,7 +132,7 @@ def test_send_fail(client, user):
 
 def test_send_suc(client, user, invoice_2):
     res = client.post(
-        f"{INVOICE_SEND_PATH}?xml_id={invoice_2.id}&target_email=",
+        f"{INVOICE_SEND_PATH}?xml_id={invoice_2.id}&target_email=TEST",
         headers={
             "Authorisation": user.token,
             "Content-Type": "application/json"

@@ -55,7 +55,7 @@ def send_attachment(send_to: list[str], text: str, ubl_data: list[tuple[str, str
     sender_email = os.getenv("EMAIL_USER")
     sender_pass = os.getenv("EMAIL_PASS")
 
-    if len(send_to) == 1 and send_to[0] == "":
+    if len(send_to) == 1 and send_to[0] == "TEST":
         return True 
 
     msg = MIMEMultipart()
