@@ -15,6 +15,8 @@ import {
 import DownloadIcon from '@mui/icons-material/Download';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { saveAs } from 'file-saver';
+
 
 function DownloadReport(props: {
   invoiceName: String;
@@ -38,13 +40,12 @@ function DownloadReport(props: {
   };
 
   const handleDownloadJSON = () => {
-    var FileSaver = require('file-saver');
     const dataStr = JSON.stringify(currentReport, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
 
     const formatName = invoiceName.replace(/\.[^/.]+$/, '');
 
-    FileSaver.saveAs(blob, `${formatName}-validation-report.json`);
+    saveAs(blob, `${formatName}-validation-report.json`);
   };
 
   const handleDownloadPDF = async () => {
