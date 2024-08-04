@@ -29,7 +29,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import useAuth from '../../helpers/useAuth';
 
-export default function InvoiceManagement(props: { token: string }) {
+function InvoiceManagement(props: { token: string }) {
   useAuth(props.token);
 
   const navigate = useNavigate();
@@ -358,3 +358,5 @@ export default function InvoiceManagement(props: { token: string }) {
     </>
   );
 }
+
+export default InvoiceManagement;

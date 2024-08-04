@@ -31,7 +31,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import vatRates from '../../VATRates.json';
 import ErrorModal from '../../components/ErrorModal';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import LoadingDialog from '../../components/LoadingDialog';
 import useAuth from '../../helpers/useAuth';
 import SaveIcon from '@mui/icons-material/Save';
@@ -44,7 +44,7 @@ interface FileObject {
 
 // Edit flag to determine if we are editing
 // Data passed in to preload it if we are editing
-export default function CreationGUI(props: {
+function CreationGUI(props: {
   token: string;
   editFlag: boolean;
   data: any;
@@ -61,9 +61,9 @@ export default function CreationGUI(props: {
   const [loadingMsg, setLoadingMsg] = React.useState<string>('');
   const navigate = useNavigate();
   const countries = Object.keys(vatRates);
-  console.log(props.id);
+
+  // Preloaded data
   const [fields, setFields] = React.useState<any>(null);
-  // Preloading the saved data
 
   const breadcrumbNavEdit = {
     Dashboard: '/dashboard',
@@ -77,13 +77,12 @@ export default function CreationGUI(props: {
     'Invoice Creation - GUI': '/invoice-creation-GUI',
   };
 
-  // Invoice Name State
   const [invName, setInvName] = React.useState<string>('');
   const [invNum, setInvNum] = React.useState<string>('');
   const [date, setDate] = React.useState<Date>(new Date());
+
   const [sellerABN, setSellerABN] = React.useState<string>('');
   const [sellerName, setSellerName] = React.useState<string>('');
-  // const [sellerAddr, setSellerAddr] = React.useState<string>('');
   const [sellerStreetName, setSellerStreetName] = React.useState<string>('');
   const [sellerAddStreetName, setSellerAddStreetName] =
     React.useState<string>('');
@@ -105,8 +104,6 @@ export default function CreationGUI(props: {
   const [buyerCountry, setBuyerCountry] = React.useState('');
   const [vatRate, setVatRate] = React.useState<number>(0);
 
-  const [priceTotal, setPriceTotal] = React.useState<number>(0);
-  const [itemGST, setItemGST] = React.useState<number>(0);
   const [rows, setRows] = React.useState([
     {
       id: 1,
@@ -125,7 +122,6 @@ export default function CreationGUI(props: {
 
   React.useEffect(() => {
     if (props.editFlag && props.data) {
-      console.log('Hey guys');
       setFields(props.data.fields);
     }
 
@@ -137,11 +133,9 @@ export default function CreationGUI(props: {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // console.log(fields);
-
+  // When the data is loaded in we can preload the fields
   React.useEffect(() => {
     if (props.editFlag) {
-      console.log(fields);
       const dateString = fields?.IssueDate || '';
       const [day, month, year] = dateString.split('/');
       const newDate = `${year}-${month}-${day}`;
@@ -207,27 +201,21 @@ export default function CreationGUI(props: {
             .IdentificationCode || ''
         );
       }
-      // console.log('VAT RATE:' + vatRate);
-      // console.log('SELLER:' + sellerCountry);
-      // console.log('BUYER:' + buyerCountry);
+
       const selectedCountry = buyerCountry as keyof typeof vatRates;
       setVatRate(vatRates[selectedCountry]);
+
+      // Determines if the invoice items are an array or not and deal with each case
       if (Array.isArray(fields?.InvoiceLine)) {
-        // console.log(rows);
         let tempRows = rows;
         let firstFlag = true;
-        console.log(fields?.InvoiceLine);
+
         fields?.InvoiceLine.forEach((item: any) => {
-          console.log(item);
-          // console.log('GST' + itemGST);
-          // console.log('Price' + priceTotal);
           if (firstFlag) {
             const baseAmount =
               parseFloat(item?.Price?.PriceAmount['@value']) /
               (1 +
                 Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent / 100));
-            console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-            console.log(Number(item?.Item.ClassifiedTaxCategory?.Percent));
 
             const newRow = {
               id: parseInt(item.ID) + 1,
@@ -240,19 +228,14 @@ export default function CreationGUI(props: {
               totalPrice: parseFloat(item.LineExtensionAmount['@value']),
             };
             firstFlag = false;
-            // setRows([...rows, newRow]);
+
             tempRows = [newRow];
             setNextId(nextId + 1);
-            // console.log(tempRows);
-            // console.log(rows);
           } else {
             const baseAmount =
               parseFloat(item?.Price?.PriceAmount['@value']) /
               (1 +
                 Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent / 100));
-
-            console.log('###############################');
-            console.log(baseAmount);
 
             const newRow = {
               id: parseInt(item.ID) + 1,
@@ -265,7 +248,7 @@ export default function CreationGUI(props: {
               totalPrice: parseFloat(item.LineExtensionAmount['@value']),
             };
             tempRows.push(newRow);
-            // setRows([...rows, newRow]);
+
             setNextId(nextId + 1);
           }
         });
@@ -281,7 +264,6 @@ export default function CreationGUI(props: {
             parseFloat(fields?.InvoiceLine.Price.PriceAmount['@value']) /
             (1 +
               Number(fields?.TaxTotal.TaxSubtotal.TaxCategory.Percent) / 100);
-          console.log('3' + baseAmount);
 
           const newRow = {
             id: 1,
@@ -306,7 +288,6 @@ export default function CreationGUI(props: {
           };
 
           setRows([newRow]);
-          // setNextId(nextId + 1);
         }
         if (vatRate) {
           rows.forEach((row) => {
@@ -315,10 +296,6 @@ export default function CreationGUI(props: {
         }
       }
     }
-    console.log(buyerCountry);
-    console.log(sellerCountry);
-    console.log(vatRate);
-    console.log('NO SHOT');
   }, [fields, buyerCountry]);
 
   // Uploading additional documents
@@ -359,8 +336,6 @@ export default function CreationGUI(props: {
       totalAmount += Number(row.totalPrice);
     });
 
-    let totalTaxable = totalAmount - totalGST;
-
     return {
       totalGST: totalGST,
       totalTaxable: totalAmount - totalGST,
@@ -373,13 +348,9 @@ export default function CreationGUI(props: {
   // Changes the VAT rate based on the buyer's country
   const handleChange = (event: { target: { value: any; name: string } }) => {
     const selectedCountry = event.target.value as keyof typeof vatRates;
-    console.log(buyerCountry);
-    console.log('HELLO?');
     if (event.target.name == 'buyerCountry') {
       setBuyerCountry(selectedCountry);
       setVatRate(vatRates[selectedCountry]);
-      console.log('Hi?');
-      console.log(buyerCountry);
       rows.forEach((row) => {
         handleCellValueChange(row);
       });
@@ -570,7 +541,6 @@ export default function CreationGUI(props: {
 
     const { additionalDocuments, extraComments, ...filteredInvoiceData } =
       invoiceData;
-    var str = JSON.stringify(filteredInvoiceData, null, 2);
 
     if (errorCheck) {
       return;
@@ -617,24 +587,17 @@ export default function CreationGUI(props: {
           setLoading(false);
 
           if (response.status === 201) {
-            // This is the one that should be working, but the api backend does not work
-            // navigate('/invoice-confirmation', { state: { invoice: invoiceData, type: 'GUI' } });
-
-            // This is to make the response object consistent betwee invoices create via GUI and upload
-            console.log('this is reponse data: ', response.data);
-            console.log('this is reponse data.data: ', response.data.data);
             const customResponse = {
               invoice: {
                 data: [
                   {
-                    // NOTE: This method chaining fucking sucks -> wtf is this
                     filename: response.data.data[0].filename,
                     invoiceId: response.data.data[0].invoiceId,
                   },
                 ],
               },
               type: 'GUI',
-              // This doesn't seem right... but it's how the invoicecreation gui via bulk upload returns
+
               invoiceId: response.data.data[0].invoiceId,
             };
 
@@ -642,15 +605,21 @@ export default function CreationGUI(props: {
               state: customResponse,
             });
           } else {
-            console.log(response);
-            alert('Unable to create invoice');
+            setOpenError(true);
+            setError('Unable to create invoice');
           }
-        } catch (err) {
+        } catch (error) {
           setLoading(false);
-          console.error(err);
-          alert(err);
+          const err = error as AxiosError<{ message: string }>;
+          if (err.response) {
+            setOpenError(true);
+            setError(err.response.data.message);
+          } else if (error instanceof Error) {
+            setOpenError(true);
+            setError(error.message);
+          }
         }
-        // SEND TO BACKEND HERE -> if successful, go to confirmation page
+
         return;
       }
     }
@@ -1045,18 +1014,6 @@ export default function CreationGUI(props: {
             </Table>
           </TableContainer>
 
-          {/* ADDITIONAL OPTIONS */}
-          {/* <Typography variant='h5' sx={{ mt: 4, mb: 2 }}>
-            Extra Comments
-          </Typography> */}
-          {/* Commented out because backend does not store it */}
-          {/* <Button
-            variant='contained'
-            color='primary'
-            onClick={() => setOpenFileUpload(true)}
-          >
-            Upload Additional Documents
-          </Button> */}
           <DropzoneDialogBase
             dialogTitle={'Upload file'}
             acceptedFiles={['image/*']}
@@ -1087,16 +1044,6 @@ export default function CreationGUI(props: {
             showFileNamesInPreview={true}
           />
 
-          {/* <Typography variant='h6' sx={{ mt: 4 }}>
-            Extra Comments
-          </Typography> */}
-          {/* <TextField
-            multiline
-            rows={5}
-            name='extraComments'
-            sx={{ width: '100%' }}
-          /> */}
-
           <Box textAlign='center'>
             <Button
               data-cy='confirm-gui'
@@ -1112,13 +1059,14 @@ export default function CreationGUI(props: {
             </Button>
           </Box>
         </form>
-
-        {openError && (
-          <ErrorModal open={openError} setOpen={setOpenError}>
-            {error}
-          </ErrorModal>
-        )}
       </Container>
+      {openError && (
+        <ErrorModal open={openError} setOpen={setOpenError}>
+          {error}
+        </ErrorModal>
+      )}
     </>
   );
 }
+
+export default CreationGUI;
