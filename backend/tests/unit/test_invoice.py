@@ -13,7 +13,6 @@ from tests.urls import (
     INVOICE_DELETE_PATH, 
     INVOICE_EDIT_PATH, 
     INVOICE_HISTORY_PATH, 
-    INVOICE_SAVE_PATH, 
     INVOICE_SEND_PATH, 
     INVOICE_VALIDATE_PATH,
 )
@@ -56,64 +55,6 @@ def test_invoice_creation_unauthorised(client):
     )
 
     assert res.status_code == 403
-
-def test_invoice_save_successful(client, user):
-    data = {
-        "name": "Testing123",
-        "fields": {
-            "field 1": "hi"
-        }
-    }
-
-    res = client.post(
-        INVOICE_SAVE_PATH,
-        data=json.dumps(data),
-        headers={
-            "Authorisation": user.token,
-            "Content-Type": "application/json"
-        }
-    )
-
-    assert res.status_code == 201
-    assert len(Invoice.query.all()) > 0
-
-def test_invoice_save_invalid_fields_type(client, user):
-    data = {
-        "name": "Testing123",
-        # should be json
-        "fields": "test"
-    }
-
-    res = client.post(
-        INVOICE_SAVE_PATH,
-        data=json.dumps(data),
-        headers={
-            "Authorisation": user.token,
-            "Content-Type": "application/json"
-        }
-    )
-
-    assert res.status_code == 400
-
-def test_invoice_save_invalid_name_type(client, user):
-    data = {
-        # should be str
-        "name": 5,
-        "fields": {
-            "field 1": "hi"
-        }
-    }
-
-    res = client.post(
-        INVOICE_SAVE_PATH,
-        data=json.dumps(data),
-        headers={
-            "Authorisation": user.token,
-            "Content-Type": "application/json"
-        }
-    )
-
-    assert res.status_code == 400
 
 def test_send_fail(client, user):
     data = {
@@ -501,8 +442,7 @@ def test_uploadcreate_json(client, user):
     assert response_body['message'] == "Invoice(s) created successfully"
     assert (len(response_body['data']) == 1)
 
-# TODO: RE-ENABLE ON FINAL PUSH
-def _test_uploadcreate_pdf(client, user):
+def test_uploadcreate_pdf(client, user):
     data = {}
     data['files'] = [(io.BytesIO(base64.b64decode(TEST_DATA["PDF_1"])), 'test.pdf')]
 

@@ -236,8 +236,7 @@ def test_json_create_sequence(client):
     assert len(res.json) == 0
 
 # Register -> Upload PDF Create -> Download -> History (Confirm 1 exist) -> Validate (Fail) -> Delete -> History (Confirm 0 exists)
-# TODO: RE-ENABLE ON FINAL PUSH
-def _test_pdf_create_sequence(client):
+def test_pdf_create_sequence(client):
     data = {
         "email": "abc@gmail.com",
         "password": "abc"
