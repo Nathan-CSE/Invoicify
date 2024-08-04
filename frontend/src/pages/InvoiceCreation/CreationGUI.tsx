@@ -948,7 +948,6 @@ function CreationGUI(props: {
                 disableColumnMenu
                 rowSelectionModel={selectedRowIds}
                 onRowSelectionModelChange={(rowIds) => {
-                  // console.log("this is rowIds: ", rowIds);
                   setSelectedRowIds(rowIds.map((id) => Number(id)));
                 }}
                 processRowUpdate={(newRow) => {
@@ -1013,36 +1012,6 @@ function CreationGUI(props: {
               </TableBody>
             </Table>
           </TableContainer>
-
-          <DropzoneDialogBase
-            dialogTitle={'Upload file'}
-            acceptedFiles={['image/*']}
-            fileObjects={fileList.map((fileObj) => ({
-              ...fileObj,
-              data: null,
-            }))}
-            cancelButtonText={'cancel'}
-            submitButtonText={'submit'}
-            maxFileSize={5000000}
-            open={openFileUpload}
-            onAdd={(newFileObjs: FileObject[]) => {
-              console.log('onAdd', newFileObjs);
-              setFileList((prevFileObjects) => [
-                ...prevFileObjects,
-                ...newFileObjs,
-              ]);
-            }}
-            onDelete={(deleteFileObj) => {
-              console.log('onDelete', deleteFileObj);
-            }}
-            onClose={() => setOpenFileUpload(false)}
-            onSave={() => {
-              console.log('onSave', fileList);
-              setOpenFileUpload(false);
-            }}
-            showPreviews={true}
-            showFileNamesInPreview={true}
-          />
 
           <Box textAlign='center'>
             <Button

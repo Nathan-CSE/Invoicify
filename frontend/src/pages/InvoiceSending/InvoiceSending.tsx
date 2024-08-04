@@ -56,7 +56,6 @@ function InvoiceSending(props: { token: string }) {
   };
 
   const handleFileChange = (loadedFiles: File[]) => {
-    console.log('Currently loaded:', loadedFiles);
     if (loadedFiles.length > 0) {
       setFiles(loadedFiles);
       setInvoices([]); // Clear invoice selection if a file is uploaded

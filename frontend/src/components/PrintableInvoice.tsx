@@ -1,4 +1,3 @@
-// PrintableInvoice.tsx
 import React, { forwardRef } from 'react';
 import {
   Typography,

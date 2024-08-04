@@ -6,33 +6,51 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Checkbox from '@mui/material/Checkbox';
 import Chip from '@mui/material/Chip';
-import { IoInformationCircleOutline } from "react-icons/io5";
-import { AiOutlineFieldNumber } from "react-icons/ai";
-import NumbersIcon from '@mui/icons-material/Numbers';
 import TagIcon from '@mui/icons-material/Tag';
 import { Typography } from '@mui/material';
 
-
-export default function MultipleSelect(props: { invoices: string[], availableInvoices: { invoiceId: number; name: string; }[], file: File[] | null, handleChange: (event: SelectChangeEvent<string[]>, child: React.ReactNode) => void }) {
+function MultipleSelect(props: {
+  invoices: string[];
+  availableInvoices: { invoiceId: number; name: string }[];
+  file: File[] | null;
+  handleChange: (
+    event: SelectChangeEvent<string[]>,
+    child: React.ReactNode
+  ) => void;
+}) {
   const { invoices, availableInvoices, file, handleChange } = props;
-  
+
   return (
     <Box sx={{ minWidth: 120 }}>
-      <FormControl variant="standard" fullWidth>
-        <InputLabel id="select-invoice-label" sx={{ paddingTop: '10px' }}>Select Invoice</InputLabel>
+      <FormControl variant='standard' fullWidth>
+        <InputLabel id='select-invoice-label' sx={{ paddingTop: '10px' }}>
+          Select Invoice
+        </InputLabel>
         <Select
-          labelId="select-invoice-label"
-          id="select-invoice"
+          labelId='select-invoice-label'
+          id='select-invoice'
           name='select-invoice'
           multiple
           value={invoices}
-          label="Select Invoice"
+          label='Select Invoice'
           onChange={handleChange}
           disabled={Boolean(file)}
           renderValue={(selected) => (
-            <Box sx={{ display: 'flex', flexWrap: 'nowrap', gap: 0.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '100%' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexWrap: 'nowrap',
+                gap: 0.5,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                maxWidth: '100%',
+              }}
+            >
               {selected.map((value: string) => {
-                const invoice = availableInvoices.find(item => item.invoiceId === Number(value));
+                const invoice = availableInvoices.find(
+                  (item) => item.invoiceId === Number(value)
+                );
                 return (
                   <Chip
                     key={value}
@@ -48,18 +66,21 @@ export default function MultipleSelect(props: { invoices: string[], availableInv
           sx={{ height: '45px' }}
         >
           {availableInvoices.map((invoice) => {
-            // Log invoice details
-            // console.log("all invoices: ", invoices);
-            // console.log("curr invoice: ", invoice);
-            // console.log("invoice id: ", invoice.invoiceId);
-
             return (
-              <MenuItem key={invoice.invoiceId} value={invoice.invoiceId.toString()}>
+              <MenuItem
+                key={invoice.invoiceId}
+                value={invoice.invoiceId.toString()}
+              >
                 <Checkbox
                   checked={invoices.includes(invoice.invoiceId.toString())}
-                  // {/* <Checkbox checked={invoices.indexOf(invoice.invoiceId.toString()) > -1} /> */}
                 />
-                <TagIcon style={{ paddingBottom: '1px', marginRight: '4px', fontSize: 15 }} /> 
+                <TagIcon
+                  style={{
+                    paddingBottom: '1px',
+                    marginRight: '4px',
+                    fontSize: 15,
+                  }}
+                />
                 <Typography
                   sx={{
                     overflow: 'hidden',
@@ -77,3 +98,5 @@ export default function MultipleSelect(props: { invoices: string[], availableInv
     </Box>
   );
 }
+
+export default MultipleSelect;

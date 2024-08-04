@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
@@ -20,7 +19,7 @@ import { ReactComponent as DocSvg } from '../assets/documentation.svg';
 import { ReactComponent as HomeSvg } from '../assets/home.svg';
 import { useNavigate } from 'react-router-dom';
 
-export default function TemporaryDrawer() {
+function TemporaryDrawer() {
   const [open, setOpen] = React.useState(false);
   const navigate = useNavigate();
   const toggleDrawer = (newOpen: boolean) => () => {
@@ -37,15 +36,38 @@ export default function TemporaryDrawer() {
     [key: string]: dashboardCardInfo;
   }
 
-  // REPLACE your route to the page when implemented
   const options = {
-    'Dashboard': { svg: HomeSvg, route: '/dashboard', cy: 'drawer-dashboard' },
-    'Create/Upload an Invoice': { svg: PenSvg, route: '/invoice-creation', cy: 'drawer-creation' },
-    'Validate an Invoice': { svg: TickSvg, route: '/invoice-validation', cy: 'drawer-validation' },
-    'Send an Invoice': { svg: SendSvg, route: '/invoice-sending', cy: 'drawer-sending' },
-    'Manage Invoices': { svg: ManageSvg, route: '/invoice-management', cy: 'drawer-management' },
-    'Account Settings': { svg: CogSvg, route: '/settings', cy: 'drawer-settings' },
-    'Documentation Info': { svg: DocSvg, route: '/documentation', cy: 'drawer-documentation' },
+    Dashboard: { svg: HomeSvg, route: '/dashboard', cy: 'drawer-dashboard' },
+    'Create/Upload an Invoice': {
+      svg: PenSvg,
+      route: '/invoice-creation',
+      cy: 'drawer-creation',
+    },
+    'Validate an Invoice': {
+      svg: TickSvg,
+      route: '/invoice-validation',
+      cy: 'drawer-validation',
+    },
+    'Send an Invoice': {
+      svg: SendSvg,
+      route: '/invoice-sending',
+      cy: 'drawer-sending',
+    },
+    'Manage Invoices': {
+      svg: ManageSvg,
+      route: '/invoice-management',
+      cy: 'drawer-management',
+    },
+    'Account Settings': {
+      svg: CogSvg,
+      route: '/settings',
+      cy: 'drawer-settings',
+    },
+    'Documentation Info': {
+      svg: DocSvg,
+      route: '/documentation',
+      cy: 'drawer-documentation',
+    },
   };
 
   const DrawerList = (
@@ -84,7 +106,7 @@ export default function TemporaryDrawer() {
   return (
     <div>
       <IconButton
-        data-cy="toggle-drawer"
+        data-cy='toggle-drawer'
         size='large'
         edge='start'
         color='inherit'
@@ -104,3 +126,5 @@ export default function TemporaryDrawer() {
     </div>
   );
 }
+
+export default TemporaryDrawer;

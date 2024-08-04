@@ -5,11 +5,9 @@ import Dialog from '@mui/material/Dialog';
 
 import {
   FormControl,
-  FormLabel,
   RadioGroup,
   FormControlLabel,
   Radio,
-  Box,
   DialogContent,
   DialogActions,
 } from '@mui/material';
@@ -20,7 +18,7 @@ export interface SimpleDialogProps {
   onCancel: () => void;
 }
 
-export default function FilterModal(props: SimpleDialogProps) {
+function FilterModal(props: SimpleDialogProps) {
   const { onClose, onCancel, open } = props;
 
   const [filterOption, setFilterOption] = React.useState('id');
@@ -75,3 +73,5 @@ export default function FilterModal(props: SimpleDialogProps) {
     </Dialog>
   );
 }
+
+export default FilterModal;

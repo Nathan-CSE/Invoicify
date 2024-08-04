@@ -110,10 +110,6 @@ function HistoryPreviewInvoice(props: { token: string }) {
       );
 
       if (response.status === 200) {
-        console.log(response.data);
-
-        // Tried to change this to use saveAs lib, but ran into a bunch of issues trying to format the
-        // string into a file that was able to be saved
         const url = window.URL.createObjectURL(
           new Blob([response.data['message']])
         );
@@ -143,7 +139,6 @@ function HistoryPreviewInvoice(props: { token: string }) {
   const formatJSON = (dataFields: any, indentLevel = 0) => {
     let formattedString = '';
     const indent = ' '.repeat(indentLevel * 2); // Use two spaces for each indent level
-    console.log(dataFields);
 
     // Checks if its an object and has children to loop through so we recurse
     // Else we just display the value
@@ -164,7 +159,6 @@ function HistoryPreviewInvoice(props: { token: string }) {
   };
 
   const formatGUI = (dataFields: any) => {
-    console.log(dataFields);
     return (
       <>
         <Typography variant='h5' sx={{ mt: 4 }}>

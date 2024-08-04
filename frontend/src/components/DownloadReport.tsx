@@ -1,18 +1,26 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { InputLabel, Select, MenuItem, SelectChangeEvent, Box, FormControl } from '@mui/material';
+import {
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent,
+  FormControl,
+} from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-import { saveAs } from 'file-saver';
 
-export default function DownloadReport(props: { invoiceName: String, currentReport: any, inputDiv: any }) {
+function DownloadReport(props: {
+  invoiceName: String;
+  currentReport: any;
+  inputDiv: any;
+}) {
   const [open, setOpen] = React.useState(false);
   const [downloadFormat, setDownloadFormat] = React.useState('');
   const { invoiceName, currentReport, inputDiv } = props;
@@ -26,26 +34,22 @@ export default function DownloadReport(props: { invoiceName: String, currentRepo
   };
 
   const handleChange = (event: SelectChangeEvent) => {
-    console.log('this is event.target: ', event.target);
     setDownloadFormat(event.target.value);
   };
-
 
   const handleDownloadJSON = () => {
     var FileSaver = require('file-saver');
     const dataStr = JSON.stringify(currentReport, null, 2);
     const blob = new Blob([dataStr], { type: 'application/json' });
 
-    const formatName = invoiceName.replace(/\.[^/.]+$/, "");
+    const formatName = invoiceName.replace(/\.[^/.]+$/, '');
 
     FileSaver.saveAs(blob, `${formatName}-validation-report.json`);
-
-  }
+  };
 
   const handleDownloadPDF = async () => {
     const inputDiv = document.getElementById('report-content');
     if (inputDiv) {
-      
       const pdf = new jsPDF();
       const margin = 10;
       const pdfWidth = pdf.internal.pageSize.getWidth() - margin * 2;
@@ -68,9 +72,8 @@ export default function DownloadReport(props: { invoiceName: String, currentRepo
         heightLeft -= pdfHeight;
       }
 
-      const formatName = invoiceName.replace(/\.[^/.]+$/, "");
+      const formatName = invoiceName.replace(/\.[^/.]+$/, '');
       pdf.save(`${formatName}-validation-report.pdf`);
-
     }
   };
 
@@ -103,32 +106,37 @@ export default function DownloadReport(props: { invoiceName: String, currentRepo
       >
         <DialogTitle>Download report for {invoiceName}?</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            Select a download format below.
-          </DialogContentText>
+          <DialogContentText>Select a download format below.</DialogContentText>
 
-          <FormControl fullWidth variant="outlined" margin="normal" required sx={{ mt: 2, mb: -1 }}>      
-            <InputLabel id="select-format">Download Format</InputLabel>
+          <FormControl
+            fullWidth
+            variant='outlined'
+            margin='normal'
+            required
+            sx={{ mt: 2, mb: -1 }}
+          >
+            <InputLabel id='select-format'>Download Format</InputLabel>
             <Select
-              labelId="select-format"
-              id="select-format"
+              labelId='select-format'
+              id='select-format'
               value={downloadFormat}
-              label="Download Format"
+              label='Download Format'
               onChange={handleChange}
               required
               fullWidth
             >
               <MenuItem value={'JSON'}>JSON</MenuItem>
               <MenuItem value={'PDF'}>PDF</MenuItem>
-
             </Select>
           </FormControl>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Download</Button>
+          <Button type='submit'>Download</Button>
         </DialogActions>
       </Dialog>
     </>
-  )
+  );
 }
+
+export default DownloadReport;
